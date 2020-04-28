@@ -138,9 +138,9 @@ class Board
 				}
 				
 				cout << endl;
-				if(row%2 == 0)
+				if(row%2 == 0 && row < 4)
 					cout << "|\\|/|\\|/|\\|/|\\|/|" << endl;
-				else if(row%2 != 0 && row < 4)
+				else if (row < 4)
 					cout << "|/|\\|/|\\|/|\\|/|\\|" << endl;
 			}
 		}
