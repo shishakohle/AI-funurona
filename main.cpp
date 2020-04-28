@@ -128,8 +128,16 @@ class Board
 		
 		void print(void)
 		{
+			char longitude[]="  A B C D E F G H I";
+			
+			// print longitude
+			cout  << longitude << endl;
+			
 			for(int row=0; row<5; row++)
 			{
+				// print latitude
+				cout << row+1 << " " << flush;
+				
 				for(int column=0; column<9; column++)
 				{
 					cout << cells[row][column].printStatus() << flush;
@@ -137,12 +145,19 @@ class Board
 						cout << "-" << flush;
 				}
 				
+				// print latitude
+				cout << " " << row+1 << flush;
+				
 				cout << endl;
+				
 				if(row%2 == 0 && row < 4)
-					cout << "|\\|/|\\|/|\\|/|\\|/|" << endl;
+					cout << "  |\\|/|\\|/|\\|/|\\|/|" << endl;
 				else if (row < 4)
-					cout << "|/|\\|/|\\|/|\\|/|\\|" << endl;
+					cout << "  |/|\\|/|\\|/|\\|/|\\|" << endl;
 			}
+			
+			// print longitude
+			cout << longitude << endl;
 		}
 };
 
