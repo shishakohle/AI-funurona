@@ -16,11 +16,45 @@
  * colors: black -> # , white -> O , empty cell -> .
  */
 
+#define TOKEN_WHITE 'O'
+#define TOKEN_BLACK '#'
+
 #include <iostream>
 
 using namespace std;
 
-enum Team {black, white};
+enum Team {BLACK, WHITE};
+
+class Player
+{
+	private:
+	
+		char name[16];
+		enum Team team;
+	
+	public:
+	
+		// constructor for instances of Player
+		// TODO
+		
+		// getter for player's name
+		// TODO
+		
+		// get player's token
+		char getToken()
+		{
+			char token;
+			
+			switch (team)
+			{
+				case WHITE: token = TOKEN_WHITE; break;
+				case BLACK: token = TOKEN_BLACK; break;
+				// default: break;
+			}
+			
+			return token;
+		}
+};
 
 struct position
 {
@@ -63,10 +97,10 @@ class Cell
 			
 			if (isOccupied)
 			{
-				switch (token.getTeam())
+				switch (token.getTeam()) // TODO for Ingo
 				{
-					case black: out = '#'; break;
-					case white: out = 'O'; break;
+					case BLACK: out = TOKEN_BLACK; break;
+					case WHITE: out = TOKEN_WHITE; break;
 					default: break;
 				}
 			}
@@ -98,26 +132,26 @@ class Board
 					
 					if (row==0||row==1)
 					{
-						t.setTeam(black);
+						t.setTeam(BLACK);
 						cells[row][column].setToken(t);
 					}
 					else if (row==3||row==4)
 					{
-						t.setTeam(white);
+						t.setTeam(WHITE);
 						cells[row][column].setToken(t);
 					}
 					else
 					{
 						switch(column)
 						{
-							case 0: t.setTeam(black); cells[row][column].setToken(t); break;
-							case 2: t.setTeam(black); cells[row][column].setToken(t); break;
-							case 5: t.setTeam(black); cells[row][column].setToken(t); break;
-							case 7: t.setTeam(black); cells[row][column].setToken(t); break;
-							case 1: t.setTeam(white); cells[row][column].setToken(t); break;
-							case 3: t.setTeam(white); cells[row][column].setToken(t); break;
-							case 6: t.setTeam(white); cells[row][column].setToken(t); break;
-							case 8: t.setTeam(white); cells[row][column].setToken(t); break;
+							case 0: t.setTeam(BLACK); cells[row][column].setToken(t); break;
+							case 2: t.setTeam(BLACK); cells[row][column].setToken(t); break;
+							case 5: t.setTeam(BLACK); cells[row][column].setToken(t); break;
+							case 7: t.setTeam(BLACK); cells[row][column].setToken(t); break;
+							case 1: t.setTeam(WHITE); cells[row][column].setToken(t); break;
+							case 3: t.setTeam(WHITE); cells[row][column].setToken(t); break;
+							case 6: t.setTeam(WHITE); cells[row][column].setToken(t); break;
+							case 8: t.setTeam(WHITE); cells[row][column].setToken(t); break;
 							case 4: cells[row][column].setOccupied(false); break;
 							default: break;
 						}
@@ -164,48 +198,56 @@ class Board
 
 class Game {
 
-	public:
+	private:
+	
 		enum Team currentTeam;
 		bool gameWon;
 		Board meinSpielbrett;
-
-
-		Game(){
-			currentTeam = white;
+	
+	public:
+	
+		Game()
+		{
+			currentTeam = WHITE;
 			gameWon = false;
 
 			meinSpielbrett.init();
 			meinSpielbrett.print();
 
 		};
+		
+		void start()
+		{
+			cout << "Welcome to funurona! Player white begins." << endl;
 
-		void start(){
-
-
-			cout << "Welcome to funurona! Player white begins.";
-
-			while(!gameWon){
+			while(!gameWon)
+			{
 				turn();
 			}
 		};
-
-		void turn(){
-
-			cout << "Player " << currentTeam;
-			cout << "Choose token:";
+	
+	private:
+	
+		void turn()
+		{
+			cout << "Player " << currentTeam << ": " << "Make your turn!" << endl;
+			
+			cout << "Choose startpostion" << endl;
 			struct position startPosition = chooseToken();
-			cout << "Startposition COL: " << startPosition.column;
-			cout << "Startposition ROW: " << startPosition.row;
+				cout << "Startposition COL: " << startPosition.column << endl;
+				cout << "Startposition ROW: " << startPosition.row << endl;
 
 
-			//Ist auf dieser Position ein Token von dem Team?
+			// Ist auf dieser Position ein Token von dem Team?
 
-			cout << "Choose endposition:";
+			cout << "Choose endposition:" << endl;
 			struct position endPostion = chooseToken();
-			cout << "Endposition COL: " << endPostion.column;
-			cout << "Endposition ROW: " << endPostion.row;
+				cout << "Endposition COL: " << endPostion.column << endl;
+				cout << "Endposition ROW: " << endPostion.row << endl;
 
-			//
+			// Kann dieser Zug ausgeführt werden?
+			// - Ist die Position eine freie Position?
+			// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
 
 
 			meinSpielbrett.print();
@@ -215,9 +257,9 @@ class Game {
 		{
 			int row, col;
 
-			cout << "Please choose the row:";
+			cout << "Please choose the row: ";
 			cin >> row;
-			cout << "Please choose the column:";
+			cout << "Please choose the column: ";
 			cin >> col;
 
 			struct position position;
@@ -226,11 +268,6 @@ class Game {
 
 			return position;
 		}
-
-
-	private:
-
-
 };
 
 int main(void)
