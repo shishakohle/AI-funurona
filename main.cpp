@@ -18,8 +18,11 @@
 
 #define TOKEN_WHITE 'O'
 #define TOKEN_BLACK '#'
+#define UNNAMED_PLAYER "unnamed"
+#define LINES_TO_CLEAR 50
 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -29,23 +32,53 @@ class Player
 {
 	private:
 	
-		char name[16];
+		string name;
 		enum Team team;
 	
 	public:
 	
-		// constructor for instances of Player
-		// TODO
+		// overloaded constructors for instances of Player
+		
+		Player()
+		{
+			this->setName(UNNAMED_PLAYER);
+		}
+		
+		Player(string name, enum Team team)
+		{
+			this->setName(name);
+			this->setTeam(team);
+		}
+		
+		// setter for player's name
+		void setName(string name)
+		{
+			!name.empty() ? this->name=name : this->name = UNNAMED_PLAYER;
+		}
+		
+		// setter for player's team
+		void setTeam(enum Team team)
+		{
+			this->team = team;
+		}
 		
 		// getter for player's name
-		// TODO
+		string getName()
+		{
+			return this->name;
+		}
 		
-		// get player's token
+		enum Team getTeam()
+		{
+			return this->team;
+		}
+		
+		// get player's token // TODO: needed?
 		char getToken()
 		{
 			char token;
 			
-			switch (team)
+			switch (this->team)
 			{
 				case WHITE: token = TOKEN_WHITE; break;
 				case BLACK: token = TOKEN_BLACK; break;
@@ -64,15 +97,38 @@ struct position
 class Token
 {
 	public:
+	
 		void setTeam(Team t)
 		{
-			team = t;
+			this->team = t;
 		}
+		
 		Team getTeam()
 		{
-			return team;
+			return this->team;
 		}
+		
+		char asChar() // TODO invoke this when printing the board. or is this needed overall?
+		{
+			return this->asChar(this->team);
+		}
+		
+		static char asChar(enum Team team) // TODO: private??
+		{
+			char out = '?';
+			
+			switch (team)
+			{
+				case BLACK: out = TOKEN_BLACK; break;
+				case WHITE: out = TOKEN_WHITE; break;
+				// default: break;
+			}
+			
+			return out;
+		}
+		
 	private:
+	
 		enum Team team;
 		struct position;
 };
@@ -200,26 +256,72 @@ class Game {
 
 	private:
 	
-		enum Team currentTeam;
+		//enum Team currentTeam;
+		Player *currentPlayer;
 		bool gameWon;
 		Board meinSpielbrett;
+		Player playerWhite, playerBlack;
 	
 	public:
 	
 		Game()
 		{
-			currentTeam = WHITE;
-			gameWon = false;
+			//this->currentTeam = WHITE;
+			this->currentPlayer = &playerWhite;
+			this->gameWon = false;
+			this->playerWhite.setTeam(WHITE);
+			this->playerBlack.setTeam(BLACK);
 
 			meinSpielbrett.init();
-			meinSpielbrett.print();
-
 		};
 		
-		void start()
+		void start() // TODO: private??
 		{
-			cout << "Welcome to funurona! Player white begins." << endl;
-
+			// clear screen
+			this->clearScreen();
+			
+			// print welcome screen
+			ifstream welcomeScreenFile;
+			welcomeScreenFile.open("welcome.txt");
+			if(welcomeScreenFile)
+			{
+				string line;
+				while( getline(welcomeScreenFile, line) )
+					cout << line << endl;
+			}
+			else
+			{
+				cout << "Welcome to Corona FUNurona!\n" << endl;
+			}
+			
+			string playerName = "";
+			
+			// create Player for team WHITE
+			do
+			{
+				cout << "Please enter the name for the WHITE player: " << flush;
+				getline(cin, playerName);
+			}
+			while( playerName.empty() );
+			this->playerWhite.setName(playerName);
+			cout << "Hello " << this->playerWhite.getName() <<". " << flush;
+			cout << "You're on the WHITE team, your tokens look like this: " << Token::asChar(WHITE) << "\n" << endl;
+			
+			// create Player for team BLACK
+			do
+			{
+				cout << "Please enter the name for the BLACK player: " << flush;
+				getline(cin, playerName);
+			}
+			while( playerName.empty() );
+			this->playerBlack.setName(playerName);
+			cout << "Hello " << this->playerBlack.getName() <<". " << flush;
+			cout << "You're on the BLACK team, your tokens look like this: " << Token::asChar(BLACK) << "\n" << endl;
+			
+			cout << "Team WHITE (hence "<< this->playerWhite.getName() << "-" << Token::asChar(WHITE) <<") will begin." << endl; // TODO manage inconsistencies with constructor
+			cout << "Press <ENTER> to start the game." << flush;
+			getline(cin,playerName);
+			
 			while(!gameWon)
 			{
 				turn();
@@ -230,20 +332,25 @@ class Game {
 	
 		void turn()
 		{
-			cout << "Player " << currentTeam << ": " << "Make your turn!" << endl;
+			// clear screen
+			this->clearScreen();
+			
+			meinSpielbrett.print();
+			
+			cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
 			
 			cout << "Choose startpostion" << endl;
 			struct position startPosition = chooseToken();
-				cout << "Startposition COL: " << startPosition.column << endl;
-				cout << "Startposition ROW: " << startPosition.row << endl;
+				cout << "\tStartposition COL: " << startPosition.column << endl;
+				cout << "\tStartposition ROW: " << startPosition.row << endl;
 
 
 			// Ist auf dieser Position ein Token von dem Team?
 
 			cout << "Choose endposition:" << endl;
 			struct position endPostion = chooseToken();
-				cout << "Endposition COL: " << endPostion.column << endl;
-				cout << "Endposition ROW: " << endPostion.row << endl;
+				cout << "\tEndposition COL: " << endPostion.column << endl;
+				cout << "\tEndposition ROW: " << endPostion.row << endl;
 
 			// Kann dieser Zug ausgeführt werden?
 			// - Ist die Position eine freie Position?
@@ -267,6 +374,13 @@ class Game {
 			position.row = row;
 
 			return position;
+		}
+		
+		void clearScreen()
+		{
+			int i = 0;
+			while(i++ < LINES_TO_CLEAR)
+				cout << endl;
 		}
 };
 
