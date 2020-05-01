@@ -161,15 +161,84 @@ class Board
 		}
 };
 
+
+class Game {
+
+	public:
+		enum Team currentTeam;
+		bool gameWon;
+		Board meinSpielbrett;
+
+
+		Game(){
+			currentTeam = white;
+			gameWon = false;
+
+			meinSpielbrett.init();
+			meinSpielbrett.print();
+
+		};
+
+		void start(){
+
+
+			cout << "Welcome to funurona! Player white begins.";
+
+			while(!gameWon){
+				turn();
+			}
+		};
+
+		void turn(){
+
+			cout << "Player " << currentTeam;
+			cout << "Choose token:";
+			struct position startPosition = chooseToken();
+			cout << "Startposition COL: " << startPosition.column;
+			cout << "Startposition ROW: " << startPosition.row;
+
+
+			//Ist auf dieser Position ein Token von dem Team?
+
+			cout << "Choose endposition:";
+			struct position endPostion = chooseToken();
+			cout << "Endposition COL: " << endPostion.column;
+			cout << "Endposition ROW: " << endPostion.row;
+
+			//
+
+
+			meinSpielbrett.print();
+		}
+
+		struct position chooseToken()
+		{
+			int row, col;
+
+			cout << "Please choose the row:";
+			cin >> row;
+			cout << "Please choose the column:";
+			cin >> col;
+
+			struct position position;
+			position.column = col;
+			position.row = row;
+
+			return position;
+		}
+
+
+	private:
+
+
+};
+
 int main(void)
 {
 	//cout << "Hello World!" << endl;
-	
-	Board meinSpielbrett;
-	
-	meinSpielbrett.init();
-	meinSpielbrett.print();
-	
-	
+	Game meinSpiel;
+
+	meinSpiel.start();
+
 	return 0;
 }
