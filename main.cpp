@@ -34,6 +34,7 @@ class Player
 	
 		string name;
 		enum Team team;
+		int tokensLeft;
 	
 	public:
 	
@@ -42,6 +43,7 @@ class Player
 		Player()
 		{
 			this->setName(UNNAMED_PLAYER);
+			this->setLeftTokens(22);
 		}
 		
 		Player(string name, enum Team team)
@@ -61,6 +63,12 @@ class Player
 		{
 			this->team = team;
 		}
+
+		// setter for player's amount of left tokens
+		void setLeftTokens(int tokensLeft)
+		{
+			this->tokensLeft = tokensLeft;
+		}
 		
 		// getter for player's name
 		string getName()
@@ -71,6 +79,11 @@ class Player
 		enum Team getTeam()
 		{
 			return this->team;
+		}
+
+		int getLeftTokens()
+		{
+			return this->tokensLeft;
 		}
 		
 		// get player's token // TODO: needed?
@@ -259,6 +272,7 @@ class Game {
 		//enum Team currentTeam;
 		Player *currentPlayer;
 		bool gameWon;
+		Player winner;
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
 	
@@ -325,7 +339,9 @@ class Game {
 			while(!gameWon)
 			{
 				turn();
+				gameOver();
 			}
+			cout << "The game is over. "<< this->winner.getName() <<"you have won. Congratulations!" << endl;
 		};
 	
 	private:
@@ -374,6 +390,22 @@ class Game {
 			position.row = row;
 
 			return position;
+		}
+		
+		//check if game is over and who is winner
+		void gameOver ()
+		{
+			if(currentPlayer.getLeftTokens == 0) //TO-DO: when player captures stones - subtract amount form total count
+			{
+				gameWon = true;
+				this->winner.setTeam(currentPlayer.getTeam());
+				this->winner.setName(currentPlayer.getName());
+			}
+			else
+			{
+				gameWon = false;
+			}
+
 		}
 		
 		void clearScreen()
