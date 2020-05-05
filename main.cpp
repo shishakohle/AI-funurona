@@ -272,7 +272,7 @@ class Game {
 		//enum Team currentTeam;
 		Player *currentPlayer;
 		bool gameWon;
-		Player winner;
+		Player *winner;
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
 	
@@ -343,7 +343,7 @@ class Game {
 				//change current player
 
 			}
-			cout << "The game is over. "<< this->winner.getName() <<"you have won. Congratulations!" << endl;
+			cout << "The game is over. "<< this->winner->getName() <<"you have won. Congratulations!" << endl;
 		};
 	
 	private:
@@ -397,11 +397,10 @@ class Game {
 		//check if game is over and who is winner
 		void gameOver ()
 		{
-			if(this->currentPlayer->getLeftTokens()  == 0) //TO-DO: when player captures stones - subtract amount form total count
+			if(this->playerWhite.getLeftTokens() == 0 || this->playerBlack.getLeftTokens() == 0) //TO-DO: when player captures stones - subtract amount form total count
 			{
 				gameWon = true;
-				this->winner.setTeam(this->currentPlayer->getTeam());
-				this->winner.setName(this->currentPlayer->getName());
+				this->winner = currentPlayer;
 			}
 			else
 			{
