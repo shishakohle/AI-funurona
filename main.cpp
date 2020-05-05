@@ -340,6 +340,8 @@ class Game {
 			{
 				turn();
 				gameOver();
+				//change current player
+
 			}
 			cout << "The game is over. "<< this->winner.getName() <<"you have won. Congratulations!" << endl;
 		};
@@ -395,11 +397,11 @@ class Game {
 		//check if game is over and who is winner
 		void gameOver ()
 		{
-			if(currentPlayer.getLeftTokens == 0) //TO-DO: when player captures stones - subtract amount form total count
+			if(this->currentPlayer->getLeftTokens()  == 0) //TO-DO: when player captures stones - subtract amount form total count
 			{
 				gameWon = true;
-				this->winner.setTeam(currentPlayer.getTeam());
-				this->winner.setName(currentPlayer.getName());
+				this->winner.setTeam(this->currentPlayer->getTeam());
+				this->winner.setName(this->currentPlayer->getName());
 			}
 			else
 			{
