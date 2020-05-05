@@ -341,6 +341,14 @@ class Game {
 				turn();
 				gameOver();
 				//change current player
+				if(currentPlayer->getTeam() == WHITE)
+				{
+					currentPlayer = &playerBlack;
+				}
+				else
+				{
+					currentPlayer = &playerWhite;
+				}
 
 			}
 			cout << "The game is over. "<< this->winner->getName() <<"you have won. Congratulations!" << endl;
@@ -348,6 +356,7 @@ class Game {
 	
 	private:
 	
+		//RUNDE
 		void turn()
 		{
 			// clear screen
@@ -377,6 +386,13 @@ class Game {
 
 			meinSpielbrett.print();
 		}
+
+		//ZUG
+		void move()
+		{
+			//check rules
+		}
+
 
 		struct position chooseToken()
 		{
