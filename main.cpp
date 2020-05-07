@@ -275,6 +275,9 @@ class Game {
 		Player *winner;
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
+		bool grid[5][9];
+		bool anotherMove;
+		bool beenThereVar;
 	
 	public:
 	
@@ -338,6 +341,7 @@ class Game {
 			
 			while(!gameWon)
 			{
+				anotherMove = true; //(re)move later
 				turn();
 				gameOver();
 				//change current player
@@ -357,12 +361,14 @@ class Game {
 	private:
 	
 		//RUNDE
-		void turn()
+		void move()
 		{
 			// clear screen
 			this->clearScreen();
 			
 			meinSpielbrett.print();
+
+			//TO-DO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
 			
 			cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
 			
@@ -378,12 +384,19 @@ class Game {
 			struct position endPostion = chooseToken();
 				cout << "\tEndposition COL: " << endPostion.column << endl;
 				cout << "\tEndposition ROW: " << endPostion.row << endl;
+				
+			//war in diesem Zug schon mal auf diesem spielfeld?
+				
+			beenThereVar = beenThere(endPostion);
+			//if beenThereVar = false --> dont move token --> ask again
+			//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
+
 
 			// Kann dieser Zug ausgeführt werden?
 			// - Ist die Position eine freie Position?
 
-
-
+			
+			
 
 
 			// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
@@ -391,16 +404,20 @@ class Game {
 			int turnLengthRow = endPostion.row - startPosition.row;
 
 			switch (turnLengthColumn)
+			{
 				case 0:
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht ned" << endl; break;
 						case 1: cout << "geht prinzipiell" << endl; break;
 						case -1: cout << "geht prinzipiell" << endl; break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
 				case 1:
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht prinzipiell" << endl; break;
 						case 1: 
 							if((startPosition.column + startPosition.row)%2==0)
@@ -414,11 +431,13 @@ class Game {
 							else
 								cout << "keine diagonale" << endl; 
 						break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
 				case -1: 
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht prinzipiell" << endl; break;
 						case 1: 
 							if((startPosition.column + startPosition.row)%2==0)
@@ -432,20 +451,60 @@ class Game {
 							else
 								cout << "keine diagonale" << endl; 
 						break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
-				case default: "zu weit" break;
-
-
+				default: cout << "zu weit" << endl; break;
+			}
 
 			meinSpielbrett.print();
 		}
 
 		//ZUG
-		void move()
+		void turn()
 		{
+
 			//check rules
+			//clear grid for check "beenThere"
+			for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					grid[row][column] = 0;
+				}
+				cout << endl;
+			}
+
+			//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
+			while(1) //TO-DO: need to adapt anotherMove --> only if additional move allowed
+			{
+				if(anotherMove == true)
+				{
+					move();
+					//anotherMove = false;
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+		}
+
+		bool beenThere(struct position endPostion)
+		{
+			if(grid[endPostion.row-1][endPostion.column-1] == 0)
+			{
+				grid[endPostion.row-1][endPostion.column-1] = 1;
+				return true;
+
+			}
+			else
+			{
+				cout << "You have already been there. Move invalid. Choose another endposition." << endl;
+				return false;
+			}
 		}
 
 
