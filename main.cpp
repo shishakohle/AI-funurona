@@ -159,6 +159,11 @@ class Cell
 		{
 			isOccupied = flag;
 		}
+
+		bool getOccupied()
+		{
+			return isOccupied;
+		}
 		
 		char printStatus()
 		{
@@ -176,6 +181,12 @@ class Cell
 			
 			return out;
 		}
+
+		Token getToken()
+		{
+			return token;
+		}
+
 	private:
 		struct position;
 		Token token;
@@ -262,6 +273,11 @@ class Board
 			// print longitude
 			cout << longitude << endl;
 		}
+
+		Cell getCell(struct position position)
+		{
+			return cells[position.row][position.column];
+		}
 };
 
 
@@ -277,7 +293,9 @@ class Game {
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
 		bool anotherMove;
+		bool isStartTokenFromCurrentTeam;
 		bool beenThereVar;
+		bool isEndPositionFree;
 	
 	public:
 	
@@ -379,29 +397,27 @@ class Game {
 
 
 			// Ist auf dieser Position ein Token von dem Team?
+			isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
 
 			cout << "Choose endposition:" << endl;
-			struct position endPostion = chooseToken();
-				cout << "\tEndposition COL: " << endPostion.column << endl;
-				cout << "\tEndposition ROW: " << endPostion.row << endl;
+			struct position endPosition = chooseToken();
+				cout << "\tEndposition COL: " << endPosition.column << endl;
+				cout << "\tEndposition ROW: " << endPosition.row << endl;
 				
 			//war in diesem Zug schon mal auf diesem spielfeld?
 				
-			beenThereVar = beenThere(endPostion);
+			beenThereVar = beenThere(endPosition);
 			//if beenThereVar = false --> dont move token --> ask again
 			//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
 
 
 			// Kann dieser Zug ausgeführt werden?
 			// - Ist die Position eine freie Position?
-
+			isEndPositionFree = freePosition(endPosition);
 			
-			
-
-
 			// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-			int turnLengthColumn = endPostion.column - startPosition.column;
-			int turnLengthRow = endPostion.row - startPosition.row;
+			int turnLengthColumn = endPosition.column - startPosition.column;
+			int turnLengthRow = endPosition.row - startPosition.row;
 
 			switch (turnLengthColumn)
 			{
@@ -492,18 +508,41 @@ class Game {
 			
 		}
 
-		bool beenThere(struct position endPostion)
+		bool isTokenFromCurrentTeam(struct position position)
 		{
-			if(grid[endPostion.row-1][endPostion.column-1] == 0)
+			enum Team tokenTeam = meinSpielbrett.getCell(position).getToken().getTeam();
+			
+			if(tokenTeam == this->currentPlayer->getTeam())
 			{
-				grid[endPostion.row-1][endPostion.column-1] = 1;
 				return true;
+			} else 
+			{
+				return false;
+			}
+		}
 
+		bool beenThere(struct position endPosition)
+		{
+			if(grid[endPosition.row-1][endPosition.column-1] == 0)
+			{
+				grid[endPosition.row-1][endPosition.column-1] = 1;
+				return true;
 			}
 			else
 			{
 				cout << "You have already been there. Move invalid. Choose another endposition." << endl;
 				return false;
+			}
+		}
+
+		bool freePosition(struct position position)
+		{
+			if(meinSpielbrett.getCell(position).getOccupied() == 1 ){
+				return false;
+			} 
+			else
+			{
+				return true;
 			}
 		}
 
