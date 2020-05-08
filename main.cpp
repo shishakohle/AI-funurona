@@ -523,9 +523,9 @@ class Game {
 
 		bool beenThere(struct position endPosition)
 		{
-			if(grid[endPosition.row-1][endPosition.column-1] == 0)
+			if(grid[endPosition.row][endPosition.column] == 0)
 			{
-				grid[endPosition.row-1][endPosition.column-1] = 1;
+				grid[endPosition.row][endPosition.column] = 1;
 				return true;
 			}
 			else
@@ -561,7 +561,7 @@ class Game {
 
 			struct position position;
 			position.column = col;
-			position.row = row;
+			position.row = row - 1;
 
 			return position;
 		}
