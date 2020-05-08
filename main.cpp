@@ -550,11 +550,14 @@ class Game {
 		struct position chooseToken()
 		{
 			int row, col;
+			char column;
 
 			cout << "Please choose the row: ";
 			cin >> row;
 			cout << "Please choose the column: ";
-			cin >> col;
+			cin >> column;
+
+			col = int(column) - 65;
 
 			struct position position;
 			position.column = col;
