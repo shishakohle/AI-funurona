@@ -557,7 +557,7 @@ class Game {
 			cout << "Please choose the column: ";
 			cin >> column;
 
-			col = int(column) - 65;
+			col = column - 65;
 
 			struct position position;
 			position.column = col;
