@@ -278,6 +278,16 @@ class Board
 		{
 			return cells[position.row][position.column];
 		}
+
+		void setTokenOnCell(struct position position, Token token)
+		{
+			cells[position.row][position.column].setToken(token); 
+		}
+
+		void emptyCell(struct position position)
+		{
+			cells[position.row][position.column].setOccupied(false); 
+		}
 };
 
 
@@ -395,7 +405,6 @@ class Game {
 				cout << "\tStartposition COL: " << startPosition.column << endl;
 				cout << "\tStartposition ROW: " << startPosition.row << endl;
 
-
 			// Ist auf dieser Position ein Token von dem Team?
 			isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
 
@@ -474,6 +483,9 @@ class Game {
 				default: cout << "zu weit" << endl; break;
 			}
 
+			//TO-DO: LUKAS
+			//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
+			moveToken(startPosition, endPosition);
 			meinSpielbrett.print();
 		}
 
@@ -579,6 +591,14 @@ class Game {
 				gameWon = false;
 			}
 
+		}
+
+		//move Token from start to end position
+		void moveToken (struct position startPosition, struct position endPosition)
+		{
+			Token tokenToMove = meinSpielbrett.getCell(startPosition).getToken();
+			meinSpielbrett.setTokenOnCell(endPosition, tokenToMove);
+			meinSpielbrett.emptyCell(startPosition);
 		}
 		
 		void clearScreen()
