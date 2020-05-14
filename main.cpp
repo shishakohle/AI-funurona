@@ -391,16 +391,20 @@ class Game {
 			int turnLengthRow = endPostion.row - startPosition.row;
 
 			switch (turnLengthColumn)
+			{
 				case 0:
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht ned" << endl; break;
 						case 1: cout << "geht prinzipiell" << endl; break;
 						case -1: cout << "geht prinzipiell" << endl; break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
 				case 1:
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht prinzipiell" << endl; break;
 						case 1: 
 							if((startPosition.column + startPosition.row)%2==0)
@@ -414,11 +418,13 @@ class Game {
 							else
 								cout << "keine diagonale" << endl; 
 						break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
 				case -1: 
 					switch (turnLengthRow)
+					{
 						case 0: cout << "geht prinzipiell" << endl; break;
 						case 1: 
 							if((startPosition.column + startPosition.row)%2==0)
@@ -432,11 +438,12 @@ class Game {
 							else
 								cout << "keine diagonale" << endl; 
 						break;
-						case default: cout << "zu weit" << endl; break;
+						default: cout << "zu weit" << endl; break;
+					}
 				break;
 
-				case default: "zu weit" break;
-
+				default: "zu weit"; break;
+			}
 
 
 			meinSpielbrett.print();
