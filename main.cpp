@@ -159,6 +159,11 @@ class Cell
 		{
 			isOccupied = flag;
 		}
+
+		bool getOccupied()
+		{
+			return isOccupied;
+		}
 		
 		char printStatus()
 		{
@@ -176,6 +181,12 @@ class Cell
 			
 			return out;
 		}
+
+		Token getToken()
+		{
+			return token;
+		}
+
 	private:
 		struct position;
 		Token token;
@@ -262,6 +273,21 @@ class Board
 			// print longitude
 			cout << longitude << endl;
 		}
+
+		Cell getCell(struct position position)
+		{
+			return cells[position.row][position.column];
+		}
+
+		void setTokenOnCell(struct position position, Token token)
+		{
+			cells[position.row][position.column].setToken(token); 
+		}
+
+		void emptyCell(struct position position)
+		{
+			cells[position.row][position.column].setOccupied(false); 
+		}
 };
 
 
@@ -275,6 +301,11 @@ class Game {
 		Player *winner;
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
+		bool grid[5][9];
+		bool anotherMove;
+		bool isStartTokenFromCurrentTeam;
+		bool beenThereVar;
+		bool isEndPositionFree;
 	
 	public:
 	
@@ -338,6 +369,7 @@ class Game {
 			
 			while(!gameWon)
 			{
+				anotherMove = true; //(re)move later
 				turn();
 				gameOver();
 				//change current player
@@ -357,12 +389,14 @@ class Game {
 	private:
 	
 		//RUNDE
-		void turn()
+		void move()
 		{
 			// clear screen
 			this->clearScreen();
 			
 			meinSpielbrett.print();
+
+			//TO-DO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
 			
 			cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
 			
@@ -371,24 +405,28 @@ class Game {
 				cout << "\tStartposition COL: " << startPosition.column << endl;
 				cout << "\tStartposition ROW: " << startPosition.row << endl;
 
-
 			// Ist auf dieser Position ein Token von dem Team?
+			isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
 
 			cout << "Choose endposition:" << endl;
-			struct position endPostion = chooseToken();
-				cout << "\tEndposition COL: " << endPostion.column << endl;
-				cout << "\tEndposition ROW: " << endPostion.row << endl;
+			struct position endPosition = chooseToken();
+				cout << "\tEndposition COL: " << endPosition.column << endl;
+				cout << "\tEndposition ROW: " << endPosition.row << endl;
+				
+			//war in diesem Zug schon mal auf diesem spielfeld?
+				
+			beenThereVar = beenThere(endPosition);
+			//if beenThereVar = false --> dont move token --> ask again
+			//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
+
 
 			// Kann dieser Zug ausgeführt werden?
 			// - Ist die Position eine freie Position?
-
-
-
-
-
+			isEndPositionFree = freePosition(endPosition);
+			
 			// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-			int turnLengthColumn = endPostion.column - startPosition.column;
-			int turnLengthRow = endPostion.row - startPosition.row;
+			int turnLengthColumn = endPosition.column - startPosition.column;
+			int turnLengthRow = endPosition.row - startPosition.row;
 
 			switch (turnLengthColumn)
 			{
@@ -442,32 +480,106 @@ class Game {
 					}
 				break;
 
+<<<<<<< HEAD
 				default: "zu weit"; break;
 			}
 
+=======
+				default: cout << "zu weit" << endl; break;
+			}
+>>>>>>> 73594d662290ae195811dde325c43f66a0df7131
 
+			//TO-DO: LUKAS
+			//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
+			moveToken(startPosition, endPosition);
 			meinSpielbrett.print();
 		}
 
 		//ZUG
-		void move()
+		void turn()
 		{
+
 			//check rules
+			//clear grid for check "beenThere"
+			for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					grid[row][column] = 0;
+				}
+				cout << endl;
+			}
+
+			//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
+			while(1) //TO-DO: need to adapt anotherMove --> only if additional move allowed
+			{
+				if(anotherMove == true)
+				{
+					move();
+					//anotherMove = false;
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+		}
+
+		bool isTokenFromCurrentTeam(struct position position)
+		{
+			enum Team tokenTeam = meinSpielbrett.getCell(position).getToken().getTeam();
+			
+			if(tokenTeam == this->currentPlayer->getTeam())
+			{
+				return true;
+			} else 
+			{
+				return false;
+			}
+		}
+
+		bool beenThere(struct position endPosition)
+		{
+			if(grid[endPosition.row][endPosition.column] == 0)
+			{
+				grid[endPosition.row][endPosition.column] = 1;
+				return true;
+			}
+			else
+			{
+				cout << "You have already been there. Move invalid. Choose another endposition." << endl;
+				return false;
+			}
+		}
+
+		bool freePosition(struct position position)
+		{
+			if(meinSpielbrett.getCell(position).getOccupied() == 1 ){
+				return false;
+			} 
+			else
+			{
+				return true;
+			}
 		}
 
 
 		struct position chooseToken()
 		{
 			int row, col;
+			char column;
 
 			cout << "Please choose the row: ";
 			cin >> row;
 			cout << "Please choose the column: ";
-			cin >> col;
+			cin >> column;
+
+			col = column - 65;
 
 			struct position position;
 			position.column = col;
-			position.row = row;
+			position.row = row - 1;
 
 			return position;
 		}
@@ -485,6 +597,14 @@ class Game {
 				gameWon = false;
 			}
 
+		}
+
+		//move Token from start to end position
+		void moveToken (struct position startPosition, struct position endPosition)
+		{
+			Token tokenToMove = meinSpielbrett.getCell(startPosition).getToken();
+			meinSpielbrett.setTokenOnCell(endPosition, tokenToMove);
+			meinSpielbrett.emptyCell(startPosition);
 		}
 		
 		void clearScreen()
