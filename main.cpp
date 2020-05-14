@@ -107,6 +107,11 @@ struct position
 	int column,row;
 };
 
+struct lastMoveDirection
+{
+	int column,row;
+};
+
 class Token
 {
 	public:
@@ -119,6 +124,16 @@ class Token
 		Team getTeam()
 		{
 			return this->team;
+		}
+
+		void setLastMoveDirection(struct lastMoveDirection lmd)
+		{
+			this->lmd = lmd;
+		}
+		
+		struct lastMoveDirection getLastMoveDirection()
+		{
+			return this->lmd;
 		}
 		
 		char asChar() // TODO invoke this when printing the board. or is this needed overall?
@@ -144,6 +159,7 @@ class Token
 	
 		enum Team team;
 		struct position;
+		struct lastMoveDirection lmd;
 };
 
 class Cell
@@ -306,6 +322,7 @@ class Game {
 		bool isStartTokenFromCurrentTeam;
 		bool beenThereVar;
 		bool isEndPositionFree;
+		bool isMoveLengthOK;
 	
 	public:
 	
@@ -392,6 +409,10 @@ class Game {
 		void move()
 		{
 			// clear screen
+			struct position startPosition;
+			struct position endPosition;
+			do {
+
 			this->clearScreen();
 			
 			meinSpielbrett.print();
@@ -401,7 +422,7 @@ class Game {
 			cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
 			
 			cout << "Choose startpostion" << endl;
-			struct position startPosition = chooseToken();
+			startPosition = chooseToken();
 				cout << "\tStartposition COL: " << startPosition.column << endl;
 				cout << "\tStartposition ROW: " << startPosition.row << endl;
 
@@ -409,7 +430,7 @@ class Game {
 			isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
 
 			cout << "Choose endposition:" << endl;
-			struct position endPosition = chooseToken();
+			endPosition = chooseToken();
 				cout << "\tEndposition COL: " << endPosition.column << endl;
 				cout << "\tEndposition ROW: " << endPosition.row << endl;
 				
@@ -425,66 +446,13 @@ class Game {
 			isEndPositionFree = freePosition(endPosition);
 			
 			// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-			int turnLengthColumn = endPosition.column - startPosition.column;
-			int turnLengthRow = endPosition.row - startPosition.row;
-
-			switch (turnLengthColumn)
-			{
-				case 0:
-					switch (turnLengthRow)
-					{
-						case 0: cout << "geht ned" << endl; break;
-						case 1: cout << "geht prinzipiell" << endl; break;
-						case -1: cout << "geht prinzipiell" << endl; break;
-						default: cout << "zu weit" << endl; break;
-					}
-				break;
-
-				case 1:
-					switch (turnLengthRow)
-					{
-						case 0: cout << "geht prinzipiell" << endl; break;
-						case 1: 
-							if((startPosition.column + startPosition.row)%2==0)
-								cout << "geht prinzipiell" << endl; 
-							else
-								cout << "keine diagonale" << endl; 
-						break;
-						case -1: 
-								if((startPosition.column + startPosition.row)%2==0)
-								cout << "geht prinzipiell" << endl; 
-							else
-								cout << "keine diagonale" << endl; 
-						break;
-						default: cout << "zu weit" << endl; break;
-					}
-				break;
-
-				case -1: 
-					switch (turnLengthRow)
-					{
-						case 0: cout << "geht prinzipiell" << endl; break;
-						case 1: 
-							if((startPosition.column + startPosition.row)%2==0)
-								cout << "geht prinzipiell" << endl; 
-							else
-								cout << "keine diagonale" << endl; 
-						break;
-						case -1: 
-								if((startPosition.column + startPosition.row)%2==0)
-								cout << "geht prinzipiell" << endl; 
-							else
-								cout << "keine diagonale" << endl; 
-						break;
-						default: cout << "zu weit" << endl; break;
-					}
-				break;
-
-				default: cout << "zu weit" << endl; break;
-			}
+			isMoveLengthOK = moveLength(startPosition, endPosition);
 
 			//TO-DO: LUKAS
 			//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
+
+
+			}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar));
 			moveToken(startPosition, endPosition);
 			meinSpielbrett.print();
 		}
@@ -492,6 +460,7 @@ class Game {
 		//ZUG
 		void turn()
 		{
+
 			//check rules
 			//clear grid for check "beenThere"
 			for(int row=0; row<5; row++)
@@ -557,35 +526,113 @@ class Game {
 			}
 		}
 
+		bool moveLength(struct position startPosition, struct position endPosition){
+		int moveLengthColumn = endPosition.column - startPosition.column;
+			int moveLengthRow = endPosition.row - startPosition.row;
+			int moveLengthOutput = 255; //random number, damit man sehen kann ob die werte genommen werden
+			bool moveLengthvalid = false; //kann man vll weglassen
+			switch (moveLengthColumn)
+			{
+
+				case 0:
+					switch (moveLengthRow)
+					{
+						case 0: moveLengthOutput = 0; moveLengthvalid = false; break;
+						case 1: moveLengthOutput = 1; moveLengthvalid = true; break;
+						case -1: moveLengthOutput = 1; moveLengthvalid = true; break;
+						default: moveLengthOutput = 3; moveLengthvalid = false; break;
+					}
+				break;
+
+				case 1:
+					switch (moveLengthRow)
+					{
+						case 0: moveLengthOutput = 1; moveLengthvalid = true; break;
+						case 1: 
+							if((startPosition.column + startPosition.row)%2==0){
+								moveLengthOutput = 1; 
+								moveLengthvalid = true;
+							}
+								
+							else{
+								moveLengthOutput = 2; 
+								moveLengthvalid = false;
+							}
+						break;
+						case -1: 
+								if((startPosition.column + startPosition.row)%2==0){
+								 moveLengthOutput = 1; 
+								moveLengthvalid = true;
+								}
+							else{
+								moveLengthOutput = 2; 
+								moveLengthvalid = false;
+							}
+						break;
+						default: moveLengthOutput = 3; moveLengthvalid = false;
+					}
+				break;
+
+				case -1: 
+					switch (moveLengthRow)
+					{
+						case 0: moveLengthOutput = 1; moveLengthvalid = true;  break;
+						case 1: 
+							if((startPosition.column + startPosition.row)%2==0){
+								moveLengthOutput = 1; 
+								moveLengthvalid = true; 
+								}
+							else{
+								moveLengthOutput = 2;
+								moveLengthvalid = false;
+							}
+						break;
+						case -1: 
+								if((startPosition.column + startPosition.row)%2==0){
+									moveLengthOutput = 1; 
+									moveLengthvalid = true; 
+								}
+							else
+							{
+								moveLengthOutput = 2; 
+								moveLengthvalid = false;
+							}
+						break;
+						default: moveLengthOutput = 3; moveLengthvalid = false; break;
+					}
+				break;
+
+				default: moveLengthOutput = 3; moveLengthvalid = false; break;
+			}
+
+			switch (moveLengthOutput)
+			{
+				case 0: cout << "selbes feld" << endl; return false; break;
+				case 1: cout << "geht prinzipiell" << endl; break; //wäre am ende noch zu löschen
+				case 2: cout << "keine diagonale" << endl; return false; break;
+				case 3: cout << "zu weit" << endl; return false; break;
+				default: cout << "error, keine ahnung" << endl; return false; break;
+			}
+
+			if (moveLengthvalid==true)
+			{
+			//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
+			//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
+
+			}
+		}
 
 		struct position chooseToken()
 		{
 			int row, col;
 			char column;
-			bool rowValid = false;
-			bool colValid = false;
 
-			while(!rowValid){
-				cout << "Please choose the row: ";
-				cin >> row;
+			cout << "Please choose the row: ";
+			cin >> row;
+			cout << "Please choose the column: ";
+			cin >> column;
 
-				if(row > 0 && row <= 5){
-					rowValid = true;
-				} else {
-				cout << "The entered row is invalid - it has to be between 1 and 5.";
-				}
-			}
-
-			while(!colValid){
-				cout << "Please choose the column: ";
-				cin >> column;
-				col = column - 65;
-				if(col >= 0 && col <= 8){
-					colValid = true;
-				} else {
-					cout << "The entered column is invalid - it has to be between A and I.";
-				}	
-			}	
+			col = column - 65;
 
 			struct position position;
 			position.column = col;
@@ -634,3 +681,4 @@ int main(void)
 
 	return 0;
 }
+
