@@ -480,14 +480,8 @@ class Game {
 					}
 				break;
 
-<<<<<<< HEAD
-				default: "zu weit"; break;
-			}
-
-=======
 				default: cout << "zu weit" << endl; break;
 			}
->>>>>>> 73594d662290ae195811dde325c43f66a0df7131
 
 			//TO-DO: LUKAS
 			//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
@@ -498,7 +492,6 @@ class Game {
 		//ZUG
 		void turn()
 		{
-
 			//check rules
 			//clear grid for check "beenThere"
 			for(int row=0; row<5; row++)
@@ -569,13 +562,30 @@ class Game {
 		{
 			int row, col;
 			char column;
+			bool rowValid = false;
+			bool colValid = false;
 
-			cout << "Please choose the row: ";
-			cin >> row;
-			cout << "Please choose the column: ";
-			cin >> column;
+			while(!rowValid){
+				cout << "Please choose the row: ";
+				cin >> row;
 
-			col = column - 65;
+				if(row > 0 && row <= 5){
+					rowValid = true;
+				} else {
+				cout << "The entered row is invalid - it has to be between 1 and 5.";
+				}
+			}
+
+			while(!colValid){
+				cout << "Please choose the column: ";
+				cin >> column;
+				col = column - 65;
+				if(col >= 0 && col <= 8){
+					colValid = true;
+				} else {
+					cout << "The entered column is invalid - it has to be between A and I.";
+				}	
+			}	
 
 			struct position position;
 			position.column = col;
