@@ -388,6 +388,47 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	meinSpielbrett.emptyCell(startPosition);
 }
 
+
+void Game::captureToken(enum Direction direction, struct position endPosition)
+{
+	bool neighbourFieldEmpty = false;
+	//Von welcher Richtung komme ich ? -> direction
+
+	//Je nachdem checke die Felder in weiterer Folge der Linie
+
+	//Token moves from NORTH - check neighbour in the SOUTH
+		//Example: Startposition [0][0] Endposition: [0][1]
+	//while neigbour is !emptyField -> delete Token
+	while (!neighbourFieldEmpty)
+	{
+		int i = 1;
+		struct position neighbour;
+		neighbour.row = endPosition.row;
+		neighbour.column = endPosition.column + i;
+
+		if(!freePosition(neighbour)){
+			//delete Token
+			//meinSpielbrett.getCell(neighbour).deleteToken();
+		}
+	}
+
+
+	//Token moves from SOUTH - check neighbour in the NORTH
+
+	//Token moves from WEST - check neighbour in the EAST
+
+	//Token moves fro m EAST - check neighbour in the WEST
+
+	//Token moves from NORTHWEST - check neighbour in the SOUTHEAST
+
+	//Token moves from SOUTHEAST - check neighbour in the NORTHWEST
+
+	//Token moves from NORTHEAST - check neighbour in the SOUTHWEST
+
+	//Token moves from SOUTHWEST - check neighbour in the NORTHEAST
+
+}
+
 void Game::clearScreen(void)
 {
 	int i = 0;
