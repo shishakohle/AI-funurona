@@ -38,3 +38,8 @@ Token Cell::getToken()
 	return token;
 }
 
+void Cell::deleteToken()
+{
+	printf("Token deleted");
+}
+

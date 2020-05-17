@@ -382,6 +382,73 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	meinSpielbrett.emptyCell(startPosition);
 }
 
+
+void Game::captureToken(enum Direction direction, struct position endPosition)
+{
+	bool neighbourFieldEmpty = false;
+
+	switch(direction)
+	{
+		case NORTH: //Token moves from NORTH - check neighbour in the SOUTH
+			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
+			{
+				int i = 1;
+				struct position neighbour;
+				neighbour.row = endPosition.row;
+				neighbour.column = endPosition.column + i;
+
+				if(!freePosition(neighbour)){
+					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+				} else{
+					neighbourFieldEmpty = true;
+				}
+			}
+		break;
+
+		case SOUTH: //Token moves from SOUTH - check neighbour in the NORTH
+			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
+			{
+				int i = 1;
+				struct position neighbour;
+				neighbour.row = endPosition.row;
+				neighbour.column = endPosition.column - i;
+
+				if(!freePosition(neighbour)){
+					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+				} else{
+					neighbourFieldEmpty = true;
+				}
+			}
+		break;
+
+		case EAST: //Token moves fro m EAST - check neighbour in the WEST
+
+
+		break;
+
+		case WEST: 	//Token moves from WEST - check neighbour in the EAST
+
+
+		break;
+
+		case NORTHWEST: //Token moves from NORTHWEST - check neighbour in the SOUTHEAST
+
+		break;
+
+		case SOUTHEAST: //Token moves from SOUTHEAST - check neighbour in the NORTHWEST
+
+		break;
+
+		case NORTHEAST: //Token moves from NORTHEAST - check neighbour in the SOUTHWEST
+
+		break;
+
+		case SOUTHWEST: //Token moves from SOUTHWEST - check neighbour in the NORTHEAST
+
+		break;
+	}
+}
+
 void Game::clearScreen(void)
 {
 	int i = 0;

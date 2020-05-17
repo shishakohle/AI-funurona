@@ -22,6 +22,8 @@
 #include "board.h"
 #include "player.h"
 
+enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -63,6 +65,7 @@ class Game
 		void gameOver(void);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
+		void captureToken(enum Direction, struct position);
 		void clearScreen(void);
 };
 
