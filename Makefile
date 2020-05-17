@@ -9,10 +9,10 @@ all: $(SOURCES)
 clean:
 	@ $(RM) $(OUT)
 
-# test: test1 test2 test3
+test: test1
 
-# testXY:
-#	@./funorona.out < ./tests/inputXY.txt > ./tests/outputXY.txt
-#	diff ./tests/correctXY.txt ./tests/outputXY.txt
+test1: $(OUT) ./tests/test1_input.txt ./tests/test1_correct.txt
+	@./$(OUT) < ./tests/test1_input.txt > ./tests/test1_output.txt
+	diff ./tests/test1_correct.txt ./tests/test1_output.txt
 #	@$(RM) ./tests/outputXY.txt
 
