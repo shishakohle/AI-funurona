@@ -148,11 +148,7 @@ struct superstruct Game::move(struct superstruct lastPositions)
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 
-<<<<<<< HEAD
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && isDirectionOK));
-=======
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && startPositionInputValid && endPositionInputValid && isStartTokenFromCurrentTeam));
->>>>>>> 6e27264128fab37ad10e04aa10b7a34d888cbd44
+	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && startPositionInputValid && endPositionInputValid && isDirectionOK));
 	moveToken(startPosition, endPosition);
 	lastPositions.start = startPosition;
 	lastPositions.end = endPosition;
@@ -333,19 +329,10 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 		default: cout << "error, keine ahnung" << endl; return false; break;
 	}
 
-<<<<<<< HEAD
 	if (moveLengthvalid==true){
 		direction.column= moveLengthColumn;
 		direction.row= moveLengthRow;
-=======
-	if (moveLengthvalid==true)
-	{
-	//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
-	//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
->>>>>>> 6e27264128fab37ad10e04aa10b7a34d888cbd44
 	}
-
-	
 }
 
 
