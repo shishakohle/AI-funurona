@@ -123,7 +123,10 @@ void Game::move(void)
 	endPosition = chooseToken();
 		cout << "\tEndposition COL: " << endPosition.column << endl;
 		cout << "\tEndposition ROW: " << endPosition.row << endl;
-		
+
+	startPositionInputValid = positionInputValid(startPosition);
+	endPositionInputValid = positionInputValid(endPosition);
+
 	//war in diesem Zug schon mal auf diesem spielfeld?
 		
 	beenThereVar = beenThere(endPosition);
@@ -142,7 +145,7 @@ void Game::move(void)
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam));
+	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && startPositionInputValid && endPositionInputValid && isStartTokenFromCurrentTeam));
 	moveToken(startPosition, endPosition);
 	meinSpielbrett.print();
 }
@@ -309,7 +312,6 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 	{
 	//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
 	//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
-
 	}
 }
 
@@ -330,6 +332,15 @@ struct position Game::chooseToken(void)
 	position.row = row - 1;
 
 	return position;
+}
+
+bool Game::positionInputValid(struct position position)
+{
+	if(position.row >= 0 && position.row <= 5 && position.column >= 0 && position.column <= 8){
+ 		return true;
+ 	} else {
+		 return false;
+	 }
 }
 
 //check if game is over and who is winner
