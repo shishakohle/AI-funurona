@@ -1,4 +1,4 @@
-SOURCES=main.cpp
+SOURCES=*.cpp 
 OUT=funorona.out
 CXX=g++
 RM=rm -f
