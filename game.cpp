@@ -96,11 +96,12 @@ void Game::start() // TODO: private??
 
 	
 //RUNDE
-void Game::move(void)
+struct superstruct Game::move(struct superstruct lastPositions)
 {
 	// clear screen
 	struct position startPosition;
 	struct position endPosition;
+	struct position direction;
 	do {
 
 	this->clearScreen();
@@ -136,21 +137,25 @@ void Game::move(void)
 	isEndPositionFree = freePosition(endPosition);
 	
 	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-	isMoveLengthOK = isMoveLengthValid(startPosition, endPosition);
+	isMoveLengthOK = isMoveLengthValid(startPosition, endPosition, direction);
+
+	isDirectionOK = isMoveDirectionValid(startPosition, endPosition,lastPositions);
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam));
+	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && isDirectionOK));
 	moveToken(startPosition, endPosition);
+	lastPositions.start = startPosition;
+	lastPositions.end = endPosition;
 	meinSpielbrett.print();
 }
 
 //ZUG
 void Game::turn(void)
 {
-
+ struct superstruct lastPositions;
 	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
@@ -167,7 +172,7 @@ void Game::turn(void)
 	{
 		if(anotherMove == true)
 		{
-			move();
+			lastPositions = move(lastPositions);
 			//anotherMove = false;
 		}
 		else
@@ -216,7 +221,23 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::isMoveLengthValid(struct position startPosition, struct position endPosition)
+bool Game::isMoveDirectionValid(struct position start, struct position end, struct superstruct lastpositions){
+	int dirColumn = end.column - start.column;
+	int dirRow = end.row - start.row;
+	
+	if (dirColumn==lastpositions.direction.column && dirRow==lastpositions.direction.row)
+	{
+		return false;
+	}
+	else{
+		return true;
+	}
+
+
+}
+
+
+bool Game::isMoveLengthValid(struct position startPosition, struct position endPosition, struct position direction)
 {
 int moveLengthColumn = endPosition.column - startPosition.column;
 	int moveLengthRow = endPosition.row - startPosition.row;
@@ -305,13 +326,15 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 		default: cout << "error, keine ahnung" << endl; return false; break;
 	}
 
-	if (moveLengthvalid==true)
-	{
-	//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
-	//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
-
+	if (moveLengthvalid==true){
+		direction.column= moveLengthColumn;
+		direction.row= moveLengthRow;
 	}
+
+	
 }
+
+
 
 struct position Game::chooseToken(void)
 {
