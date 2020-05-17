@@ -41,6 +41,8 @@ class Game
 		bool grid[5][9];
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
+		bool startPositionInputValid;
+		bool endPositionInputValid;
 		bool beenThereVar;
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
@@ -56,6 +58,7 @@ class Game
 		bool isMoveLengthValid(struct position, struct position, struct position);
 		bool isMoveDirectionValid(struct position, struct position,struct superstruct);
 		struct position chooseToken(void);
+		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
 		//move Token from start to end position
