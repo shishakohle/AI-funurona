@@ -171,18 +171,12 @@ void Game::turn(void)
 	}
 
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
-	while(1) //TO-DO: need to adapt anotherMove --> only if additional move allowed
+	do
 	{
-		if(anotherMove == true)
-		{
 			lastPositions = move(lastPositions);
-			//anotherMove = false;
-		}
-		else
-		{
-			break;
-		}
+			anotherMove = false;
 	}
+	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
 	
 }
 
