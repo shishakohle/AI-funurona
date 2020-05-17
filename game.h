@@ -46,15 +46,17 @@ class Game
 		bool beenThereVar;
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
+		bool isDirectionOK;
 		
 		//RUNDE
-		void move(void);
+		struct superstruct move(struct superstruct lastPositions);
 		//ZUG
 		void turn(void);
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
-		bool isMoveLengthValid(struct position, struct position);
+		bool isMoveLengthValid(struct position, struct position, struct position);
+		bool isMoveDirectionValid(struct position, struct position,struct superstruct);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
