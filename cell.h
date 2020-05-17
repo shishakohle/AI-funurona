@@ -11,6 +11,7 @@ class Cell
 		bool getOccupied();
 		char printStatus();
 		Token getToken();
+		void deleteToken();
 	private:
 		struct position;
 		Token token;
