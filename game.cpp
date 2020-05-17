@@ -95,7 +95,7 @@ void Game::start() // TODO: private??
 }
 
 	
-//RUNDE
+// ZUG
 struct superstruct Game::move(struct superstruct lastPositions)
 {
 	// clear screen
@@ -155,7 +155,7 @@ struct superstruct Game::move(struct superstruct lastPositions)
 	meinSpielbrett.print();
 }
 
-//ZUG
+// RUNDE
 void Game::turn(void)
 {
  struct superstruct lastPositions;
