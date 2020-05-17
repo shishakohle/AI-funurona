@@ -52,7 +52,7 @@ class Game
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
-		bool moveLength(struct position, struct position);
+		bool isMoveLengthValid(struct position, struct position);
 		struct position chooseToken(void);
 		//check if game is over and who is winner
 		void gameOver(void);

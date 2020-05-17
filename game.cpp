@@ -136,13 +136,13 @@ void Game::move(void)
 	isEndPositionFree = freePosition(endPosition);
 	
 	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-	isMoveLengthOK = moveLength(startPosition, endPosition);
+	isMoveLengthOK = isMoveLengthValid(startPosition, endPosition);
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar));
+	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam));
 	moveToken(startPosition, endPosition);
 	meinSpielbrett.print();
 }
@@ -216,7 +216,7 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::moveLength(struct position startPosition, struct position endPosition)
+bool Game::isMoveLengthValid(struct position startPosition, struct position endPosition)
 {
 int moveLengthColumn = endPosition.column - startPosition.column;
 	int moveLengthRow = endPosition.row - startPosition.row;
