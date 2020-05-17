@@ -141,6 +141,7 @@ void Game::move(void)
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
+	capturingPossible ()
 
 	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar));
 	moveToken(startPosition, endPosition);
@@ -310,6 +311,47 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 	//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
 	//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
 
+	}
+}
+
+//TO-DO: Anna is capturing of another token possible?
+bool Game::capturingPossible ()
+{
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			struct position pos;
+			pos.column = column;
+			pos.row = row;
+
+			//check all tokens from currentPlayer
+			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
+			{
+				//check if they can capture someone
+				//check of every token neighborhood --> if cell is free
+				//if free --> remember direction form where it came and see if it can capture a token there
+				//mark all possible positions to move to in grid (= been there)
+				//if endposition = 1 on grid --> return true
+
+				//OR
+				//check if any token can capture one --> as soon as can capture one --> return true and stop
+				//in another method: give it endPosition and see if it can capture someone there --> if method before returned true --> this must also return true --> otherwise choose other
+				//would not give all possible tokens/endpositions right away
+				
+				//OR
+				//check of every token neighborhood --> if cell is free
+				//if free --> remember direction form where it came and see if it can capture a token there
+				//mark all possible tokens that could capture one on grid (= been there)
+				//give method startposition --> if 1 on grid --> check endposition if can capture there
+				//if not 1 on grid, choose again, if start = 1 but cant capture anyone at end --> choose again
+				return true;
+			}
+			else
+			{
+				return false;	
+			}
+		}
 	}
 }
 
