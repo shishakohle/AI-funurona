@@ -96,7 +96,7 @@ void Game::start() // TODO: private??
 
 	
 // ZUG
-struct superstruct Game::move(struct superstruct lastPositions)
+struct Useraction Game::move(struct Useraction lastPositions)
 {
 	// clear screen
 	struct position startPosition;
@@ -158,7 +158,7 @@ struct superstruct Game::move(struct superstruct lastPositions)
 // RUNDE
 void Game::turn(void)
 {
- struct superstruct lastPositions;
+ struct Useraction lastPositions;
 	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
@@ -218,7 +218,7 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::isMoveDirectionValid(struct position start, struct position end, struct superstruct lastpositions){
+bool Game::isMoveDirectionValid(struct position start, struct position end, struct Useraction lastpositions){
 	int dirColumn = end.column - start.column;
 	int dirRow = end.row - start.row;
 	

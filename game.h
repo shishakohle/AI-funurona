@@ -22,10 +22,40 @@
 #include "board.h"
 #include "player.h"
 
+#ifndef DIRECTION_H
+#define DIRECTION_H
+
 enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+
+#endif
+
+#ifndef COMMAND_H
+#define COMMAND_H
+
+enum Command {Invalid, Skip, Move, Help, Restart, Quit};
+
+#endif
 
 #ifndef GAME_H
 #define GAME_H
+
+
+
+#ifndef USERACTION_H
+#define USERACTION_H
+
+struct Useraction
+{
+	struct position end;       // TODO: end       will not be used anymore.
+	struct position	direction; // TODO: direction will not be used anymore.
+
+	struct position  start;	
+	enum   Direction dir;
+	enum   Command   command;
+};
+
+#endif
+
 
 class Game
 {
@@ -51,14 +81,14 @@ class Game
 		bool isDirectionOK;
 		
 		//RUNDE
-		struct superstruct move(struct superstruct lastPositions);
+		struct Useraction move(struct Useraction lastPositions);
 		//ZUG
 		void turn(void);
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
 		bool isMoveLengthValid(struct position, struct position, struct position);
-		bool isMoveDirectionValid(struct position, struct position,struct superstruct);
+		bool isMoveDirectionValid(struct position, struct position,struct Useraction);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
