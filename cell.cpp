@@ -40,6 +40,6 @@ Token Cell::getToken()
 
 void Cell::deleteToken()
 {
-	printf("Token deleted");
+	cout << "Token deleted" << flush;
 }
 
