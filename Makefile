@@ -3,8 +3,11 @@ OUT=funorona.out
 CXX=g++
 RM=rm -f
 
-all: $(SOURCES)
+all: clean $(SOURCES)
 	@ $(CXX) $(SOURCES) -o $(OUT)
+
+all+run: all
+	@./$(OUT)
 
 clean:
 	@ $(RM) $(OUT)
