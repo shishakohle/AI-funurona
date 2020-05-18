@@ -95,12 +95,13 @@ void Game::start() // TODO: private??
 }
 
 	
-//RUNDE
-void Game::move(void)
+// ZUG
+struct superstruct Game::move(struct superstruct lastPositions)
 {
 	// clear screen
 	struct position startPosition;
 	struct position endPosition;
+	struct position direction;
 	do {
 
 	this->clearScreen();
@@ -123,7 +124,10 @@ void Game::move(void)
 	endPosition = chooseToken();
 		cout << "\tEndposition COL: " << endPosition.column << endl;
 		cout << "\tEndposition ROW: " << endPosition.row << endl;
-		
+
+	startPositionInputValid = positionInputValid(startPosition);
+	endPositionInputValid = positionInputValid(endPosition);
+
 	//war in diesem Zug schon mal auf diesem spielfeld?
 		
 	beenThereVar = beenThere(endPosition);
@@ -136,22 +140,26 @@ void Game::move(void)
 	isEndPositionFree = freePosition(endPosition);
 	
 	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-	isMoveLengthOK = moveLength(startPosition, endPosition);
+	isMoveLengthOK = isMoveLengthValid(startPosition, endPosition, direction);
+
+	isDirectionOK = isMoveDirectionValid(startPosition, endPosition,lastPositions);
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 	capturingPossible ()
 
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar));
+	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && startPositionInputValid && endPositionInputValid && isDirectionOK));
 	moveToken(startPosition, endPosition);
+	lastPositions.start = startPosition;
+	lastPositions.end = endPosition;
 	meinSpielbrett.print();
 }
 
-//ZUG
+// RUNDE
 void Game::turn(void)
 {
-
+ struct superstruct lastPositions;
 	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
@@ -164,18 +172,12 @@ void Game::turn(void)
 	}
 
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
-	while(1) //TO-DO: need to adapt anotherMove --> only if additional move allowed
+	do
 	{
-		if(anotherMove == true)
-		{
-			move();
-			//anotherMove = false;
-		}
-		else
-		{
-			break;
-		}
+			lastPositions = move(lastPositions);
+			anotherMove = false;
 	}
+	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
 	
 }
 
@@ -217,7 +219,23 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::moveLength(struct position startPosition, struct position endPosition)
+bool Game::isMoveDirectionValid(struct position start, struct position end, struct superstruct lastpositions){
+	int dirColumn = end.column - start.column;
+	int dirRow = end.row - start.row;
+	
+	if (dirColumn==lastpositions.direction.column && dirRow==lastpositions.direction.row)
+	{
+		return false;
+	}
+	else{
+		return true;
+	}
+
+
+}
+
+
+bool Game::isMoveLengthValid(struct position startPosition, struct position endPosition, struct position direction)
 {
 int moveLengthColumn = endPosition.column - startPosition.column;
 	int moveLengthRow = endPosition.row - startPosition.row;
@@ -306,14 +324,13 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 		default: cout << "error, keine ahnung" << endl; return false; break;
 	}
 
-	if (moveLengthvalid==true)
-	{
-	//	TODO: vergleichen ob die richtung des letzten zugs die selbe ist wie des aktuellen zugs
-	//if (meinSpielbrett.getCell(position).getToken().getLastmovedirection()==
-
+	if (moveLengthvalid==true){
+		direction.column= moveLengthColumn;
+		direction.row= moveLengthRow;
 	}
 }
 
+<<<<<<< HEAD
 //TO-DO: Anna is capturing of another token possible?
 bool Game::capturingPossible ()
 {
@@ -354,6 +371,9 @@ bool Game::capturingPossible ()
 		}
 	}
 }
+=======
+
+>>>>>>> a53c23457288bbc0b068bf09f73cf62026c1fff8
 
 struct position Game::chooseToken(void)
 {
@@ -372,6 +392,15 @@ struct position Game::chooseToken(void)
 	position.row = row - 1;
 
 	return position;
+}
+
+bool Game::positionInputValid(struct position position)
+{
+	if(position.row >= 0 && position.row <= 5 && position.column >= 0 && position.column <= 8){
+ 		return true;
+ 	} else {
+		 return false;
+	 }
 }
 
 //check if game is over and who is winner
@@ -395,6 +424,73 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	Token tokenToMove = meinSpielbrett.getCell(startPosition).getToken();
 	meinSpielbrett.setTokenOnCell(endPosition, tokenToMove);
 	meinSpielbrett.emptyCell(startPosition);
+}
+
+
+void Game::captureToken(enum Direction direction, struct position endPosition)
+{
+	bool neighbourFieldEmpty = false;
+
+	switch(direction)
+	{
+		case NORTH: //Token moves from NORTH - check neighbour in the SOUTH
+			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
+			{
+				int i = 1;
+				struct position neighbour;
+				neighbour.row = endPosition.row;
+				neighbour.column = endPosition.column + i;
+
+				if(!freePosition(neighbour)){
+					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+				} else{
+					neighbourFieldEmpty = true;
+				}
+			}
+		break;
+
+		case SOUTH: //Token moves from SOUTH - check neighbour in the NORTH
+			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
+			{
+				int i = 1;
+				struct position neighbour;
+				neighbour.row = endPosition.row;
+				neighbour.column = endPosition.column - i;
+
+				if(!freePosition(neighbour)){
+					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+				} else{
+					neighbourFieldEmpty = true;
+				}
+			}
+		break;
+
+		case EAST: //Token moves fro m EAST - check neighbour in the WEST
+
+
+		break;
+
+		case WEST: 	//Token moves from WEST - check neighbour in the EAST
+
+
+		break;
+
+		case NORTHWEST: //Token moves from NORTHWEST - check neighbour in the SOUTHEAST
+
+		break;
+
+		case SOUTHEAST: //Token moves from SOUTHEAST - check neighbour in the NORTHWEST
+
+		break;
+
+		case NORTHEAST: //Token moves from NORTHEAST - check neighbour in the SOUTHWEST
+
+		break;
+
+		case SOUTHWEST: //Token moves from SOUTHWEST - check neighbour in the NORTHEAST
+
+		break;
+	}
 }
 
 void Game::clearScreen(void)

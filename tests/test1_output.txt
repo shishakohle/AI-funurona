@@ -1,0 +1,223 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ The MME-AI course at UAS Technikum presents
+ ______ _    _ _   _
+|  ____| |  | | \ | |               Corona Editon
+| |__  | |  | |  \| | ___  _ __ ___  _ __   __ _ 
+|  __| | |  | | . ` |/ _ \| '__/ _ \| '_ \ / _` |
+| |    | |__| | |\  | (_) | | | (_) | | | | (_| |
+|_|     \____/|_| \_|\___/|_|  \___/|_| |_|\__,_|
+
+ A. Friedl, K. Pegler, L. Riedler, I. Weigel
+ Vienna, 2020
+ https://github.com/shishakohle/AI-funurona/
+
+
+Please enter the name for the WHITE player: Hello Anna. You're on the WHITE team, your tokens look like this: O
+
+Please enter the name for the BLACK player: Hello Kerstin. You're on the BLACK team, your tokens look like this: #
+
+Team WHITE (hence Anna-O) will begin.
+Press <ENTER> to start the game.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  A B C D E F G H I
+1 #-#-#-#-#-#-#-#-# 1
+  |\|/|\|/|\|/|\|/|
+2 #-#-#-#-#-#-#-#-# 2
+  |/|\|/|\|/|\|/|\|
+3 #-O-#-O-.-#-O-#-O 3
+  |\|/|\|/|\|/|\|/|
+4 O-O-O-O-O-O-O-O-O 4
+  |/|\|/|\|/|\|/|\|
+5 O-O-O-O-O-O-O-O-O 5
+  A B C D E F G H I
+
+Player Anna-O: Make your turn!
+
+Choose startpostion
+Please choose the row: Please choose the column: 	Startposition COL: 4
+	Startposition ROW: 3
+Choose endposition:
+Please choose the row: Please choose the column: 	Endposition COL: 4
+	Endposition ROW: 2
+geht prinzipiell
+  A B C D E F G H I
+1 #-#-#-#-#-#-#-#-# 1
+  |\|/|\|/|\|/|\|/|
+2 #-#-#-#-#-#-#-#-# 2
+  |/|\|/|\|/|\|/|\|
+3 #-O-#-O-O-#-O-#-O 3
+  |\|/|\|/|\|/|\|/|
+4 O-O-O-O-.-O-O-O-O 4
+  |/|\|/|\|/|\|/|\|
+5 O-O-O-O-O-O-O-O-O 5
+  A B C D E F G H I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  A B C D E F G H I
+1 #-#-#-#-#-#-#-#-# 1
+  |\|/|\|/|\|/|\|/|
+2 #-#-#-#-#-#-#-#-# 2
+  |/|\|/|\|/|\|/|\|
+3 #-O-#-O-O-#-O-#-O 3
+  |\|/|\|/|\|/|\|/|
+4 O-O-O-O-.-O-O-O-O 4
+  |/|\|/|\|/|\|/|\|
+5 O-O-O-O-O-O-O-O-O 5
+  A B C D E F G H I
+
+Player Anna-O: Make your turn!
+
+Choose startpostion
+Please choose the row: Please choose the column: 	Startposition COL: -65
+	Startposition ROW: 1585997854

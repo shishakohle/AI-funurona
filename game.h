@@ -22,6 +22,8 @@
 #include "board.h"
 #include "player.h"
 
+enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -41,23 +43,29 @@ class Game
 		bool grid[5][9];
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
+		bool startPositionInputValid;
+		bool endPositionInputValid;
 		bool beenThereVar;
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
+		bool isDirectionOK;
 		
 		//RUNDE
-		void move(void);
+		struct superstruct move(struct superstruct lastPositions);
 		//ZUG
 		void turn(void);
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
-		bool moveLength(struct position, struct position);
+		bool isMoveLengthValid(struct position, struct position, struct position);
+		bool isMoveDirectionValid(struct position, struct position,struct superstruct);
 		struct position chooseToken(void);
+		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
+		void captureToken(enum Direction, struct position);
 		void clearScreen(void);
 };
 
