@@ -39,3 +39,40 @@ char Token::asChar(enum Team team) // TODO: private??
 	return out;
 }
 
+//tokenGrid to check from where it could capture someone
+void Token::setGrid(struct position pos, bool value)
+{
+	if(value = true)
+	{
+		//can capture one if would move there)
+		gridCapturing[pos.row][pos.column] = 1;
+	}
+	else
+	{
+		//cant capture one if would move ther
+		gridCapturing[row][column] = 0;
+	}
+}
+
+bool Token::getGridBool()
+{
+	gridBool = false;
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			if(gridCapturing[row][column] == 1)
+			{
+				gridBool = true;
+			}
+		}
+	}
+	return gridBool;
+}
+
+//TODO: set fehlt
+struct position getPosition ()
+{
+	return this--> pos;
+}
+

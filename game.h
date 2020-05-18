@@ -41,6 +41,7 @@ class Game
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
+		bool gridCapturing[5][9];
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
 		bool startPositionInputValid;
@@ -63,6 +64,9 @@ class Game
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
+		void capturingPossible();
+		void checkIfCanCapture(int, int, Token);
+		void updateGridToken(Token);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
 		void captureToken(enum Direction, struct position);

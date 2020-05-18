@@ -147,7 +147,6 @@ struct superstruct Game::move(struct superstruct lastPositions)
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
-	capturingPossible ()
 
 	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && startPositionInputValid && endPositionInputValid && isDirectionOK));
 	moveToken(startPosition, endPosition);
@@ -159,7 +158,7 @@ struct superstruct Game::move(struct superstruct lastPositions)
 // RUNDE
 void Game::turn(void)
 {
- struct superstruct lastPositions;
+ 	struct superstruct lastPositions;
 	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
@@ -330,9 +329,106 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 	}
 }
 
-<<<<<<< HEAD
 //TO-DO: Anna is capturing of another token possible?
-bool Game::capturingPossible ()
+void Game::checkIfCanCapture(int i, int j, Token t)
+{
+	struct position currentPosition = t.getPosition(); 
+
+	struct position endPos;
+	endPos.row = currentPosition.row+i;
+	endPos.column = currentPosition.column+j;
+	struct position neighbour;			//TODO: CHANGE ALL
+	neighbour.row = endPos.row+i; //endPosition = currentPosition + North
+	neighbour.column = endPos.column+j;
+	
+	if(!freePosition(neighbour)){ //feld oberhalb belegt
+		//Token above from other team
+		if(meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam())
+		{
+			t.setGrid(endPos,true);
+		}
+		else
+		{
+			t.setGrid(endPos,false);
+		}
+	} 
+	else //Feld unbelegt
+	{
+		t.setGrid(endPos,false);
+	}
+}
+
+void Game::updateGridToken(Token t) //bool
+{
+	//set grid 0
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			struct position pos;
+			pos.column = column;
+			pos.row = row;
+
+			t.setGrid(pos,false);
+		}
+		cout << endl;
+	}
+
+	int i;
+	int j;
+
+	//set grid 1 where token could capture someone
+	//TO-DO: from current position
+	switch(i) //rows --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
+	{
+		case -1: //Token moves to NORTH  
+			switch(j) //columns --> 0 = N, +1 = NO, -1 = NW
+			{
+				case -1:
+					checkIfCanCapture(i, j, t);
+				;
+
+				case 0:
+					checkIfCanCapture(i, j, t);
+				;
+
+				case 1:
+					checkIfCanCapture(i, j, t);
+				;
+			};
+
+		case +1: //Token moves to South  
+			switch(j) //columns --> 0 = S, +1 = SO, -1 = SW
+			{
+				case -1:
+					checkIfCanCapture(i, j, t);
+				;
+
+				case 0:
+					checkIfCanCapture(i, j, t);
+				;
+
+				case 1:
+					checkIfCanCapture(i, j, t);
+				;
+			};
+
+		case 0: //Token stay in row  
+			switch(j) //columns --> 1 = O, -1 = W
+			{
+				case -1:
+					checkIfCanCapture(i, j, t);
+				;
+
+				case 1:
+					checkIfCanCapture(i, j, t);
+				;
+			};
+	}
+}
+
+//creates a grid with all cells marked where tokens are placed, that could possible capture someone
+void Game::capturingPossible() //bool
 {
 	for(int row=0; row<5; row++)
 	{
@@ -342,38 +438,35 @@ bool Game::capturingPossible ()
 			pos.column = column;
 			pos.row = row;
 
+			//create a grid for token --> 1 = this token can capture someone, 0 --> token cant capture or from other team
+			gridCapturing[row][column] = 0;
+			
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
 			{
-				//check if they can capture someone
-				//check of every token neighborhood --> if cell is free
-				//if free --> remember direction form where it came and see if it can capture a token there
-				//mark all possible positions to move to in grid (= been there)
-				//if endposition = 1 on grid --> return true
+				updateGridToken(meinSpielbrett.getCell(pos).getToken());
+				//token from currentPlayer can capture someone
+				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true)
+				{
+					gridCapturing[row][column] = 1;
+				}
 
-				//OR
-				//check if any token can capture one --> as soon as can capture one --> return true and stop
-				//in another method: give it endPosition and see if it can capture someone there --> if method before returned true --> this must also return true --> otherwise choose other
-				//would not give all possible tokens/endpositions right away
-				
-				//OR
-				//check of every token neighborhood --> if cell is free
-				//if free --> remember direction form where it came and see if it can capture a token there
-				//mark all possible tokens that could capture one on grid (= been there)
-				//give method startposition --> if 1 on grid --> check endposition if can capture there
-				//if not 1 on grid, choose again, if start = 1 but cant capture anyone at end --> choose again
-				return true;
+				//token from currentPlayer but cant capture anyone
+				else
+				{
+					gridCapturing[row][column] = 0;	
+				}
 			}
+
+			//tokens are from other team
 			else
 			{
-				return false;	
+				gridCapturing[row][column] = 0;
 			}
 		}
+		cout << endl;
 	}
 }
-=======
-
->>>>>>> a53c23457288bbc0b068bf09f73cf62026c1fff8
 
 struct position Game::chooseToken(void)
 {
