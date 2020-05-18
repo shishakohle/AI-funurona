@@ -96,7 +96,7 @@ void Game::start() // TODO: private??
 
 	
 // ZUG
-struct superstruct Game::move(struct superstruct lastPositions)
+struct Useraction Game::move(struct Useraction lastPositions)
 {
 	// clear screen
 	struct position startPosition;
@@ -158,7 +158,7 @@ struct superstruct Game::move(struct superstruct lastPositions)
 // RUNDE
 void Game::turn(void)
 {
- 	struct superstruct lastPositions;
+ struct Useraction lastPositions;
 	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
@@ -218,7 +218,7 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::isMoveDirectionValid(struct position start, struct position end, struct superstruct lastpositions){
+bool Game::isMoveDirectionValid(struct position start, struct position end, struct Useraction lastpositions){
 	int dirColumn = end.column - start.column;
 	int dirRow = end.row - start.row;
 	
@@ -523,19 +523,24 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 void Game::captureToken(enum Direction direction, struct position endPosition)
 {
 	bool neighbourFieldEmpty = false;
+	int capturedTokens = 0;
+	int i = 1;
 
 	switch(direction)
 	{
 		case NORTH: //Token moves from NORTH - check neighbour in the SOUTH
 			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
 			{
-				int i = 1;
 				struct position neighbour;
-				neighbour.row = endPosition.row;
-				neighbour.column = endPosition.column + i;
+				neighbour.row = endPosition.row + i;
+				neighbour.column = endPosition.column;
+				cout << "row: [" << neighbour.row << "]";
+				cout << "column: [" << neighbour.column << "]" << endl;
 
-				if(!freePosition(neighbour)){
+				if(!freePosition(neighbour) && neighbour.row > 4){
 					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+					capturedTokens++;
+					i++;
 				} else{
 					neighbourFieldEmpty = true;
 				}
@@ -545,14 +550,18 @@ void Game::captureToken(enum Direction direction, struct position endPosition)
 		case SOUTH: //Token moves from SOUTH - check neighbour in the NORTH
 			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
 			{
-				int i = 1;
 				struct position neighbour;
-				neighbour.row = endPosition.row;
-				neighbour.column = endPosition.column - i;
+				neighbour.row = endPosition.row - i;
+				neighbour.column = endPosition.column;
+				cout << "row: [" << neighbour.row << "]";
+				cout << "column: [" << neighbour.column << "]" << endl;
 
-				if(!freePosition(neighbour)){
+				if(!freePosition(neighbour) && neighbour.row > 0){
 					meinSpielbrett.getCell(neighbour).deleteToken(); //delete Token
+					capturedTokens++;
+					i++;
 				} else{
+					//cout << "free";
 					neighbourFieldEmpty = true;
 				}
 			}
@@ -584,6 +593,8 @@ void Game::captureToken(enum Direction direction, struct position endPosition)
 
 		break;
 	}
+
+	cout << "Number of deleted tokens: " << capturedTokens << endl;
 }
 
 void Game::clearScreen(void)

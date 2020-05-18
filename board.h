@@ -8,11 +8,6 @@ struct position
 	int column,row;
 };
 
-struct superstruct
-{
-	struct position start,end,direction;
-};
-
 #endif
 
 #ifndef BOARD_H
