@@ -42,7 +42,7 @@ char Token::asChar(enum Team team) // TODO: private??
 //tokenGrid to check from where it could capture someone
 void Token::setGrid(struct position pos, bool value)
 {
-	if(value = true)
+	if(value == true)
 	{
 		//can capture one if would move there)
 		gridCapturing[pos.row][pos.column] = 1;
@@ -50,7 +50,7 @@ void Token::setGrid(struct position pos, bool value)
 	else
 	{
 		//cant capture one if would move ther
-		gridCapturing[row][column] = 0;
+		gridCapturing[pos.row][pos.column] = 0;
 	}
 }
 
@@ -71,8 +71,8 @@ bool Token::getGridBool()
 }
 
 //TODO: set fehlt
-struct position getPosition ()
+struct position Token::getPosition ()
 {
-	return this--> pos;
+	return pos;
 }
 

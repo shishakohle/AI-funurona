@@ -99,7 +99,8 @@ class Game
 		void updateGridToken(Token);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
-		void captureToken(enum Direction, struct position);
+		struct position getNeighbour(struct position, Direction);
+		void captureToken(struct Useraction);
 		void clearScreen(void);
 };
 
