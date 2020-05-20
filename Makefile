@@ -4,11 +4,11 @@ CXXSTANDARD=c++11
 
 ifeq ($(OS),Windows_NT)
 	OUT=funorona.exe
-	RM=DEL /F /Q
+	RM=if exist $(OUT) del /F /Q
 #	RUNPREFIX=
 else
 	OUT=funorona.out
-	RM=rm -f
+	RM=rm -rf
 	RUNPREFIX=./
 endif
 
@@ -19,11 +19,7 @@ all+run: all
 	@ $(RUNPREFIX)$(OUT)
 
 clean:
-	ifeq ($(OS),Windows_NT)
-		@ IF EXIST $(OUT) $(RM) $(OUT)
-	else
-		@ $(RM) $(OUT)
-	endif
+	@ $(RM) $(OUT)
 
 test: test1
 
