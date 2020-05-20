@@ -1,5 +1,6 @@
 SOURCES=*.cpp
 CXX=g++
+CXXSTANDARD=c++11
 
 ifeq ($(OS),Windows_NT)
 	OUT=funorona.exe
@@ -12,7 +13,7 @@ else
 endif
 
 all: clean $(SOURCES)
-	@ $(CXX) $(SOURCES) -o $(OUT)
+	@ $(CXX) $(SOURCES) -o $(OUT) -std=$(CXXSTANDARD)
 
 all+run: all
 	@ $(RUNPREFIX)$(OUT)
