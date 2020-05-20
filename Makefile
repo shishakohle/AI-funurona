@@ -19,7 +19,11 @@ all+run: all
 	@ $(RUNPREFIX)$(OUT)
 
 clean:
-	@ $(RM) $(OUT)
+	ifeq ($(OS),Windows_NT)
+		@ IF EXIST $(OUT) $(RM) $(OUT)
+	else
+		@ $(RM) $(OUT)
+	endif
 
 test: test1
 
