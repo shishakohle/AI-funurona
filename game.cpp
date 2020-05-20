@@ -532,8 +532,6 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 struct position Game::getNeighbour(struct position position, Direction direction){
 	struct position neighbour;
 
-	cout << "DIR: " << direction << endl;
-
 	switch(direction){
 		case North:
 			neighbour.row = position.row - 1;
