@@ -1,10 +1,11 @@
 SOURCES=*.cpp
 OUT=funorona.out
 CXX=g++
+CXXSTANDARD=c++11
 RM=rm -f
 
 all: clean $(SOURCES)
-	@ $(CXX) $(SOURCES) -o $(OUT)
+	@ $(CXX) $(SOURCES) -o $(OUT) -std=$(CXXSTANDARD)
 
 all+run: all
 	@./$(OUT)
