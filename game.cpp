@@ -15,11 +15,11 @@
  */
 
 #include <fstream>
+#include <algorithm>
 #include "game.h"
 
 Game::Game(void)
 {
-	//this->currentTeam = WHITE;
 	this->currentPlayer = &playerWhite;
 	this->gameWon = false;
 	this->playerWhite.setTeam(WHITE);
@@ -91,7 +91,7 @@ void Game::start() // TODO: private??
 		}
 
 	}
-	cout << "The game is over. "<< this->winner->getName() <<"you have won. Congratulations!" << endl;
+	cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
 }
 
 	
@@ -104,14 +104,11 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	struct position direction;
 	do {
 
-	this->clearScreen();
-	
-	meinSpielbrett.print();
 
-	//TO-DO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
+
+	// TODO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
 	
-	cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
-	
+	/*
 	cout << "Choose startpostion" << endl;
 	startPosition = chooseToken();
 		cout << "\tStartposition COL: " << startPosition.column << endl;
@@ -124,6 +121,26 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	endPosition = chooseToken();
 		cout << "\tEndposition COL: " << endPosition.column << endl;
 		cout << "\tEndposition ROW: " << endPosition.row << endl;
+	*/
+	
+	struct Useraction useraction;  // TODO: maybe wanna declare somewhere else?
+	
+	do
+	{
+		useraction = getUseraction();
+	}
+	while(useraction.command == Invalid);
+	
+		switch(useraction.command)
+		{
+			//case Invalid: break;
+			case Skip:    break;
+			case Move:    break;
+			case Help:    break;
+			case Restart: break;
+			case Quit:    break;
+			// default: break;
+		}
 
 	startPositionInputValid = positionInputValid(startPosition);
 	endPositionInputValid = positionInputValid(endPosition);
@@ -331,7 +348,7 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 
 
 
-struct position Game::chooseToken(void)
+struct position Game::chooseToken(void) // TODO abolish
 {
 	int row, col;
 	char column;
@@ -465,5 +482,42 @@ void Game::clearScreen(void)
 	int i = 0;
 	while(i++ < LINES_TO_CLEAR)
 		cout << endl;
+}
+
+struct Useraction Game::getUseraction(void)
+{
+	struct Useraction useraction;
+	string userinput;
+	
+	this->clearScreen();
+	this->meinSpielbrett.print();
+	cout << endl;
+		
+	do
+	{
+		cout << "Player " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn! > " << flush;	
+		getline(cin, userinput);
+	}
+	while(userinput=="");
+	
+	// use toupper() in a Lambda expression to transform userinput to upper case
+	std::for_each( userinput.begin(), userinput.end(),
+		// pass each character by reference to callback
+		[](char &c){ c = ::toupper(c); }
+	);
+	
+	
+	cout << userinput << endl;
+	
+	useraction.command = Invalid; // TODO hardcoded for now
+	
+	if(useraction.command == Invalid)
+	{
+		cout << "\nUnknown command: " << userinput << "\nUse comannd \"help\" for a short manual." << endl;
+		cout << "Press <ENTER> to try again." << flush;
+		getline(cin,userinput); // TODO: just some random string not used anymore
+	}
+	
+	return useraction;
 }
 

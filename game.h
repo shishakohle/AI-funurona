@@ -32,7 +32,14 @@ enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTH
 #ifndef COMMAND_H
 #define COMMAND_H
 
-enum Command {Invalid, Skip, Move, Help, Restart, Quit};
+enum Command {
+	Invalid,
+	Skip,
+	Move,
+	Help,
+	Restart,
+	Quit
+};
 
 #endif
 
@@ -64,7 +71,6 @@ class Game
 		void start(); // TODO: private??
 		
 	private:
-		//enum Team currentTeam;
 		Player *currentPlayer;
 		bool gameWon;
 		Player *winner;
@@ -97,6 +103,7 @@ class Game
 		void moveToken (struct position, struct position);
 		void captureToken(enum Direction, struct position);
 		void clearScreen(void);
+		struct Useraction getUseraction(void);
 };
 
 #endif
