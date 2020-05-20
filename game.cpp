@@ -381,7 +381,7 @@ void Game::updateGridToken(Token t) //bool
 	//TO-DO: from current position
 	switch(i) //rows --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
 	{
-		case -1: //Token moves to NORTH  
+		case -1: //Token moves to North  
 			switch(j) //columns --> 0 = N, +1 = NO, -1 = NW
 			{
 				case -1:
@@ -518,8 +518,8 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	meinSpielbrett.setTokenOnCell(endPosition, tokenToMove);
 	meinSpielbrett.emptyCell(startPosition);
 
-	/*struct Useraction test;
-	test.dir = SOUTH;
+/*	struct Useraction test;
+	test.dir = South;
 	test.end.row = 2;
 	test.end.column= 4;
 	test.start.row = 3;
@@ -533,42 +533,42 @@ struct position Game::getNeighbour(struct position position, Direction direction
 	struct position neighbour;
 
 	switch(direction){
-		case NORTH:
+		case North:
 			neighbour.row = position.row - 1;
 			neighbour.column = position.column;
 		break;
 
-		case SOUTH:
+		case South:
 			neighbour.row = position.row + 1;
 			neighbour.column = position.column;
 		break;
 
-		case EAST:
+		case East:
 			neighbour.row = position.row;
 			neighbour.column = position.column + 1;
 		break;
 
-		case WEST:
+		case West:
 			neighbour.row = position.row;
 			neighbour.column = position.column - 1;
 		break;
 
-		case NORTHWEST:
+		case Northwest:
 			neighbour.row = position.row - 1;
 			neighbour.column = position.column - 1;
 		break;
 
-		case SOUTHEAST:
+		case Southeast:
 			neighbour.row = position.row + 1;
 			neighbour.column = position.column + 1;
 		break;
 
-		case NORTHEAST:
+		case Northeast:
 			neighbour.row = position.row - 1;
 			neighbour.column = position.column + 1;
 		break;
 		
-		case SOUTHWEST:
+		case Southwest:
 			neighbour.row = position.row + 1;
 			neighbour.column = position.column - 1;
 		break;
@@ -577,112 +577,125 @@ struct position Game::getNeighbour(struct position position, Direction direction
 	return neighbour;
 }
 
+void Game::capture(struct position startNeighbour, Direction startNeighbourDir, struct position endNeighbour, Direction endNeighbourDir){
+
+    bool neighbourFieldEmpty = false;
+    int capturedTokens = 0;
+    bool withdraw = false;
+    bool approach = false;
+    string choice;
+
+            //If neighbour of Startposition is not free and is Token from other Team && neighbour from endPosition is not free and is Token from other Team
+            if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
+                cout << "Please choose withdraw or approach";
+                cin >> choice;
+
+                
+
+                if(choice.compare("withdraw") == 0){
+                    withdraw = true;
+                } else if(choice.compare("approach") == 0){
+                    approach = true;
+                }
+            }
+            //Only Neighbour of endPosition is Token from other Team
+            else if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9)){ //Nachbar in Endposition schmeißen
+                while(!neighbourFieldEmpty){
+                    if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
+                        && endNeighbour.row < 9 && endNeighbour.column > 0
+                        && endNeighbour.column < 5 && endNeighbour.column > 0){
+                        //Capture
+                        meinSpielbrett.emptyCell(endNeighbour);
+                        endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
+                        capturedTokens++;
+                    } else{
+                        neighbourFieldEmpty = true;
+                    }
+                }
+            } 
+            //Only Neighbour of startPosition is Token from other Team
+            else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0)){ //Nachbar in Startposition schmeißen
+                while(!neighbourFieldEmpty){
+                    if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
+                       && startNeighbour.row < 9 && startNeighbour.row > 0 
+                       && startNeighbour.row < 5 && startNeighbour.column > 0 ){
+                        //Capture
+                        meinSpielbrett.emptyCell(startNeighbour);
+                        startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
+                        capturedTokens++;
+                    } else{
+                        neighbourFieldEmpty = true;
+                    }
+                }
+            }
+        cout << "Number of deleted tokens: " << capturedTokens << endl;
+}
+
 
 void Game::captureToken(struct Useraction userAction)
 {
-	bool neighbourFieldEmpty = false;
-	int capturedTokens = 0;
-	int i = 1;
+    switch(userAction.dir)
+    {
+        case North: { //Token moves to North - check neighbour in the North
+            struct position startNeighbour = getNeighbour(userAction.start, North);
+            struct position endNeighbour = getNeighbour(userAction.end, South);
 
-	switch(userAction.dir)
-	{
-		case NORTH: { //Token moves to NORTH - check neighbour in the NORTH
-			while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
-			{
-				struct position neighbour;
-				neighbour.row = userAction.end.row - i;
-				neighbour.column = userAction.end.column;
-				cout << "row: [" << neighbour.row << "]";
-				cout << "column: [" << neighbour.column << "]" << endl;
+            capture(startNeighbour, North, endNeighbour, South);
+        }
 
-				if(!freePosition(neighbour) && neighbour.row > 4){
-					meinSpielbrett.emptyCell(neighbour);
-					capturedTokens++;
-					i++;
-				} else{
-					neighbourFieldEmpty = true;
-				}
-			}
-		break;
-		}
+        case South: { //Token moves to South 
+            struct position startNeighbour = getNeighbour(userAction.start, South);
+            struct position endNeighbour = getNeighbour(userAction.end, North);
 
-		case SOUTH: { //Token moves to SOUTH 
-			//Hat Starposition Nachbar in NORTH?
-			struct position startNeighbour = getNeighbour(userAction.start, NORTH);
-				
-			//Hat Endposition Nachbar in SOUTH?
-			struct position endNeighbour = getNeighbour(userAction.end, SOUTH);
+            capture(startNeighbour, South, endNeighbour, North);
+        break;
+        }
+        case East:{ //Token moves to East - check neighbour in the East
+            struct position startNeighbour = getNeighbour(userAction.start, East);
+            struct position endNeighbour = getNeighbour(userAction.end, West);
 
-			//Wenn beide true sind, muss User entscheiden können welchen token er schmeißen möchte
-			if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
-				cout << "User needs to choose";
-			}
-			else if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9)){ //Nachbar in Endposition schmeißen
-				while(!neighbourFieldEmpty){
-					if(!freePosition(endNeighbour) && endNeighbour.row < 9 && !isTokenFromCurrentTeam(endNeighbour)){
-					meinSpielbrett.emptyCell(endNeighbour);
-					endNeighbour = getNeighbour(endNeighbour, SOUTH);
-					cout << "row: [" << endNeighbour.row << "]";
-					cout << "column: [" << endNeighbour.column << "]" << endl;
-					capturedTokens++;
-					} else{
-						neighbourFieldEmpty = true;
-					}
-				}
-			} else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0)){ //Nachbar in Startposition schmeißen
-					
-			}
-		/*	while (!neighbourFieldEmpty) //while neigbourField is not empty -> delete Token
-			{
+            capture(startNeighbour, East, endNeighbour, West);
 
+        break;
+        }
+        case West: {    //Token moves to West - check neighbour in the West
+            struct position startNeighbour = getNeighbour(userAction.start, West);
+            struct position endNeighbour = getNeighbour(userAction.end, East);
 
-				//Wenn nur einer true ist, dann geh weiter in diese richtung
-				struct position neighbour;
-				neighbour.row = userAction.end.row + i;
-				neighbour.column = userAction.end.column;
-				cout << "row: [" << neighbour.row << "]";
-				cout << "column: [" << neighbour.column << "]" << endl;
+            capture(startNeighbour, West, endNeighbour, East);
+        break;
+        }
+        case Northwest: { //Token moves to Northwest - check neighbour in the Northwest
+            struct position startNeighbour = getNeighbour(userAction.start, Northwest);
+            struct position endNeighbour = getNeighbour(userAction.end, Southeast);
 
-				if(!freePosition(neighbour) && neighbour.row > 0){
-					meinSpielbrett.emptyCell(neighbour); //delete Token
-					capturedTokens++;
-					i++;
-				} else{
-					neighbourFieldEmpty = true;
-				}
-			}*/
-		break;
-		}
-		case EAST:{ //Token moves to EAST - check neighbour in the EAST
+            capture(startNeighbour, Northwest, endNeighbour, Southeast);
+        break;
+        }
+        case Southeast: { //Token moves to Southeast - check neighbour in the Southeast
+            struct position startNeighbour = getNeighbour(userAction.start, Southeast);
+            struct position endNeighbour = getNeighbour(userAction.end, Northwest);
 
+            capture(startNeighbour, Southeast, endNeighbour, Northwest);
+        break;
+        }
+        case Northeast: {//Token moves to Northeast - check neighbour in the Northeast
+            struct position startNeighbour = getNeighbour(userAction.start, Northeast);
+            struct position endNeighbour = getNeighbour(userAction.end, Southwest);
 
-		break;
-		}
-		case WEST: {	//Token moves to WEST - check neighbour in the WEST
+            capture(startNeighbour, Northeast, endNeighbour, Southwest);
+        break;
+        }
+        case Southwest:{//Token moves to Southwest - check neighbour in the Southwest
+            struct position startNeighbour = getNeighbour(userAction.start, Southwest);
+            struct position endNeighbour = getNeighbour(userAction.end, Northeast);
 
-
-		break;
-		}
-		case NORTHWEST: { //Token moves to NORTHWEST - check neighbour in the NORTHWEST
-
-		break;
-		}
-		case SOUTHEAST: { //Token moves to SOUTHEAST - check neighbour in the SOUTHEAST
-
-		break;
-		}
-		case NORTHEAST: {//Token moves to NORTHEAST - check neighbour in the NORTHEAST
-
-		break;
-		}
-		case SOUTHWEST:{//Token moves to SOUTHWEST - check neighbour in the SOUTHWEST
-
-		break;
-		}
-	}
-
-	cout << "Number of deleted tokens: " << capturedTokens << endl;
+            capture(startNeighbour, Southwest, endNeighbour, Northeast);
+        break;
+        }
+    }
 }
+
 
 void Game::clearScreen(void)
 {

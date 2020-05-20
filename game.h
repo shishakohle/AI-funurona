@@ -25,7 +25,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest};
 
 #endif
 
@@ -100,6 +100,7 @@ class Game
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
 		struct position getNeighbour(struct position, Direction);
+		void capture(struct position, Direction, struct position, Direction);
 		void captureToken(struct Useraction);
 		void clearScreen(void);
 };
