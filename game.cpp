@@ -134,6 +134,16 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	//if beenThereVar = false --> dont move token --> ask again
 	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
 
+	//if can capture --> see if chose right token to right position, else cant capture anyway and any move possible
+	/*if(capturingYes)
+	{
+		capturingRight = rightfulCapturing();
+	}
+	else
+	{
+		capturingRight = true:
+	}*/
+	//TODO: Anna
 
 	// Kann dieser Zug ausgeführt werden?
 	// - Ist die Position eine freie Position?
@@ -147,7 +157,7 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
-
+	//TODO Anna: add capturingRight
 	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && startPositionInputValid && endPositionInputValid && isDirectionOK));
 	moveToken(startPosition, endPosition);
 	lastPositions.start = startPosition;
@@ -173,7 +183,8 @@ void Game::turn(void)
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
 	do
 	{
-			lastPositions = move(lastPositions);
+			//capturingYes = capturingPossible();
+			lastPositions = move(lastPositions); //TODO Anna later: give as argument capturingYes
 			anotherMove = false;
 	}
 	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
@@ -329,32 +340,54 @@ int moveLengthColumn = endPosition.column - startPosition.column;
 	}
 }
 
+bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
+{
+	if(gridCapturing[startPosition.row][startPosition.column] == 1 && meinSpielbrett.getCell(endPosition).getToken().getGridValue(endPosition) == 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 //TO-DO: Anna is capturing of another token possible?
 void Game::checkIfCanCapture(int i, int j, Token t)
 {
 	struct position currentPosition = t.getPosition(); 
 
+	//approach
 	struct position endPos;
 	endPos.row = currentPosition.row+i;
 	endPos.column = currentPosition.column+j;
 	struct position neighbour;			//TODO: CHANGE ALL
 	neighbour.row = endPos.row+i; //endPosition = currentPosition + North
 	neighbour.column = endPos.column+j;
-	
-	if(!freePosition(neighbour)){ //feld oberhalb belegt
+
+	//widthdraw
+	struct position neighbour2;			//TODO: CHANGE ALL
+	neighbour2.row = endPos.row-(2*i); //endPosition = currentPosition + North
+	neighbour2.column = endPos.column-(2*j);
+
+	//TODO: include beenThere --> cant capture if already been there	
+	if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
 		//Token above from other team
-		if(meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam())
+		if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
 		{
-			t.setGrid(endPos,true);
+			t.setGridValue(endPos,true);
 		}
 		else
 		{
-			t.setGrid(endPos,false);
+			t.setGridValue(endPos,false);
 		}
 	} 
 	else //Feld unbelegt
 	{
-		t.setGrid(endPos,false);
+		if(positionInputValid(endPos))
+		{
+			t.setGridValue(endPos,false);
+		}
 	}
 }
 
@@ -369,7 +402,7 @@ void Game::updateGridToken(Token t) //bool
 			pos.column = column;
 			pos.row = row;
 
-			t.setGrid(pos,false);
+			t.setGridValue(pos,false);
 		}
 		cout << endl;
 	}
@@ -428,8 +461,9 @@ void Game::updateGridToken(Token t) //bool
 }
 
 //creates a grid with all cells marked where tokens are placed, that could possible capture someone
-void Game::capturingPossible() //bool
+bool Game::capturingPossible() 
 {
+	bool var = false;
 	for(int row=0; row<5; row++)
 	{
 		for(int column=0; column<9; column++)
@@ -449,6 +483,7 @@ void Game::capturingPossible() //bool
 				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true)
 				{
 					gridCapturing[row][column] = 1;
+					var = true;
 				}
 
 				//token from currentPlayer but cant capture anyone
@@ -466,6 +501,7 @@ void Game::capturingPossible() //bool
 		}
 		cout << endl;
 	}
+	return var;
 }
 
 struct position Game::chooseToken(void)

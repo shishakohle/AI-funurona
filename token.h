@@ -32,7 +32,8 @@ class Token
 		struct lastMoveDirection getLastMoveDirection(void);
 		char asChar(void); // TODO invoke this when printing the board. or is this needed overall?
 		static char asChar(enum Team); // TODO: private??
-		void setGrid(struct position,bool); //TODO: set und get position & update it somewhere
+		void setGridValue(struct position,bool); //TODO: set und get position & update it somewhere
+		bool getGridValue(struct position);
 		bool getGridBool(void);
 		struct position getPosition ();
 	private:

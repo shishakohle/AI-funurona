@@ -80,6 +80,8 @@ class Game
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
 		bool isDirectionOK;
+		bool capturingYes;
+		bool capturingRight;
 		
 		//RUNDE
 		struct Useraction move(struct Useraction lastPositions);
@@ -94,7 +96,8 @@ class Game
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
-		void capturingPossible();
+		bool rightfulCapturing(struct position, struct position);
+		bool capturingPossible();
 		void checkIfCanCapture(int, int, Token);
 		void updateGridToken(Token);
 		//move Token from start to end position
