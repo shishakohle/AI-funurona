@@ -14,9 +14,15 @@
  * colors: black -> # , white -> O , empty cell -> .
  */
 
+#include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <map>
 #include "game.h"
+
+using namespace std;
 
 Game::Game(void)
 {
@@ -30,7 +36,7 @@ Game::Game(void)
 
 void Game::start() // TODO: private??
 {
-	// clear screen
+/*	// clear screen
 	this->clearScreen();
 	
 	// print welcome screen
@@ -74,7 +80,9 @@ void Game::start() // TODO: private??
 	cout << "Team WHITE (hence "<< this->playerWhite.getName() << "-" << Token::asChar(WHITE) <<") will begin." << endl; // TODO manage inconsistencies with constructor
 	cout << "Press <ENTER> to start the game." << flush;
 	getline(cin,playerName);
-	
+*/
+this->playerWhite.setName("Anna");
+this->playerBlack.setName("Kerstin");
 	while(!gameWon)
 	{
 		anotherMove = true; //(re)move later
@@ -495,7 +503,7 @@ struct Useraction Game::getUseraction(void)
 		
 	do
 	{
-		cout << "Player " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn! > " << flush;	
+		cout << " [" << Token::asChar( this->currentPlayer->getTeam() ) << "] " << this->currentPlayer->getName() << ", " << "make your turn! > " << flush;	
 		getline(cin, userinput);
 	}
 	while(userinput=="");
@@ -506,10 +514,23 @@ struct Useraction Game::getUseraction(void)
 		[](char &c){ c = ::toupper(c); }
 	);
 	
+	string snippet;
+	istringstream iss(userinput);
 	
-	cout << userinput << endl;
+	iss >> snippet;
 	
-	useraction.command = Invalid; // TODO hardcoded for now
+	static const map <string, Command> commandMap // TODO declare somewhere else!
+	{
+		{ "SKIP",    Skip },
+		{ "MOVE",    Move },
+		{ "HELP",    Help },
+		{ "RESTART", Restart },
+		{ "QUIT",    Quit},
+		{ "EXIT",    Quit},
+		{ "BYE",     Quit}
+	};
+	auto iterator = commandMap.find(snippet);
+	iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
 	
 	if(useraction.command == Invalid)
 	{
