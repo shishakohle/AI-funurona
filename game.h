@@ -80,18 +80,17 @@ class Game
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
 		bool isDirectionOK;
-		bool capturingYes;
-		bool capturingRight;
 		
 		//RUNDE
 		struct Useraction move(struct Useraction lastPositions);
 		//ZUG
 		void turn(void);
+		bool isMoveValid(struct position,  struct position, int direction, struct Useraction);
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
-		bool isMoveLengthValid(struct position, struct position, struct position);
-		bool isMoveDirectionValid(struct position, struct position,struct Useraction);
+		bool areFieldsConnected(struct position, int direction);
+		bool isMoveDirectionValid(struct Useraction, int direction);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner

@@ -101,7 +101,7 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	// clear screen
 	struct position startPosition;
 	struct position endPosition;
-	struct position direction;
+	enum Direction dir;
 	do {
 
 	this->clearScreen();
@@ -117,51 +117,17 @@ struct Useraction Game::move(struct Useraction lastPositions)
 		cout << "\tStartposition COL: " << startPosition.column << endl;
 		cout << "\tStartposition ROW: " << startPosition.row << endl;
 
-	// Ist auf dieser Position ein Token von dem Team?
-	isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
 
-	cout << "Choose endposition:" << endl;
-	endPosition = chooseToken();
-		cout << "\tEndposition COL: " << endPosition.column << endl;
-		cout << "\tEndposition ROW: " << endPosition.row << endl;
-
-	startPositionInputValid = positionInputValid(startPosition);
-	endPositionInputValid = positionInputValid(endPosition);
-
-	//war in diesem Zug schon mal auf diesem spielfeld?
-		
-	beenThereVar = beenThere(endPosition);
-	//if beenThereVar = false --> dont move token --> ask again
-	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
-
-	//if can capture --> see if chose right token to right position, else cant capture anyway and any move possible
-	/*if(capturingYes)
-	{
-		capturingRight = rightfulCapturing();
-	}
-	else
-	{
-		capturingRight = true:
-	}*/
-	//TODO: Anna
-
-	// Kann dieser Zug ausgeführt werden?
-	// - Ist die Position eine freie Position?
-	isEndPositionFree = freePosition(endPosition);
-	
-	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
-	isMoveLengthOK = isMoveLengthValid(startPosition, endPosition, direction);
-
-	isDirectionOK = isMoveDirectionValid(startPosition, endPosition,lastPositions);
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 	//TODO Anna: add capturingRight
-	}while(!(isMoveLengthOK && isEndPositionFree && beenThereVar && isStartTokenFromCurrentTeam && startPositionInputValid && endPositionInputValid && isDirectionOK));
+	}while(!isMoveValid(startPosition, endPosition, dir, lastPositions));
+		//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
 	moveToken(startPosition, endPosition);
 	lastPositions.start = startPosition;
-	lastPositions.end = endPosition;
+	lastPositions.dir = dir;
 	meinSpielbrett.print();
 }
 
@@ -190,6 +156,64 @@ void Game::turn(void)
 	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
 	
 }
+
+bool Game::isMoveValid(struct position startPosition, struct position endPosition, int direction, struct Useraction lastaction){
+	// Ist auf dieser Position ein Token von dem Team?
+	if(!isTokenFromCurrentTeam(startPosition)){
+		
+	}
+
+	cout << "Choose endposition:" << endl;
+	endPosition = chooseToken();
+		cout << "\tEndposition COL: " << endPosition.column << endl;
+		cout << "\tEndposition ROW: " << endPosition.row << endl;
+
+	if(!positionInputValid(startPosition)) {
+		return false;
+	}
+	if (!positionInputValid(endPosition)){
+		return false;
+	}
+
+	//war in diesem Zug schon mal auf diesem spielfeld?
+		
+	if(!beenThere(endPosition)){
+		return false;
+	}
+	//if beenThereVar = false --> dont move token --> ask again
+	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
+
+	//if can capture --> see if chose right token to right position, else cant capture anyway and any move possible
+	/*if(capturingYes)
+	{
+		capturingRight = rightfulCapturing();
+	}
+	else
+	{
+		capturingRight = true:
+	}*/
+	//TODO: Anna
+
+	// Kann dieser Zug ausgeführt werden?
+	// - Ist die Position eine freie Position?
+	if(!freePosition(endPosition))
+	{
+		return false;
+	}
+	
+	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
+	if(!areFieldsConnected(startPosition, direction)) {
+		return false;
+	}
+
+	if (!isMoveDirectionValid(lastaction, direction)){
+		return false;
+	}
+
+	return true;
+
+}
+
 
 bool Game::isTokenFromCurrentTeam(struct position position)
 {
@@ -229,11 +253,10 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::isMoveDirectionValid(struct position start, struct position end, struct Useraction lastpositions){
-	int dirColumn = end.column - start.column;
-	int dirRow = end.row - start.row;
+bool Game::isMoveDirectionValid(struct Useraction lastactions, int direction){
 	
-	if (dirColumn==lastpositions.direction.column && dirRow==lastpositions.direction.row)
+	
+	if (lastactions.dir == direction)
 	{
 		return false;
 	}
@@ -244,100 +267,115 @@ bool Game::isMoveDirectionValid(struct position start, struct position end, stru
 
 }
 
-
-bool Game::isMoveLengthValid(struct position startPosition, struct position endPosition, struct position direction)
+//TODO Lukas komplett umschreiben
+bool Game::areFieldsConnected(struct position startPosition, int direction)
 {
-int moveLengthColumn = endPosition.column - startPosition.column;
-	int moveLengthRow = endPosition.row - startPosition.row;
-	int moveLengthOutput = 255; //random number, damit man sehen kann ob die werte genommen werden
-	bool moveLengthvalid = false; //kann man vll weglassen
-	switch (moveLengthColumn)
+	if (direction == Southeast || direction == Southwest || direction == Northeast || direction == Northwest)
 	{
+		if ((startPosition.column + startPosition.row)%2==0){
+				return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
+	else 
+	{
+		return false;
+	}
+//int moveLengthColumn = endPosition.column - startPosition.column;
+	//int moveLengthRow = endPosition.row - startPosition.row;
+	// int moveLengthOutput = 255; //random number, damit man sehen kann ob die werte genommen werden
+	// bool moveLengthvalid = false; //kann man vll weglassen
+	// switch (moveLengthColumn)
+	// {
 
-		case 0:
-			switch (moveLengthRow)
-			{
-				case 0: moveLengthOutput = 0; moveLengthvalid = false; break;
-				case 1: moveLengthOutput = 1; moveLengthvalid = true; break;
-				case -1: moveLengthOutput = 1; moveLengthvalid = true; break;
-				default: moveLengthOutput = 3; moveLengthvalid = false; break;
-			}
-		break;
+	// 	case 0:
+	// 		switch (moveLengthRow)
+	// 		{
+	// 			case 0: moveLengthOutput = 0; moveLengthvalid = false; break;
+	// 			case 1: moveLengthOutput = 1; moveLengthvalid = true; break;
+	// 			case -1: moveLengthOutput = 1; moveLengthvalid = true; break;
+	// 			default: moveLengthOutput = 3; moveLengthvalid = false; break;
+	// 		}
+	// 	break;
 
-		case 1:
-			switch (moveLengthRow)
-			{
-				case 0: moveLengthOutput = 1; moveLengthvalid = true; break;
-				case 1: 
-					if((startPosition.column + startPosition.row)%2==0){
-						moveLengthOutput = 1; 
-						moveLengthvalid = true;
-					}
+	// 	case 1:
+	// 		switch (moveLengthRow)
+	// 		{
+	// 			case 0: moveLengthOutput = 1; moveLengthvalid = true; break;
+	// 			case 1: 
+	// 				if((startPosition.column + startPosition.row)%2==0){
+	// 					moveLengthOutput = 1; 
+	// 					moveLengthvalid = true;
+	// 				}
 						
-					else{
-						moveLengthOutput = 2; 
-						moveLengthvalid = false;
-					}
-				break;
-				case -1: 
-						if((startPosition.column + startPosition.row)%2==0){
-						 moveLengthOutput = 1; 
-						moveLengthvalid = true;
-						}
-					else{
-						moveLengthOutput = 2; 
-						moveLengthvalid = false;
-					}
-				break;
-				default: moveLengthOutput = 3; moveLengthvalid = false;
-			}
-		break;
+	// 				else{
+	// 					moveLengthOutput = 2; 
+	// 					moveLengthvalid = false;
+	// 				}
+	// 			break;
+	// 			case -1: 
+	// 					if((startPosition.column + startPosition.row)%2==0){
+	// 					 moveLengthOutput = 1; 
+	// 					moveLengthvalid = true;
+	// 					}
+	// 				else{
+	// 					moveLengthOutput = 2; 
+	// 					moveLengthvalid = false;
+	// 				}
+	// 			break;
+	// 			default: moveLengthOutput = 3; moveLengthvalid = false;
+	// 		}
+	// 	break;
 
-		case -1: 
-			switch (moveLengthRow)
-			{
-				case 0: moveLengthOutput = 1; moveLengthvalid = true;  break;
-				case 1: 
-					if((startPosition.column + startPosition.row)%2==0){
-						moveLengthOutput = 1; 
-						moveLengthvalid = true; 
-						}
-					else{
-						moveLengthOutput = 2;
-						moveLengthvalid = false;
-					}
-				break;
-				case -1: 
-						if((startPosition.column + startPosition.row)%2==0){
-							moveLengthOutput = 1; 
-							moveLengthvalid = true; 
-						}
-					else
-					{
-						moveLengthOutput = 2; 
-						moveLengthvalid = false;
-					}
-				break;
-				default: moveLengthOutput = 3; moveLengthvalid = false; break;
-			}
-		break;
+	// 	case -1: 
+	// 		switch (moveLengthRow)
+	// 		{
+	// 			case 0: moveLengthOutput = 1; moveLengthvalid = true;  break;
+	// 			case 1: 
+	// 				if((startPosition.column + startPosition.row)%2==0){
+	// 					moveLengthOutput = 1; 
+	// 					moveLengthvalid = true; 
+	// 					}
+	// 				else{
+	// 					moveLengthOutput = 2;
+	// 					moveLengthvalid = false;
+	// 				}
+	// 			break;
+	// 			case -1: 
+	// 					if((startPosition.column + startPosition.row)%2==0){
+	// 						moveLengthOutput = 1; 
+	// 						moveLengthvalid = true; 
+	// 					}
+	// 				else
+	// 				{
+	// 					moveLengthOutput = 2; 
+	// 					moveLengthvalid = false;
+	// 				}
+	// 			break;
+	// 			default: moveLengthOutput = 3; moveLengthvalid = false; break;
+	// 		}
+	// 	break;
 
-		default: moveLengthOutput = 3; moveLengthvalid = false; break;
-	}
+	// 	default: moveLengthOutput = 3; moveLengthvalid = false; break;
+	// }
 
-	switch (moveLengthOutput)
-	{
-		case 0: cout << "selbes feld" << endl; return false; break;
-		case 1: cout << "geht prinzipiell" << endl; break; //wäre am ende noch zu löschen
-		case 2: cout << "keine diagonale" << endl; return false; break;
-		case 3: cout << "zu weit" << endl; return false; break;
-		default: cout << "error, keine ahnung" << endl; return false; break;
-	}
+	// switch (moveLengthOutput)
+	// {
+	// 	case 0: cout << "selbes feld" << endl; return false; break;
+	// 	case 1: cout << "geht prinzipiell" << endl; break; //wäre am ende noch zu löschen
+	// 	case 2: cout << "keine diagonale" << endl; return false; break;
+	// 	case 3: cout << "zu weit" << endl; return false; break;
+	// 	default: cout << "error, keine ahnung" << endl; return false; break;
+	// }
 
-	if (moveLengthvalid==true){
-		direction.column= moveLengthColumn;
-		direction.row= moveLengthRow;
-	}
+	// if (moveLengthvalid==true){
+	// 	direction.column= moveLengthColumn;
+	// 	direction.row= moveLengthRow;
+	// }
 }
 
 bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
