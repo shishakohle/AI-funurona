@@ -16,10 +16,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <string>
 #include <sstream>
-#include <map>
+#include <regex>
 #include "game.h"
 
 using namespace std;
@@ -495,6 +494,8 @@ void Game::clearScreen(void)
 struct Useraction Game::getUseraction(void)
 {
 	struct Useraction useraction;
+	useraction.command = Invalid;
+	
 	string userinput;
 	
 	this->clearScreen();
@@ -519,22 +520,47 @@ struct Useraction Game::getUseraction(void)
 	
 	iss >> snippet;
 	
-	static const map <string, Command> commandMap // TODO declare somewhere else!
+	// recognize patterns in userinput through ECMAScript regular expressions	
+	
+	regex coordinateLiteral = regex("^[A-I][1-5]|[1-5][A-I]$");
+	regex directionLiteral  = regex("N|NE|E|SE|S|SW|W|NW");
+	
+	if( regex_match(snippet, coordinateLiteral) )
 	{
-		{ "SKIP",    Skip },
-		{ "MOVE",    Move },
-		{ "HELP",    Help },
-		{ "RESTART", Restart },
-		{ "QUIT",    Quit},
-		{ "EXIT",    Quit},
-		{ "BYE",     Quit}
-	};
-	auto iterator = commandMap.find(snippet);
-	iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
+		// useraction.start = string2position(snippet); // TODO
+		
+		iss >> snippet;
+		
+		if( regex_match(snippet, coordinateLiteral) )
+		{
+			// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
+			useraction.command = Move;
+		}
+		else if( regex_match(snippet, directionLiteral) )
+		{
+			// useraction.dir = string2direction(snippet); // TODO
+			useraction.command = Move;
+		}
+		else
+		{
+			useraction.command = Invalid;
+		}
+	}
+	else if( regex_match(snippet, directionLiteral) )
+	{
+		// useraction.dir = string2direction(snippet); // TODO
+		useraction.command = Move;
+	}	
+	else
+	{
+		// as it's no MOVE command, try to identify command on the map
+		auto iterator = commandMap.find(snippet);
+		iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
+	}
 	
 	if(useraction.command == Invalid)
 	{
-		cout << "\nUnknown command: " << userinput << "\nUse comannd \"help\" for a short manual." << endl;
+		cout << "\nUnknown command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
 		cout << "Press <ENTER> to try again." << flush;
 		getline(cin,userinput); // TODO: just some random string not used anymore
 	}
