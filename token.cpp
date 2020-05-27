@@ -75,9 +75,4 @@ bool Token::getGridBool()
 	return gridBool;
 }
 
-//TODO: set fehlt
-struct position Token::getPosition ()
-{
-	return pos;
-}
 

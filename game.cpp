@@ -108,7 +108,7 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	
 	meinSpielbrett.print();
 
-	//TO-DO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
+	//TO-DO: Unterscheidung ob erster Move oder erneut --> nur der schon bewegte Token darf weiter
 	
 	cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
 	
@@ -183,7 +183,27 @@ void Game::turn(void)
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
 	do
 	{
+			//test - capturingPossible
 			//capturingYes = capturingPossible();
+			struct position pos;
+			pos.row = 3;
+			pos.column = 4;
+			//updateGridToken(meinSpielbrett.getCell(pos).getToken(), pos);
+			checkIfCanCapture(-1, 0, meinSpielbrett.getCell(pos).getToken(), pos);
+
+			/*for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					struct position pos1;
+					pos1.row = row;
+					pos1.column = column;
+					//cout << cells[row][column].printStatus() << flush;
+					cout << meinSpielbrett.getCell(pos).getToken().getGridValue(pos1) << flush;
+				}
+				cout << endl;
+			}*/
+
 			lastPositions = move(lastPositions); //TODO Anna later: give as argument capturingYes
 			anotherMove = false;
 	}
@@ -352,11 +372,11 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 	}
 }
 
-//TO-DO: Anna is capturing of another token possible?
-void Game::checkIfCanCapture(int i, int j, Token t)
-{
-	struct position currentPosition = t.getPosition(); 
+//TO-DO: Anna add beenThere + areFieldsConnected
+//TO-DO Anna: remove tokenPosition --> DONE
 
+void Game::checkIfCanCapture(int i, int j, Token t, struct position currentPosition)
+{
 	//approach
 	struct position endPos;
 	endPos.row = currentPosition.row+i;
@@ -370,28 +390,48 @@ void Game::checkIfCanCapture(int i, int j, Token t)
 	neighbour2.row = endPos.row-(2*i); //endPosition = currentPosition + North
 	neighbour2.column = endPos.column-(2*j);
 
-	//TODO: include beenThere --> cant capture if already been there	
-	if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
-		//Token above from other team
-		if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
-		{
-			t.setGridValue(endPos,true);
-		}
-		else
-		{
-			t.setGridValue(endPos,false);
-		}
-	} 
-	else //Feld unbelegt
+	//struct direction dir1;
+
+	//move valid
+	//TODO: add isMoveLengthValid and check if cells are connected
+	if(freePosition(endPos)) //&& isMoveLengthValid(currentPosition, endPos, dir1)
 	{
-		if(positionInputValid(endPos))
+		cout << "move valid" << endl;
+		//TODO: include beenThere --> cant capture if already been there
+		//TODO: fields connected	
+		if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
+			//Token above from other team
+			if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
+			{
+				t.setGridValue(endPos,true);
+				cout << "kann schmeißen" << endl;
+			}
+			else
+			{
+				t.setGridValue(endPos,false);
+				cout << "kann nicht schmeißen" << endl;
+			}
+		} 
+		else //Feld unbelegt
 		{
-			t.setGridValue(endPos,false);
+			if(positionInputValid(endPos))
+			{
+				t.setGridValue(endPos,false);
+				cout << "kann nicht schmeißen - feld leer" << endl;
+			}
+			else
+			{
+				cout << "whatever" << endl;
+			}
 		}
+	}
+	else
+	{
+		cout << "move not valid" << endl;
 	}
 }
 
-void Game::updateGridToken(Token t) //bool
+void Game::updateGridToken(Token t, struct position currentPosition) //bool
 {
 	//set grid 0
 	for(int row=0; row<5; row++)
@@ -407,57 +447,30 @@ void Game::updateGridToken(Token t) //bool
 		cout << endl;
 	}
 
-	int i;
-	int j;
-
-	//set grid 1 where token could capture someone
-	//TO-DO: from current position
-	switch(i) //rows --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
+	int i[] = { -1, 0, 1 };
+	int j[] = { -1, 0, 1 };
+ 
+   // foreach loop
+   //set grid 1 where token could capture someone
+   	for (int a : i) // rows = a --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
 	{
-		case -1: //Token moves to North  
-			switch(j) //columns --> 0 = N, +1 = NO, -1 = NW
+		for (int b : j) // columns = b 
+		{
+			// row = -1, columns --> 0 = N, +1 = NO, -1 = NW 
+			// row = +1, columns --> 0 = S, +1 = SO, -1 = SW
+			// row = 0,  columns --> 1 = O, -1 = W
+
+			if(!(a==0 && b==0))
 			{
-				case -1:
-					checkIfCanCapture(i, j, t);
-				;
-
-				case 0:
-					checkIfCanCapture(i, j, t);
-				;
-
-				case 1:
-					checkIfCanCapture(i, j, t);
-				;
-			};
-
-		case +1: //Token moves to South  
-			switch(j) //columns --> 0 = S, +1 = SO, -1 = SW
-			{
-				case -1:
-					checkIfCanCapture(i, j, t);
-				;
-
-				case 0:
-					checkIfCanCapture(i, j, t);
-				;
-
-				case 1:
-					checkIfCanCapture(i, j, t);
-				;
-			};
-
-		case 0: //Token stay in row  
-			switch(j) //columns --> 1 = O, -1 = W
-			{
-				case -1:
-					checkIfCanCapture(i, j, t);
-				;
-
-				case 1:
-					checkIfCanCapture(i, j, t);
-				;
-			};
+				checkIfCanCapture(a, b, t, currentPosition);
+			}
+		}
 	}
+
+	//TODO: change i/j so that switch works! --> no iteration until now! --> for each??
+		// --> DONE
+
+	//TO-DO: from current position
 }
 
 //creates a grid with all cells marked where tokens are placed, that could possible capture someone
@@ -478,7 +491,7 @@ bool Game::capturingPossible()
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
 			{
-				updateGridToken(meinSpielbrett.getCell(pos).getToken());
+				updateGridToken(meinSpielbrett.getCell(pos).getToken(),pos);
 				//token from currentPlayer can capture someone
 				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true)
 				{

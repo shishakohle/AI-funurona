@@ -35,7 +35,7 @@ class Token
 		void setGridValue(struct position,bool); //TODO: set und get position & update it somewhere
 		bool getGridValue(struct position);
 		bool getGridBool(void);
-		struct position getPosition ();
+		
 	private:
 		enum Team team;
 		struct position pos;
