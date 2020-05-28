@@ -24,7 +24,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-enum Direction {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest};
 
 #endif
 
@@ -83,6 +83,7 @@ class Game
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
+		bool gridCapturing[5][9];
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
 		bool startPositionInputValid;
@@ -96,18 +97,25 @@ class Game
 		struct Useraction move(struct Useraction lastPositions);
 		//ZUG
 		void turn(void);
+		bool isMoveValid(struct position,  struct position, int direction, struct Useraction);
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
-		bool isMoveLengthValid(struct position, struct position, struct position);
-		bool isMoveDirectionValid(struct position, struct position,struct Useraction);
+		bool areFieldsConnected(struct position, int direction);
+		bool isMoveDirectionValid(struct Useraction, int direction);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
+		bool rightfulCapturing(struct position, struct position);
+		bool capturingPossible();
+		void checkIfCanCapture(int, int, Token);
+		void updateGridToken(Token);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
-		void captureToken(enum Direction, struct position);
+		struct position getNeighbour(struct position, Direction);
+		void capture(struct position, Direction, struct position, Direction);
+		void captureToken(struct Useraction);
 		void clearScreen(void);
 		struct Useraction getUseraction(void);
 		// TODO struct position string2position(string); // TODO: move this to public area of Class Board
