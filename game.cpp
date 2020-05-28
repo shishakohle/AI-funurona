@@ -757,12 +757,12 @@ struct Useraction Game::getUseraction(void)
 		
 		iss >> snippet;
 		
-		if( regex_match(snippet, coordinateLiteral) )
+		if( regex_match(snippet, coordinateLiteral) ) // user typed XY XY
 		{
 			// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
 			useraction.command = Move;
 		}
-		else if( regex_match(snippet, directionLiteral) )
+		else if( regex_match(snippet, directionLiteral) ) // user typed XY dir
 		{
 			// useraction.dir = string2direction(snippet); // TODO
 			useraction.command = Move;
@@ -772,12 +772,12 @@ struct Useraction Game::getUseraction(void)
 			useraction.command = Invalid;
 		}
 	}
-	else if( regex_match(snippet, directionLiteral) )
+	else if( regex_match(snippet, directionLiteral) ) // user typed dir
 	{
 		// useraction.dir = string2direction(snippet); // TODO
 		useraction.command = Move;
 	}	
-	else
+	else // user typed sth else
 	{
 		// as it's no MOVE command, try to identify command on the map
 		auto iterator = commandMap.find(snippet);

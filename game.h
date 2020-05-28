@@ -57,10 +57,8 @@ static const map <string, Command> commandMap
 
 struct Useraction
 {
-	struct position end;       // TODO: end       will not be used anymore.
-	struct position	direction; // TODO: direction will not be used anymore.
-
-	struct position  start;	
+	struct position  start;
+	struct position  end;
 	enum   Direction dir;
 	enum   Command   command;
 };
@@ -119,7 +117,7 @@ class Game
 		void clearScreen(void);
 		struct Useraction getUseraction(void);
 		// TODO struct position string2position(string); // TODO: move this to public area of Class Board
-		// TODO struct Direction string2direction(string); // TODO: move this to public area of this Class Game
+		// TODO enum Direction string2direction(struct position, struct position); // TODO: move this to public area of this Class Game
 };
 
 #endif
