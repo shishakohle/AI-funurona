@@ -107,8 +107,8 @@ class Game
 		void gameOver(void);
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
-		void checkIfCanCapture(int, int, Token);
-		void updateGridToken(Token);
+		void checkIfCanCapture(int, int, Token, struct position);
+		void updateGridToken(Token, struct position);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
 		struct position getNeighbour(struct position, Direction);
