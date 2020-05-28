@@ -14,12 +14,17 @@
  * colors: black -> # , white -> O , empty cell -> .
  */
 
+#include <iostream>
 #include <fstream>
+#include <string>
+#include <sstream>
+#include <regex>
 #include "game.h"
+
+using namespace std;
 
 Game::Game(void)
 {
-	//this->currentTeam = WHITE;
 	this->currentPlayer = &playerWhite;
 	this->gameWon = false;
 	this->playerWhite.setTeam(WHITE);
@@ -74,7 +79,7 @@ void Game::start() // TODO: private??
 	cout << "Team WHITE (hence "<< this->playerWhite.getName() << "-" << Token::asChar(WHITE) <<") will begin." << endl; // TODO manage inconsistencies with constructor
 	cout << "Press <ENTER> to start the game." << flush;
 	getline(cin,playerName);
-	
+  
 	while(!gameWon)
 	{
 		anotherMove = true; //(re)move later
@@ -91,7 +96,7 @@ void Game::start() // TODO: private??
 		}
 
 	}
-	cout << "The game is over. "<< this->winner->getName() <<"you have won. Congratulations!" << endl;
+	cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
 }
 
 	
@@ -104,19 +109,43 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	enum Direction dir;
 	do {
 
-	this->clearScreen();
-	
-	meinSpielbrett.print();
 
-	//TO-DO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
+
+	// TODO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
 	
-	cout << "\nPlayer " << this->currentPlayer->getName() << "-" << Token::asChar( this->currentPlayer->getTeam() ) << ": " << "Make your turn!\n" << endl;
-	
+	/*
 	cout << "Choose startpostion" << endl;
 	startPosition = chooseToken();
 		cout << "\tStartposition COL: " << startPosition.column << endl;
 		cout << "\tStartposition ROW: " << startPosition.row << endl;
 
+	// Ist auf dieser Position ein Token von dem Team?
+	isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
+
+	cout << "Choose endposition:" << endl;
+	endPosition = chooseToken();
+		cout << "\tEndposition COL: " << endPosition.column << endl;
+		cout << "\tEndposition ROW: " << endPosition.row << endl;
+	*/
+	
+	struct Useraction useraction;  // TODO: maybe wanna declare somewhere else?
+	
+	do
+	{
+		useraction = getUseraction();
+	}
+	while(useraction.command == Invalid);
+	
+		switch(useraction.command)
+		{
+			//case Invalid: break;
+			case Skip:    break;
+			case Move:    break;
+			case Help:    break;
+			case Restart: break;
+			case Quit:    break;
+			// default: break;
+		}
 
 
 	//TO-DO: LUKAS
@@ -452,7 +481,7 @@ bool Game::capturingPossible()
 	return var;
 }
 
-struct position Game::chooseToken(void)
+struct position Game::chooseToken(void) // TODO abolish
 {
 	int row, col;
 	char column;
@@ -686,5 +715,82 @@ void Game::clearScreen(void)
 	int i = 0;
 	while(i++ < LINES_TO_CLEAR)
 		cout << endl;
+}
+
+struct Useraction Game::getUseraction(void)
+{
+	struct Useraction useraction;
+	useraction.command = Invalid;
+	
+	string userinput;
+	
+	this->clearScreen();
+	this->meinSpielbrett.print();
+	cout << endl;
+		
+	do
+	{
+		cout << " [" << Token::asChar( this->currentPlayer->getTeam() ) << "] " << this->currentPlayer->getName() << ", " << "make your turn! > " << flush;	
+		getline(cin, userinput);
+	}
+	while(userinput=="");
+	
+	// use toupper() in a Lambda expression to transform userinput to upper case
+	std::for_each( userinput.begin(), userinput.end(),
+		// pass each character by reference to callback
+		[](char &c){ c = ::toupper(c); }
+	);
+	
+	string snippet;
+	istringstream iss(userinput);
+	
+	iss >> snippet;
+	
+	// recognize patterns in userinput through ECMAScript regular expressions	
+	
+	regex coordinateLiteral = regex("^[A-I][1-5]|[1-5][A-I]$");
+	regex directionLiteral  = regex("N|NE|E|SE|S|SW|W|NW");
+	
+	if( regex_match(snippet, coordinateLiteral) )
+	{
+		// useraction.start = string2position(snippet); // TODO
+		
+		iss >> snippet;
+		
+		if( regex_match(snippet, coordinateLiteral) )
+		{
+			// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
+			useraction.command = Move;
+		}
+		else if( regex_match(snippet, directionLiteral) )
+		{
+			// useraction.dir = string2direction(snippet); // TODO
+			useraction.command = Move;
+		}
+		else
+		{
+			useraction.command = Invalid;
+		}
+	}
+	else if( regex_match(snippet, directionLiteral) )
+	{
+		// useraction.dir = string2direction(snippet); // TODO
+		useraction.command = Move;
+	}	
+	else
+	{
+		// as it's no MOVE command, try to identify command on the map
+		auto iterator = commandMap.find(snippet);
+		iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
+	}
+	
+	if(useraction.command == Invalid)
+	{
+		cout << "\nUnknown command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
+		cout << "Press <ENTER> to try again." << flush;
+		getline(cin,userinput); // TODO: just some random string not used anymore
+	}
+	
+	return useraction;
 }
 

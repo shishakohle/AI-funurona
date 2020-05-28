@@ -16,8 +16,7 @@
 
 #define LINES_TO_CLEAR 50
 
-#include <iostream>
-	using namespace std;
+#include <map>
 	
 #include "board.h"
 #include "player.h"
@@ -32,14 +31,26 @@ enum Direction {North, East, South, West, Northeast, Southeast, Southwest, North
 #ifndef COMMAND_H
 #define COMMAND_H
 
-enum Command {Invalid, Skip, Move, Help, Restart, Quit};
+enum Command {
+	Invalid,
+	Skip,
+	Move,
+	Help,
+	Restart,
+	Quit
+};
+
+static const map <string, Command> commandMap
+{
+	{ "SKIP",    Skip },
+	{ "HELP",    Help },
+	{ "RESTART", Restart },
+	{ "QUIT",    Quit},
+	{ "EXIT",    Quit},
+	{ "BYE",     Quit}
+};
 
 #endif
-
-#ifndef GAME_H
-#define GAME_H
-
-
 
 #ifndef USERACTION_H
 #define USERACTION_H
@@ -56,6 +67,8 @@ struct Useraction
 
 #endif
 
+#ifndef GAME_H
+#define GAME_H
 
 class Game
 {
@@ -64,7 +77,6 @@ class Game
 		void start(); // TODO: private??
 		
 	private:
-		//enum Team currentTeam;
 		Player *currentPlayer;
 		bool gameWon;
 		Player *winner;
@@ -105,6 +117,9 @@ class Game
 		void capture(struct position, Direction, struct position, Direction);
 		void captureToken(struct Useraction);
 		void clearScreen(void);
+		struct Useraction getUseraction(void);
+		// TODO struct position string2position(string); // TODO: move this to public area of Class Board
+		// TODO struct Direction string2direction(string); // TODO: move this to public area of this Class Game
 };
 
 #endif
