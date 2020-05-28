@@ -104,38 +104,19 @@ void Game::start() // TODO: private??
 struct Useraction Game::move(struct Useraction lastPositions)
 {
 	// clear screen
-	struct position startPosition;
+	/*struct position startPosition;
 	struct position endPosition;
-	enum Direction dir;
-	do {
-
-
-
-	// TODO: Abfrage ob Spielfelder existieren (zB 9/9 = false)
-	
-	/*
-	cout << "Choose startpostion" << endl;
-	startPosition = chooseToken();
-		cout << "\tStartposition COL: " << startPosition.column << endl;
-		cout << "\tStartposition ROW: " << startPosition.row << endl;
-
-	// Ist auf dieser Position ein Token von dem Team?
-	isStartTokenFromCurrentTeam = isTokenFromCurrentTeam(startPosition);
-
-	cout << "Choose endposition:" << endl;
-	endPosition = chooseToken();
-		cout << "\tEndposition COL: " << endPosition.column << endl;
-		cout << "\tEndposition ROW: " << endPosition.row << endl;
-	*/
-	
-	struct Useraction useraction;  // TODO: maybe wanna declare somewhere else?
-	
+	enum Direction dir;*/
 	do
 	{
-		useraction = getUseraction();
-	}
-	while(useraction.command == Invalid);
-	
+		struct Useraction useraction;  // TODO: maybe wanna declare somewhere else?
+		
+		do
+		{
+			useraction = getUseraction();
+		}
+		while(useraction.command == Invalid);
+		
 		switch(useraction.command)
 		{
 			//case Invalid: break;
@@ -152,12 +133,13 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
 	//TODO Anna: add capturingRight
-	}while(!isMoveValid(startPosition, endPosition, dir, lastPositions));
-		//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
-	moveToken(startPosition, endPosition);
+	}while(true);
+	//while(!isMoveValid(startPosition, endPosition, dir, lastPositions));
+	//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
+	/*moveToken(startPosition, endPosition);
 	lastPositions.start = startPosition;
-	lastPositions.dir = dir;
-	meinSpielbrett.print();
+	lastPositions.dir = dir;*/
+	//meinSpielbrett.print();
 }
 
 // RUNDE
@@ -749,26 +731,28 @@ struct Useraction Game::getUseraction(void)
 	// recognize patterns in userinput through ECMAScript regular expressions	
 	
 	regex coordinateLiteral = regex("^[A-I][1-5]|[1-5][A-I]$");
-	regex directionLiteral  = regex("N|NE|E|SE|S|SW|W|NW");
+	regex directionLiteral  = regex("^N|NE|E|SE|S|SW|W|NW$");
 	
 	if( regex_match(snippet, coordinateLiteral) )
 	{
 		// useraction.start = string2position(snippet); // TODO
 		
-		iss >> snippet;
-		
-		if( regex_match(snippet, coordinateLiteral) ) // user typed XY XY
+		if (iss >> snippet)
 		{
-			// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
-			useraction.command = Move;
-		}
-		else if( regex_match(snippet, directionLiteral) ) // user typed XY dir
-		{
-			// useraction.dir = string2direction(snippet); // TODO
-			useraction.command = Move;
+			if( regex_match(snippet, coordinateLiteral) ) // user typed XY XY
+			{
+				// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
+				useraction.command = Move;
+			}
+			else if( regex_match(snippet, directionLiteral) ) // user typed XY dir
+			{
+				// useraction.dir = string2direction(snippet); // TODO
+				useraction.command = Move;
+			}
 		}
 		else
 		{
+
 			useraction.command = Invalid;
 		}
 	}
