@@ -144,26 +144,33 @@ struct Useraction Game::move(struct Useraction lastPositions)
 
 bool Game::isMoveValid(struct position startPosition, struct position endPosition, int direction, struct Useraction lastaction){
 	// Ist auf dieser Position ein Token von dem Team?
+
+	bool returnvalue = true;
+
 	if(!isTokenFromCurrentTeam(startPosition)){
-		return false;
+		returnvalue = false;
+		cout << "Token is not from current team" << endl;
 	}
 
-	cout << "Choose endposition:" << endl;
-	endPosition = chooseToken();
-		cout << "\tEndposition COL: " << endPosition.column << endl;
-		cout << "\tEndposition ROW: " << endPosition.row << endl;
+	// cout << "Choose endposition:" << endl;
+	// endPosition = chooseToken();
+	// 	cout << "\tEndposition COL: " << endPosition.column << endl;
+	// 	cout << "\tEndposition ROW: " << endPosition.row << endl;
 
 	if(!positionInputValid(startPosition)) {
-		return false;
+		returnvalue = false;
+		cout << "startposition input invalid" << endl;
 	}
-	if (!positionInputValid(endPosition)){
-		return false;
+	if (!positionInputValid(endPosition)){ //wird das noch gebraucht?
+		returnvalue = false;
+		cout << "endpositioninput invalid" << endl;
 	}
 
 	//war in diesem Zug schon mal auf diesem spielfeld?
 		
 	if(!beenThere(endPosition)){
-		return false;
+		returnvalue = false;
+		cout << "you have already been to this field in your turn" << endl;
 	}
 	//if beenThereVar = false --> dont move token --> ask again
 	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
@@ -183,19 +190,22 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	// - Ist die Position eine freie Position?
 	if(!freePosition(endPosition))
 	{
-		return false;
+		returnvalue = false;
+		cout << "this position is taken by another token" << endl;
 	}
 	
-	// - ist dieses feld erreichbar? (zugweite 1, felder müssen verbunden sein)
+	// - ist dieses feld erreichbar? (felder müssen verbunden sein)
 	if(!areFieldsConnected(startPosition, direction)) {
-		return false;
+		returnvalue = false;
+		cout << "fields are not connected" << endl;
 	}
 
 	if (!isMoveDirectionValid(lastaction, direction)){
-		return false;
+		returnvalue = false;
+		cout << "your last move was in this direction" << endl;
 	}
 
-	return true;
+	return returnvalue;
 
 }
 
@@ -313,7 +323,7 @@ bool Game::areFieldsConnected(struct position startPosition, int direction)
 	}
 	else 
 	{
-		return false;
+		return true;
 	}
 
 }
@@ -724,7 +734,7 @@ struct Useraction Game::getUseraction(void)
 		
 	do
 	{
-		cout << " [" << Token::asChar( this->currentPlayer->getTeam() ) << "] " << this->currentPlayer->getName() << ", " << "make your turn! > " << flush;	
+		cout << " [" << Token::asChar( this->currentPlayer->getTeam() ) << "] " << this->currentPlayer->getName() << ", " << "make your turn! (example A3 SW) > " << flush;	
 		getline(cin, userinput);
 	}
 	while(userinput=="");
