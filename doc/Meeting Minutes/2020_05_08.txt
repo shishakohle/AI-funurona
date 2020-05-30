@@ -1,0 +1,38 @@
+08/05/2020 - 15:30
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: Flowchart, mit Lukas: Peer-to-Peer (3) --> DONE, Flowchart in progress
+	- Kerstin: Zielfeld frei (1), Startfled mit Token CurrentPlayer (2) --> DONE
+	- Lukas: nicht 2x hintereinander pro Richtung(6) --> Until next time
+	- Anna:current Player change after each turn, (5) nicht 2x auf selbes Feld (Matrix kopieren, makieren, wo war ich schon) --> DONE
+
+During Meeting:
+> Change user input from ASCII to int, calculate user index (Kerstin)
+> Update of Tasks
+> Seperate Classes in different files --> new branch
+> Goal: 
+	- Regeln kombinieren und insgesamte Abfrage ob Move/Turn valid (Diese Regeln/Bedingungen in einen Zug pack: boolean validerZug(); --> Aufruf für einzelne Regeln) (E)
+	- Methode move token (C)
+	- Capture token --> ja/nein/welche? --> delete captured tokens, empty cell, subtract from numberTokens (leftTokens) (A)
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw (D)
+	- Erkennung ob gegnerische Tokens schmeißbar sind --> another move (+ Abfrage) --> 4) Zug muss jemanden schmeißen, wenn generell möglich, ansosnten "normales" ziehen möglich (F)
+	- Schauen ob Eingabe von Start- und Zielfeld gültig (im Board Bereich, 5x9) (B)
+> 7) Beim ersten Zug --> schmeißen = Pflicht, dann weitere Züge optional:
+		- Player darf weiterfahren, wenn er mit darauffolgenden Zug wieder jemanden schmeißt --> dann kein Zug ohne schmeißen möglich
+		- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+
+Next Goals/Tasks:
+	- Ingo: class Cell setToken = Zeigerarithmetik?, continue flowchart, make und header file
+	- Kerstin: (A), (B)
+	- Lukas: nicht 2x hintereinander pro Richtung (6), (E)
+	- Anna: (C), (F)
+
+Later to do:
+	- Style of enum team color in cout 
+	- (D) --> warten bis (A) fertig
+
+Next Meeting: Fr. 15.05, 15 Uhr
+
+

@@ -1,0 +1,26 @@
+28/04/2020 - 15:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Aufgaben bis heute:
+> Regeln vertraut machen, spielen und Strategien herausschreiben (https://de.y8.com/games/fanorona)
+> C++ vertraut machen (Klassen, Funktionen etc.)
+> Github vertraut machen
+
+During Meeting:
+> fixed Anna's include-path-problem in VS Code
+> joint programming
+> decided on object-oriented programming
+	- class board
+	- class token
+	- class cell
+> First Goal: manage to get a board with initial state
+	- set cells with token with specific color
+	- create grid plus coordinates
+> Next Goals:
+	- choose token and make move
+
+
+Nächstes Meeting: Fr. 01.05, 15 Uhr
+> Tic Tac Toe Example (Mehnen) vertraut machen
+
