@@ -30,8 +30,6 @@ class Player
 		// getter for player's name
 		string getName(void);
 		enum Team getTeam(void);
-		int getLeftTokens(void);
-		// get player's token // TODO: needed?
 		char getToken(void);
 	private:
 		string name;

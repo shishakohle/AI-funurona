@@ -89,3 +89,26 @@ void Board::emptyCell(struct position position)
 	cells[position.row][position.column].setOccupied(false); 
 }
 
+void Board::updateLeftTokens(){
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			if(cells[row][column].getToken().getTeam() == BLACK){
+				tokensLeftBlack++;
+			}
+			else if(cells[row][column].getToken().getTeam() == WHITE){
+				tokensLeftWhite++;
+			}
+		}
+	}
+}
+
+int Board::getLeftTokensBlack(){
+	return tokensLeftBlack;
+}
+
+int Board::getLeftTokensWhite(){
+	return tokensLeftWhite;
+}
+

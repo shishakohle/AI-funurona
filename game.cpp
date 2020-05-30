@@ -516,8 +516,8 @@ bool Game::positionInputValid(struct position position)
 //check if game is over and who is winner
 void Game::gameOver(void)
 {
-	if(this->playerWhite.getLeftTokens() == 0 || this->playerBlack.getLeftTokens() == 0) //TO-DO: when player captures stones - subtract amount form total count
-	{
+
+	if(meinSpielbrett.getLeftTokensBlack() == 0 || meinSpielbrett.getLeftTokensWhite() == 0 ){
 		gameWon = true;
 		this->winner = currentPlayer;
 	}
@@ -646,6 +646,7 @@ void Game::capture(struct position startNeighbour, Direction startNeighbourDir, 
                 }
             }
         cout << "Number of deleted tokens: " << capturedTokens << endl;
+		meinSpielbrett.updateLeftTokens();
 }
 
 

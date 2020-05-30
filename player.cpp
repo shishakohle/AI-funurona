@@ -43,11 +43,6 @@ enum Team Player::getTeam(void)
 	return this->team;
 }
 
-int Player::getLeftTokens(void)
-{
-	return this->tokensLeft;
-}
-
 // get player's token // TODO: needed?
 char Player::getToken(void)
 {

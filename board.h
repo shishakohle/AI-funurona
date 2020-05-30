@@ -17,6 +17,8 @@ class Board
 {
 	private:
 		Cell cells[5][9];
+		int tokensLeftWhite = 0;
+		int tokensLeftBlack = 0;
 	
 	public:
 		void init(void);
@@ -24,6 +26,9 @@ class Board
 		Cell getCell(struct position);
 		void setTokenOnCell(struct position, Token);
 		void emptyCell(struct position);
+		void updateLeftTokens();
+		int getLeftTokensWhite();
+		int getLeftTokensBlack();
 };
 
 #endif
