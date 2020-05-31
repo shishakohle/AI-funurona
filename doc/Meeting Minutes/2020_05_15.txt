@@ -1,0 +1,34 @@
+15/05/2020 - 15:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: class Cell setToken = Zeigerarithmetik?, continue flowchart, make und header file --> Flowchart gepushed, Rest muss noch gemacht werden
+	- Kerstin: (A), (B) --> Zelle existiert (A) = DONE; B follows
+	- Lukas: nicht 2x hintereinander pro Richtung (6), (E) --> ruleset DONE, 2x hintereinander missing
+	- Anna: (C), (F) --> moveToken (C) = DONE, F still missing
+
+During Meeting:
+> Update of Tasks
+> Goals: 
+	- continue tasks from last time
+
+Next Goals/Tasks:
+	- Ingo: class Cell setToken = Zeigerarithmetik?, continue flowchart, make und header file
+	- Kerstin: (A) zu boolean um, (B)
+	- Lukas: nicht 2x hintereinander pro Richtung (6), adds comments, checks do-while in turn (ruleset)
+	- Anna: (F)
+
+Still to do:
+	- Style of enum team color in cout 
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw (D) --> warten bis (A) fertig
+	- 7) Beim ersten Zug --> schmeißen = Pflicht, dann weitere Züge optional:
+		- Player darf weiterfahren, wenn er mit darauffolgenden Zug wieder jemanden schmeißt --> dann kein Zug ohne schmeißen möglich
+		- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+	- Capture token --> ja/nein/welche? --> delete captured tokens, empty cell, subtract from numberTokens (leftTokens) (A)
+	- Erkennung ob gegnerische Tokens schmeißbar sind --> another move (+ Abfrage) --> 4) Zug muss jemanden schmeißen, wenn generell möglich, ansosnten "normales" ziehen möglich (F)
+	- Schauen ob Eingabe von Start- und Zielfeld gültig (im Board Bereich, 5x9) (B)
+
+Next Meeting: Mo. 18.05, 16 Uhr
+
+

@@ -1,0 +1,37 @@
+24/04/2020 - 16:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Aufgaben bis heute:
+> Regeln vertraut machen
+> C++ vertraut machen (Klassen, Funktionen etc.)
+
+Mehnen's Tips:
+> play the real game several times - agains a human beeing
+> find a strategy, on how to play the game
+> write strategies down as easy text - no programming of mathmatical formulations at all  - as simple as possible
+> formalize these ideas vaguely - think about a heuristik / metric e.g. on how good the move or situation is
+> try to start to modify the given example codes (e.g. TIC-TAC-TOE)
+> try to do one problem after another - don't try to solve several sub-probems in parallel
+> leave out the "special cases" in the beginning ... these will follow later automatically.
+
+Github:
+> essential git commands (Kerstin)
+	- git pull origin branchname =update branch to latest version (important beforepushing something!)
+	- git status = see which files you changed
+	- git checkout branchname= change to an existing branch
+	- git checkout -b”new branchname”= create and change to a new branch
+	- git add filepath+name= stage your changed files you want to push
+	- git commit -m”commitMessage”= also needed before pushing + add some comment what you did
+	- git push origin branchname= finally push your changes to the branch
+> aufteilen in Branches ("Versionen")
+
+Visual Studio Code
+> verwenden für Programmieren
+
+Nächstes Meeting: Di. 28.04, 15 Uhr
+> Regeln vertraut machen, spielen und Strategien herausschreiben (https://de.y8.com/games/fanorona)
+> C++ vertraut machen (Klassen, Funktionen etc.)
+> Github vertraut machen
+
+
