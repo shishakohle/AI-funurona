@@ -227,26 +227,11 @@ void Game::turn(void)
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
 	do
 	{
-			//test - capturingPossible
+			
 			//capturingYes = capturingPossible();
-			struct position pos;
-			pos.row = 3;
-			pos.column = 5;
-			struct position pos6;
-			pos6.row = 2;
-			pos6.column = 4;
-			struct position pos5;
-			pos5.row = 2;
-			pos5.column = 6;
-			//checkIfCanCapture(-1, -1, meinSpielbrett.getCell(pos).getToken(), pos);
-			//checkIfCanCapture(-1, 1, meinSpielbrett.getCell(pos).getToken(), pos);
-			//cout<<meinSpielbrett.getCell(pos).getToken().getGridValue(pos5)<<endl;
-			//cout<<meinSpielbrett.getCell(pos).getToken().getGridValue(pos6)<<endl;
 
-			//checkIfCanCapture(-1, 0, meinSpielbrett.getCell(pos).getToken(), pos);
-			//struct Grid tempGrid = updateGridToken(pos);
+			//test - capturingPossible			
 			bool temp = capturingPossible();
-			//cout << meinSpielbrett.getCell(pos).getToken().getGridValue(pos6) << endl;
 			for(int row=0; row<5; row++)
 			{
 				for(int column=0; column<9; column++)
@@ -257,7 +242,6 @@ void Game::turn(void)
 					struct position pos;
 					pos.row = 3;
 					pos.column = 5;
-					//cout << cells[row][column].printStatus() << flush;
 					cout << gridCapturing.gridPosition[pos1.row][pos1.column]<< flush;
 				}
 				cout << endl;
@@ -442,43 +426,35 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 		//move valid
 		if(freePosition(endPos) && areFieldsConnected(currentPosition, direction))
 		{
+			// the neigboring cell (of endPos) is filled with a token
 			if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
-				//Token above from other team
+				
 				if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
 				{
-					//t.setGridValue(endPos,true);
-					//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,true);
-					cout << "kann schmeißen" << endl;
-					return true;
+					return true; // captruing possible
 				}
 				else
 				{
-					//t.setGridValue(endPos,false);
-					//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
-					cout << "kann nicht schmeißen" << endl;
-					return false;
+					return false; // neighboring token from my own team
 				}
 			} 
-			else //Feld unbelegt
+			else //empty cell - no token to capture
 			{
-				cout << "kann nicht schmeißen - feld leer" << endl;
 				return false;
 			}
 		}
-		else
+		else //move not valis
 		{
-			cout << "move not valid" << endl;
 			return false;
 		}
 	}
 	else //can't move there because cell doesn't exist
 	{
-		cout<<"in here2"<<endl;
 		return false;
 	}
 }
 
-struct Grid Game::updateGridToken(struct position currentPosition) // Token t, 
+struct Grid Game::updateGridToken(struct position currentPosition) 
 {
 	struct Grid temporaryGrid;
 	//set grid 0
@@ -491,8 +467,6 @@ struct Grid Game::updateGridToken(struct position currentPosition) // Token t,
 			pos.row = row;
 
 			temporaryGrid.gridPosition[pos.row][pos.column] = false;
-			//t.setGridValue(pos,false);
-			//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(pos,false);
 		}
 		cout << endl;
 	}
@@ -513,14 +487,14 @@ struct Grid Game::updateGridToken(struct position currentPosition) // Token t,
 			if(!(a==0 && b==0))
 			{
 				bool valueTemp;
-				valueTemp = checkIfCanCapture(a, b, currentPosition); //meinSpielbrett.getCell(currentPosition).getToken()
+				valueTemp = checkIfCanCapture(a, b, currentPosition); 
 				struct position endPos;
 				endPos.row = currentPosition.row+a;
 				endPos.column = currentPosition.column+b;
 				temporaryGrid.gridPosition[endPos.row][endPos.column] = valueTemp;
 
 				//test
-				for(int row=0; row<5; row++)
+				/*for(int row=0; row<5; row++)
 				{
 					for(int column=0; column<9; column++)
 					{
@@ -532,17 +506,11 @@ struct Grid Game::updateGridToken(struct position currentPosition) // Token t,
 					cout << endl;
 				}
 				cout<<a<<endl;
-				cout<<b<<endl;
-			}
-			else
-			cout<<"das ist ein test"<<endl;
+				cout<<b<<endl;*/
+			} //if doenst work again - add else here
 		}
 	}
 	return temporaryGrid;
-	//TODO: change i/j so that switch works! --> no iteration until now! --> for each??
-		// --> DONE
-
-	//TO-DO: from current position
 }
 
 //creates a grid with all cells marked where tokens are placed, that could possible capture someone
@@ -563,14 +531,10 @@ bool Game::capturingPossible()
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
 			{
-				//this->currentToken = &meinSpielbrett.getCell(pos).getToken();
-				//return grid und dann set grid in token 
 				struct Grid temporaryGrid;
 				temporaryGrid = updateGridToken(pos);
-				cout<<pos.row<<endl;
-				cout<<pos.column<<endl;
 				
-				//test
+				//test --> TODO: replace with getter and setter from tokenGrid
 				bool boolTemp = false;
 				for(int row=0; row<5; row++)
 				{
@@ -582,8 +546,7 @@ bool Game::capturingPossible()
 						}
 					}
 				}
-				cout<<boolTemp<<endl;
-				//gridCapturing.gridPosition[row][column] = true;
+				
 				//token from currentPlayer can capture someone
 				if(boolTemp == true) // meinSpielbrett.getCell(pos).getToken().getGridBool()
 				{
