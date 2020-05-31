@@ -77,4 +77,13 @@ bool Token::getGridBool()
 	return gridBool;
 }
 
+void Token::setFieldOfView(struct Grid fieldOfView)
+{
+	this->fieldOfView = fieldOfView;
+}
+
+struct Grid Token::getFieldOfView(void)
+{
+	return this->fieldOfView;
+}
 

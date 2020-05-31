@@ -79,7 +79,7 @@ class Game
 		//Token *currentToken;
 		bool gameWon;
 		Player *winner;
-		Board meinSpielbrett;
+		Board meinSpielbrett; // TODO: rename
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
 		//bool gridCapturing[5][9];
@@ -121,6 +121,7 @@ class Game
 		struct Useraction getUseraction(void);
 		// TODO struct position string2position(string); // TODO: move this to public area of Class Board
 		// TODO enum Direction string2direction(struct position, struct position); // TODO: move this to public area of this Class Game
+		void setFieldOfView(struct position, struct Grid);
 };
 
 #endif

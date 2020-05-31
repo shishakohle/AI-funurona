@@ -920,3 +920,8 @@ struct Useraction Game::getUseraction(void)
 	return useraction;
 }
 
+void Game::setFieldOfView(struct position position, struct Grid fieldOfView)
+{
+	this->meinSpielbrett.setFieldOfView(position,fieldOfView);
+}
+

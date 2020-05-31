@@ -10,10 +10,10 @@ struct lastMoveDirection
 
 #endif
 
-#ifndef POSITION
-#define POSITION
+#ifndef POSITION_H
+#define POSITION_H
 
-struct position
+struct position // TODO: upper case!
 {
 	int column,row;
 };
@@ -45,6 +45,8 @@ class Token
 		void setGridValue(struct position,bool); //TODO: set und get position & update it somewhere
 		bool getGridValue(struct position);
 		bool getGridBool(void);
+		void setFieldOfView(struct Grid);
+		struct Grid getFieldOfView(void);
 		
 	private:
 		enum Team team;
