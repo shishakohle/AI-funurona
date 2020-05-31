@@ -8,10 +8,11 @@ class Cell
 	public:
 		void setToken(Token);
 		void setOccupied(bool);
-		bool getOccupied();
-		char printStatus();
-		Token getToken();
-		void deleteToken();
+		bool getOccupied(void);
+		char printStatus(void);
+		Token getToken(void);
+		void deleteToken(void);
+		void setFieldOfView(struct Grid fieldOfView);
 	private:
 		struct position;
 		Token token;

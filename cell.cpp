@@ -11,12 +11,12 @@ void Cell::setOccupied(bool flag)
 	isOccupied = flag;
 }
 
-bool Cell::getOccupied()
+bool Cell::getOccupied(void)
 {
 	return isOccupied;
 }
 
-char Cell::printStatus()
+char Cell::printStatus(void)
 {
 	char out = '.';
 	
@@ -33,13 +33,18 @@ char Cell::printStatus()
 	return out;
 }
 
-Token Cell::getToken()
+Token Cell::getToken(void)
 {
 	return token;
 }
 
-void Cell::deleteToken()
+void Cell::deleteToken(void)
 {
-	cout << "Token deleted" << flush;
+	cout << "Token deleted" << flush; // TODO... ?
+}
+
+void Cell::setFieldOfView(struct Grid fieldOfView)
+{
+	this->token.setFieldOfView(fieldOfView);
 }
 
