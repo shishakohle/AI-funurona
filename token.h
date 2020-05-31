@@ -20,6 +20,16 @@ struct position
 
 #endif
 
+#ifndef GRID_H
+#define GRID_H
+
+struct Grid
+{
+	bool gridPosition[5][9];
+};
+
+#endif
+
 #ifndef TOKEN_H
 #define TOKEN_H
 
@@ -39,8 +49,9 @@ class Token
 	private:
 		enum Team team;
 		struct lastMoveDirection lmd;
-		bool gridCapturingToken[5][9];
-		bool gridBool;
+		bool gridCapturingToken[5][9]; // TODO: abolish
+		struct Grid fieldOfView;
+		//bool gridBool; // TODO: needed? what for? ~ingo
 };
 
 #endif
