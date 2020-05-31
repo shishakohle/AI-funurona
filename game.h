@@ -65,6 +65,16 @@ struct Useraction
 
 #endif
 
+#ifndef GRID_H
+#define GRID_H
+
+struct Grid
+{
+	bool gridPosition[5][9];
+};
+
+#endif
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -82,7 +92,8 @@ class Game
 		Board meinSpielbrett;
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
-		bool gridCapturing[5][9];
+		//bool gridCapturing[5][9];
+		struct Grid gridCapturing;
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
 		bool startPositionInputValid;
@@ -109,8 +120,8 @@ class Game
 		int calculateDirection (struct position, struct position);
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
-		void checkIfCanCapture(int, int, Token, struct position);
-		void updateGridToken(Token, struct position);
+		bool checkIfCanCapture(int, int, struct position); // Token,
+		struct Grid updateGridToken(struct position);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
 		struct position getNeighbour(struct position, Direction);
