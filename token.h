@@ -38,9 +38,8 @@ class Token
 		
 	private:
 		enum Team team;
-		struct position pos;
 		struct lastMoveDirection lmd;
-		bool gridCapturing[5][9];
+		bool gridCapturingToken[5][9];
 		bool gridBool;
 };
 

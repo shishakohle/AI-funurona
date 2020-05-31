@@ -45,18 +45,20 @@ void Token::setGridValue(struct position pos, bool value)
 	if(value == true)
 	{
 		//can capture one if would move there)
-		gridCapturing[pos.row][pos.column] = 1;
+		this->gridCapturingToken[pos.row][pos.column] = true;
+		cout<<gridCapturingToken[pos.row][pos.column]<<endl;
 	}
 	else
 	{
 		//cant capture one if would move ther
-		gridCapturing[pos.row][pos.column] = 0;
+		this->gridCapturingToken[pos.row][pos.column] = false;
+		cout<<gridCapturingToken[pos.row][pos.column]<<endl;
 	}
 }
 
 bool Token::getGridValue(struct position pos)
 {
-	return gridCapturing[pos.row][pos.column];
+	return this->gridCapturingToken[pos.row][pos.column];
 }
 
 bool Token::getGridBool()
@@ -66,7 +68,7 @@ bool Token::getGridBool()
 	{
 		for(int column=0; column<9; column++)
 		{
-			if(gridCapturing[row][column] == 1)
+			if(gridCapturingToken[row][column] == 1)
 			{
 				gridBool = true;
 			}

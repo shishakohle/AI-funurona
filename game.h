@@ -76,6 +76,7 @@ class Game
 		
 	private:
 		Player *currentPlayer;
+		//Token *currentToken;
 		bool gameWon;
 		Player *winner;
 		Board meinSpielbrett;
@@ -105,6 +106,7 @@ class Game
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
 		void gameOver(void);
+		int calculateDirection (struct position, struct position);
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
 		void checkIfCanCapture(int, int, Token, struct position);
