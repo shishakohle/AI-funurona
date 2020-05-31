@@ -391,7 +391,9 @@ int Game::calculateDirection (struct position start, struct position end)
 
 bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
 {
-	if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && meinSpielbrett.getCell(endPosition).getToken().getGridValue(endPosition) == 1)
+	struct Grid gridTemp;
+	gridTemp = meinSpielbrett.getCell(endPosition).getToken().getFieldOfView();
+	if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && gridTemp.gridPosition[endPosition.row][endPosition.column] == 1)
 	{
 		return true;
 	}
@@ -492,21 +494,6 @@ struct Grid Game::updateGridToken(struct position currentPosition)
 				endPos.row = currentPosition.row+a;
 				endPos.column = currentPosition.column+b;
 				temporaryGrid.gridPosition[endPos.row][endPos.column] = valueTemp;
-
-				//test
-				/*for(int row=0; row<5; row++)
-				{
-					for(int column=0; column<9; column++)
-					{
-						struct position pos1;
-						pos1.row = row;
-						pos1.column = column;
-						cout << temporaryGrid.gridPosition[pos1.row][pos1.column] << flush;
-					}
-					cout << endl;
-				}
-				cout<<a<<endl;
-				cout<<b<<endl;*/
 			} //if doenst work again - add else here
 		}
 	}
@@ -533,22 +520,10 @@ bool Game::capturingPossible()
 			{
 				struct Grid temporaryGrid;
 				temporaryGrid = updateGridToken(pos);
-				
-				//test --> TODO: replace with getter and setter from tokenGrid
-				bool boolTemp = false;
-				for(int row=0; row<5; row++)
-				{
-					for(int column=0; column<9; column++)
-					{
-						if(temporaryGrid.gridPosition[row][column] == true)
-						{
-							boolTemp = true;
-						}
-					}
-				}
+				setFieldOfView(pos, temporaryGrid);
 				
 				//token from currentPlayer can capture someone
-				if(boolTemp == true) // meinSpielbrett.getCell(pos).getToken().getGridBool()
+				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true) // boolTemp
 				{
 					gridCapturing.gridPosition[row][column] = true;
 					var = true;
