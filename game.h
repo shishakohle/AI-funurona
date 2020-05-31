@@ -65,16 +65,6 @@ struct Useraction
 
 #endif
 
-#ifndef GRID_H
-#define GRID_H
-
-struct Grid
-{
-	bool gridPosition[5][9];
-};
-
-#endif
-
 #ifndef GAME_H
 #define GAME_H
 

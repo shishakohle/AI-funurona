@@ -63,7 +63,7 @@ bool Token::getGridValue(struct position pos)
 
 bool Token::getGridBool()
 {
-	gridBool = false;
+	bool gridBool = false;
 	for(int row=0; row<5; row++)
 	{
 		for(int column=0; column<9; column++)
