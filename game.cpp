@@ -244,9 +244,10 @@ void Game::turn(void)
 			//cout<<meinSpielbrett.getCell(pos).getToken().getGridValue(pos6)<<endl;
 
 			//checkIfCanCapture(-1, 0, meinSpielbrett.getCell(pos).getToken(), pos);
-			//updateGridToken(meinSpielbrett.getCell(pos).getToken(), pos);
+			//struct Grid tempGrid = updateGridToken(pos);
+			bool temp = capturingPossible();
 			//cout << meinSpielbrett.getCell(pos).getToken().getGridValue(pos6) << endl;
-			/*for(int row=0; row<5; row++)
+			for(int row=0; row<5; row++)
 			{
 				for(int column=0; column<9; column++)
 				{
@@ -257,11 +258,10 @@ void Game::turn(void)
 					pos.row = 3;
 					pos.column = 5;
 					//cout << cells[row][column].printStatus() << flush;
-					cout << meinSpielbrett.getCell(pos).getToken().getGridValue(pos1)<< flush;
-					cout << "hallo"<< flush;
+					cout << gridCapturing.gridPosition[pos1.row][pos1.column]<< flush;
 				}
 				cout << endl;
-			}*/
+			}
 
 			lastPositions = move(lastPositions); //TODO Anna later: give as argument capturingYes
 			anotherMove = false;
@@ -435,7 +435,7 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPosition) //To
 
 	//move valid
 	//TODO: fieldsConnected only diagonal --> add N/W/S/E
-	if(freePosition(endPos) && areFieldsConnected(currentPosition, direction))
+	if(freePosition(endPos) && areFieldsConnected(currentPosition, direction) && positionInputValid(endPos))
 	{
 		cout << "move valid" << endl;
 		//TODO: include beenThere --> cant capture if already been there
@@ -459,20 +459,10 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPosition) //To
 		} 
 		else //Feld unbelegt
 		{
-			if(positionInputValid(endPos))
-			{
-				//t.setGridValue(endPos,false);
-				//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
-				cout << "kann nicht schmeißen - feld leer" << endl;
-				return false;
-			}
-			else
-			{
-				cout << "whatever" << endl;
-				return false;
-				//t.setGridValue(endPos,false);
-				//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
-			}
+			//t.setGridValue(endPos,false);
+			//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
+			cout << "kann nicht schmeißen - feld leer" << endl;
+			return false;
 		}
 	}
 	else
@@ -537,6 +527,8 @@ struct Grid Game::updateGridToken(struct position currentPosition) // Token t,
 					}
 					cout << endl;
 				}
+				cout<<a<<endl;
+				cout<<b<<endl;
 			}
 			else
 			cout<<"das ist ein test"<<endl;
@@ -562,7 +554,7 @@ bool Game::capturingPossible()
 			pos.row = row;
 
 			//create a grid for token --> 1 = this token can capture someone, 0 --> token cant capture or from other team
-			gridCapturing.gridPosition[row][column] = 0;
+			gridCapturing.gridPosition[row][column] = false;
 			
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
@@ -571,27 +563,43 @@ bool Game::capturingPossible()
 				//return grid und dann set grid in token 
 				struct Grid temporaryGrid;
 				temporaryGrid = updateGridToken(pos);
-				//token from currentPlayer can capture someone
-				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true)
+				cout<<pos.row<<endl;
+				cout<<pos.column<<endl;
+				
+				//test
+				bool boolTemp = false;
+				for(int row=0; row<5; row++)
 				{
-					gridCapturing.gridPosition[row][column] = 1;
+					for(int column=0; column<9; column++)
+					{
+						if(temporaryGrid.gridPosition[row][column] == true)
+						{
+							boolTemp = true;
+						}
+					}
+				}
+				cout<<boolTemp<<endl;
+				//gridCapturing.gridPosition[row][column] = true;
+				//token from currentPlayer can capture someone
+				if(boolTemp == true) // meinSpielbrett.getCell(pos).getToken().getGridBool()
+				{
+					gridCapturing.gridPosition[row][column] = true;
 					var = true;
 				}
 
 				//token from currentPlayer but cant capture anyone
 				else
 				{
-					gridCapturing.gridPosition[row][column] = 0;	
+					gridCapturing.gridPosition[row][column] = false;	
 				}
 			}
 
 			//tokens are from other team
 			else
 			{
-				gridCapturing.gridPosition[row][column] = 0;
+				gridCapturing.gridPosition[row][column] = false;
 			}
 		}
-		cout << endl;
 	}
 	return var;
 }
