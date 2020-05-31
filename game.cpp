@@ -345,10 +345,11 @@ bool Game::areFieldsConnected(struct position startPosition, int direction)
 
 int Game::calculateDirection (struct position start, struct position end)
 {
+	//  0	  1		 2		3		4		  5			 6			7
 	//North, East, South, West, Northeast, Southeast, Southwest, Northwest
 	int row = end.row - start.row;
 	int column = end.column - start.column;
-	int direction;
+	int direction = 0; //Attention: return North if same positions are entered
 
 	switch(row) //rows --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
 	{
@@ -356,15 +357,15 @@ int Game::calculateDirection (struct position start, struct position end)
 			switch(column) //columns --> 0 = N, +1 = NO, -1 = NW
 			{
 				case -1:
-					return direction = 7;
+					direction = 7;
 				; break;
 
 				case 0:
-					return direction = 0;
+					direction = 0;
 				; break;
 
 				case 1:
-					return direction = 4;
+					direction = 4;
 				; break;
 			} break;
 
@@ -372,15 +373,15 @@ int Game::calculateDirection (struct position start, struct position end)
 			switch(column) //columns --> 0 = S, +1 = SO, -1 = SW
 			{
 				case -1:
-					return direction = 6;
+					direction = 6;
 				; break;
 
 				case 0:
-					return direction = 2;
+					direction = 2;
 				; break;
 
 				case 1:
-					return direction = 5;
+					direction = 5;
 				; break;
 			} break;
 
@@ -388,16 +389,19 @@ int Game::calculateDirection (struct position start, struct position end)
 			switch(column) //columns --> 1 = O, -1 = W
 			{
 				case -1:
-					return direction = 3;
+					direction = 3;
 				; break;
 
 				case 1:
-					return direction = 1;
+					direction = 1;
+				; break;
+
+				case 0: //attention: stays - shouldnt give direcction
+					direction = 0;
 				; break;
 			} break;
 		//TODO?: need to return smtgh when 0-0 --> if yes: what?
 	}
-	cout<<direction<<endl;
 	return direction;
 }
 
@@ -413,64 +417,64 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 	}
 }
 
-//TO-DO: Anna add beenThere + areFieldsConnected
-//TO-DO Anna: remove tokenPosition --> DONE
+//TO-DO: Anna add beenThere 
 
-bool Game::checkIfCanCapture(int i, int j, struct position currentPosition) //Token t,
+//checks if a token moved in a certain direction can capture someone
+bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 {
 	//approach
 	struct position endPos;
 	endPos.row = currentPosition.row+i;
 	endPos.column = currentPosition.column+j;
-	struct position neighbour;			//TODO: CHANGE ALL
-	neighbour.row = endPos.row+i; //endPosition = currentPosition + North
+	struct position neighbour;			
+	neighbour.row = endPos.row+i; 
 	neighbour.column = endPos.column+j;
 
 	//widthdraw
-	struct position neighbour2;			//TODO: CHANGE ALL
-	neighbour2.row = endPos.row-(2*i); //endPosition = currentPosition + North
+	struct position neighbour2;			
+	neighbour2.row = endPos.row-(2*i); 
 	neighbour2.column = endPos.column-(2*j);
 
 	int direction = calculateDirection(currentPosition, endPos);
 
-	//move valid
-	//TODO: fieldsConnected only diagonal --> add N/W/S/E
-	if(freePosition(endPos) && areFieldsConnected(currentPosition, direction) && positionInputValid(endPos))
+	if(positionInputValid(endPos)) // endPosition exists
 	{
-		cout << "move valid" << endl;
-		//TODO: include beenThere --> cant capture if already been there
-		//TODO: fields connected	
-		if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
-			//Token above from other team
-			if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
+		//move valid
+		if(freePosition(endPos) && areFieldsConnected(currentPosition, direction))
+		{
+			if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
+				//Token above from other team
+				if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
+				{
+					//t.setGridValue(endPos,true);
+					//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,true);
+					cout << "kann schmeißen" << endl;
+					return true;
+				}
+				else
+				{
+					//t.setGridValue(endPos,false);
+					//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
+					cout << "kann nicht schmeißen" << endl;
+					return false;
+				}
+			} 
+			else //Feld unbelegt
 			{
-				//t.setGridValue(endPos,true);
-				//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,true);
-				cout << "kann schmeißen" << endl;
-				return true;
-			}
-			else
-			{
-				//t.setGridValue(endPos,false);
-				//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
-				cout << "kann nicht schmeißen" << endl;
+				cout << "kann nicht schmeißen - feld leer" << endl;
 				return false;
 			}
-		} 
-		else //Feld unbelegt
+		}
+		else
 		{
-			//t.setGridValue(endPos,false);
-			//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
-			cout << "kann nicht schmeißen - feld leer" << endl;
+			cout << "move not valid" << endl;
 			return false;
 		}
 	}
-	else
+	else //can't move there because cell doesn't exist
 	{
-		cout << "move not valid" << endl;
+		cout<<"in here2"<<endl;
 		return false;
-		//t.setGridValue(endPos,false);
-		//meinSpielbrett.getCell(currentPosition).getToken().setGridValue(endPos,false);
 	}
 }
 
@@ -625,11 +629,12 @@ struct position Game::chooseToken(void) // TODO abolish
 
 bool Game::positionInputValid(struct position position)
 {
-	if(position.row >= 0 && position.row <= 5 && position.column >= 0 && position.column <= 8){
+	if(position.row >= 0 && position.row <= 4 && position.column >= 0 && position.column <= 8){
  		return true;
- 	} else {
-		 return false;
-	 }
+ 	} else 
+	{
+		return false;
+	}
 }
 
 //check if game is over and who is winner

@@ -76,13 +76,11 @@ class Game
 		
 	private:
 		Player *currentPlayer;
-		//Token *currentToken;
 		bool gameWon;
 		Player *winner;
 		Board meinSpielbrett; // TODO: rename
 		Player playerWhite, playerBlack;
 		bool grid[5][9];
-		//bool gridCapturing[5][9];
 		struct Grid gridCapturing;
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
@@ -110,7 +108,7 @@ class Game
 		int calculateDirection (struct position, struct position);
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
-		bool checkIfCanCapture(int, int, struct position); // Token,
+		bool checkIfCanCapture(int, int, struct position);
 		struct Grid updateGridToken(struct position);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
