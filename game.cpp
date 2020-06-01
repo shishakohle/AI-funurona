@@ -245,10 +245,23 @@ void Game::turn(void)
 				cout << endl;
 			}
 
-			lastPositions = move(lastPositions); 
-			anotherMove = false;
+			lastPositions = move(lastPositions);
+
+			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
+			
+			//is another move/capturing with latest token possible?
+			/*if(capturingAgain(lastPositions)) 
+			{
+				anotherMove = true;
+			} 
+			else
+			{
+				anotherMove = false;
+			}*/
+			
+			anotherMove = false; //TODO - Anna: replace later with upper
 	}
-	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
+	while(anotherMove); //maybe insert capturingAgain here?
 	
 }
 
@@ -265,7 +278,7 @@ bool Game::isTokenFromCurrentTeam(struct position position)
 	}
 }
 
-bool Game::beenThere(struct position endPosition)
+bool Game::beenThere(struct position endPosition) //TODO - Anna: add first position
 {
 	if(grid[endPosition.row][endPosition.column] == 0)
 	{
@@ -540,6 +553,43 @@ bool Game::capturingPossible()
 				gridCapturing.gridPosition[row][column] = false;
 			}
 		}
+	}
+	return var;
+}
+
+//is another move/capturing with latest token possible?
+bool Game::capturingAgain(struct Useraction lastPositions)
+{
+	bool var = false;	
+	struct Grid temporaryGrid;
+	temporaryGrid = updateGridToken(lastPositions.end);
+
+	//sameDirection --> not allowed
+	int i = lastPositions.end.row - lastPositions.start.row;
+	int j = lastPositions.end.column - lastPositions.start.column;
+
+	struct position sameDirectionPosition;
+	sameDirectionPosition.row = lastPositions.end.row+i;
+	sameDirectionPosition.column = lastPositions.end.column+j;
+
+	//remove positions where cant go (beenThere, sameDirection)
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			if(grid[row][column]==1)
+			{
+				temporaryGrid.gridPosition[row][column] == 0;
+			}
+		}
+	}
+	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] == 0;
+
+
+	setFieldOfView(lastPositions.end, temporaryGrid);
+	if(meinSpielbrett.getCell(lastPositions.end).getToken().getGridBool() == true) 
+	{
+		var = true;
 	}
 	return var;
 }

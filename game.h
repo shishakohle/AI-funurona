@@ -107,10 +107,12 @@ class Game
 		//check if game is over and who is winner
 		void gameOver(void);
 		int calculateDirection (struct position, struct position);
+		//can another token be capture?
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
 		bool checkIfCanCapture(int, int, struct position);
 		struct Grid updateGridToken(struct position);
+		bool capturingAgain(struct Useraction);
 		//move Token from start to end position
 		void moveToken (struct position, struct position);
 		struct position getNeighbour(struct position, Direction);
