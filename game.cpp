@@ -132,7 +132,6 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
-	//TODO Anna: add capturingRight
 	}while(true);
 	//while(!isMoveValid(startPosition, endPosition, dir, lastPositions));
 	//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
@@ -175,16 +174,15 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	//if beenThereVar = false --> dont move token --> ask again
 	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
 
-	//if can capture --> see if chose right token to right position, else cant capture anyway and any move possible
-	/*if(capturingYes)
+	//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
+	if(capturingYes)
 	{
-		capturingRight = rightfulCapturing();
+		if(!rightfulCapturing(startPosition, endPosition))
+		{
+			returnvalue = false;
+			cout << "you are able to capture someone and therefore have to" << endl;
+		}
 	}
-	else
-	{
-		capturingRight = true:
-	}*/
-	//TODO: Anna
 
 	// Kann dieser Zug ausgeführt werden?
 	// - Ist die Position eine freie Position?
@@ -224,12 +222,12 @@ void Game::turn(void)
 		cout << endl;
 	}
 
+	//check if currentPlayer could capture anyone (true = yes)
+	capturingYes = capturingPossible(); 
+
 	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
 	do
 	{
-			
-			//capturingYes = capturingPossible();
-
 			//test - capturingPossible			
 			bool temp = capturingPossible();
 			for(int row=0; row<5; row++)
@@ -247,7 +245,7 @@ void Game::turn(void)
 				cout << endl;
 			}
 
-			lastPositions = move(lastPositions); //TODO Anna later: give as argument capturingYes
+			lastPositions = move(lastPositions); 
 			anotherMove = false;
 	}
 	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed

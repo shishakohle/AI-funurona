@@ -90,6 +90,7 @@ class Game
 		bool isEndPositionFree;
 		bool isMoveLengthOK;
 		bool isDirectionOK;
+		bool capturingYes;
 		
 		//RUNDE
 		struct Useraction move(struct Useraction lastPositions);
