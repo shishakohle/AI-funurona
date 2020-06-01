@@ -98,7 +98,7 @@ class Game
 		void turn(void);
 		bool isMoveValid(struct position,  struct position, int direction, struct Useraction);
 		bool isTokenFromCurrentTeam(struct position);
-		bool beenThere(struct position);
+		bool beenThere(struct position, struct position);
 		bool freePosition(struct position);
 		bool areFieldsConnected(struct position, int direction);
 		bool isMoveDirectionValid(struct Useraction, int direction);

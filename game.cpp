@@ -166,14 +166,11 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	}
 
 	//war in diesem Zug schon mal auf diesem spielfeld?
-		
-	if(!beenThere(endPosition)){
+	if(!beenThere(endPosition, startPosition)){
 		returnvalue = false;
 		cout << "you have already been to this field in your turn" << endl;
 	}
-	//if beenThereVar = false --> dont move token --> ask again
-	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
-
+	
 	//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
 	if(capturingYes)
 	{
@@ -211,7 +208,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 void Game::turn(void)
 {
  struct Useraction lastPositions;
-	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
 	{
@@ -225,7 +221,7 @@ void Game::turn(void)
 	//check if currentPlayer could capture anyone (true = yes)
 	capturingYes = capturingPossible(); 
 
-	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
+	//loop until cant/dont want to move and capture anymore
 	do
 	{
 			//test - capturingPossible			
@@ -278,8 +274,14 @@ bool Game::isTokenFromCurrentTeam(struct position position)
 	}
 }
 
-bool Game::beenThere(struct position endPosition) //TODO - Anna: add first position
+//make sure token doenst enter cell twice in a turn
+bool Game::beenThere(struct position endPosition, struct position startPosition) 
 {
+	//to ensure also first position cant be returned to
+	if(grid[startPosition.row][startPosition.column] == 0) 
+	{
+		grid[endPosition.row][endPosition.column] = 1;
+	}
 	if(grid[endPosition.row][endPosition.column] == 0)
 	{
 		grid[endPosition.row][endPosition.column] = 1;
@@ -287,8 +289,7 @@ bool Game::beenThere(struct position endPosition) //TODO - Anna: add first posit
 	}
 	else
 	{
-		cout << "You have already been there. Move invalid. Choose another endposition." << endl;
-		return false;
+		return false; //been there already
 	}
 }
 
@@ -316,7 +317,6 @@ bool Game::isMoveDirectionValid(struct Useraction lastactions, int direction){
 
 
 }
-
 
 bool Game::areFieldsConnected(struct position startPosition, int direction)
 {
@@ -392,7 +392,7 @@ int Game::calculateDirection (struct position start, struct position end)
 				; break;
 
 				case 0: //attention: stays - shouldnt give direcction
-					direction = 0;
+					direction = 0; //now: north
 				; break;
 			} break;
 		//TODO?: need to return smtgh when 0-0 --> if yes: what?
@@ -413,8 +413,6 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 		return false;
 	}
 }
-
-//TO-DO: Anna add beenThere 
 
 //checks if a token moved in a certain direction can capture someone
 bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
