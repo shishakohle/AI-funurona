@@ -717,6 +717,7 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
     string choice;
 
 	if(meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour)){
+		//TODO: Include withdraw or approach into Useraction
 		cout << "Please choose withdraw or approach";
 		cin >> choice;
 
@@ -727,7 +728,7 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
 		}
 	}	
 	//Only Neighbour of endPosition is Token from other Team
-	else if(meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == false){ //Nachbar in Endposition schmeißen
+	else if((meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == false) || withdraw){ //Nachbar in Endposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
 				&& endNeighbour.row < 9 && endNeighbour.column > 0
@@ -742,7 +743,7 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
 		}
 	} 
 	//Only Neighbour of startPosition is Token from other Team
-	else if(meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == false ){ //Nachbar in Startposition schmeißen
+	else if((meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == false) || approach){ //Nachbar in Startposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
 				&& startNeighbour.row < 9 && startNeighbour.row > 0 
