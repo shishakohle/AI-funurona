@@ -72,6 +72,10 @@ void Board::print(void)
 	
 	// print longitude
 	cout << longitude << endl;
+
+	cout << "#-Tokens left: " << getLeftTokensBlack() << endl;
+	cout << "O-Tokens left: " << getLeftTokensWhite() << endl;
+
 }
 
 Cell Board::getCell(struct position position)
@@ -91,14 +95,17 @@ void Board::emptyCell(struct position position)
 
 void Board::updateLeftTokens(void)
 {
+	tokensLeftBlack = 0;
+	tokensLeftWhite = 0;
+
 	for(int row=0; row<5; row++)
 	{
 		for(int column=0; column<9; column++)
-		{
-			if(cells[row][column].getToken().getTeam() == BLACK){
+		{			
+			if(cells[row][column].getOccupied() && cells[row][column].getToken().getTeam() == BLACK){
 				tokensLeftBlack++;
 			}
-			else if(cells[row][column].getToken().getTeam() == WHITE){
+			else if( cells[row][column].getOccupied() && cells[row][column].getToken().getTeam() == WHITE){
 				tokensLeftWhite++;
 			}
 		}
