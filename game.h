@@ -24,7 +24,19 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest};
+enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest, InvalidDirection};
+
+static const map <string, Direction> directionMap
+{
+	{ "N" , North},
+	{ "NE", Northeast},
+	{ "E" , East},
+	{ "SE", Southeast},
+	{ "S" , South},
+	{ "SW", Southwest},
+	{ "W" , West},
+	{ "NW", Northwest}
+};
 
 #endif
 
@@ -32,7 +44,7 @@ enum Direction {North, East, South, West, Northeast, Southeast, Southwest, North
 #define COMMAND_H
 
 enum Command {
-	Invalid,
+	Invalid, // TODO replace by InvalidCommand
 	Skip,
 	Move,
 	Help,
@@ -72,7 +84,9 @@ class Game
 {
 	public:
 		Game(void);
-		void start(); // TODO: private??
+		void start();
+		static enum Direction string2direction(string);
+		static struct position string2position(string);
 		
 	private:
 		Player *currentPlayer;
@@ -120,8 +134,6 @@ class Game
 		void captureToken(struct Useraction);
 		void clearScreen(void);
 		struct Useraction getUseraction(void);
-		// TODO struct position string2position(string); // TODO: move this to public area of Class Board
-		// TODO enum Direction string2direction(struct position, struct position); // TODO: move this to public area of this Class Game
 		void setFieldOfView(struct position, struct Grid);
 };
 

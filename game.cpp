@@ -117,6 +117,12 @@ struct Useraction Game::move(struct Useraction lastPositions)
 		}
 		while(useraction.command == Invalid);
 		
+		cout << "USERACTION DETECTED:" << endl;
+		cout << "\tcommand: " << useraction.command << endl;
+		cout << "\tstart: row " << useraction.start.row << ", column " << useraction.start.column << endl;
+		cout << "\tstart: row " << useraction.end.row << ", column " << useraction.end.column << endl;
+		cout << "\tdirection: " << useraction.dir << endl;
+		
 		switch(useraction.command)
 		{
 			//case Invalid: break;
@@ -592,7 +598,7 @@ bool Game::capturingAgain(struct Useraction lastPositions)
 	return var;
 }
 
-struct position Game::chooseToken(void) // TODO abolish
+/*struct position Game::chooseToken(void) // TODO abolish
 {
 	int row, col;
 	char column;
@@ -609,7 +615,7 @@ struct position Game::chooseToken(void) // TODO abolish
 	position.row = row - 1;
 
 	return position;
-}
+}*/
 
 bool Game::positionInputValid(struct position position)
 {
@@ -837,7 +843,7 @@ struct Useraction Game::getUseraction(void)
 	
 	string userinput;
 	
-	this->clearScreen();
+	//this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
 		
@@ -864,44 +870,52 @@ struct Useraction Game::getUseraction(void)
 	regex coordinateLiteral = regex("^[A-I][1-5]|[1-5][A-I]$");
 	regex directionLiteral  = regex("^N|NE|E|SE|S|SW|W|NW$");
 	
-	if( regex_match(snippet, coordinateLiteral) )
+	if( regex_match(snippet, coordinateLiteral) ) // user typed XY (...)
 	{
-		// useraction.start = string2position(snippet); // TODO
+		useraction.start = string2position(snippet);
 		
-		if (iss >> snippet)
+		if (iss >> snippet) // user typed XY dir
 		{
-			if( regex_match(snippet, coordinateLiteral) ) // user typed XY XY
+			/*
+			if( regex_match(snippet, directionLiteral) ) // user typed XY dir
 			{
-				// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
-				useraction.command = Move;
+				useraction.dir = string2direction(snippet);
+				//useraction.command = Move;
+				useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 			}
-			else if( regex_match(snippet, directionLiteral) ) // user typed XY dir
+			else
 			{
-				// useraction.dir = string2direction(snippet); // TODO
-				useraction.command = Move;
+				useraction.command = Invalid;
 			}
+			*/
+			
+			useraction.dir = string2direction(snippet);
+			useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 		}
-		else
+		else // user typed XY (only)
 		{
-
 			useraction.command = Invalid;
 		}
+		
+		if (useraction.start.row < 0 || useraction.start.column < 0)
+			useraction.command = Invalid;
 	}
 	else if( regex_match(snippet, directionLiteral) ) // user typed dir
 	{
-		// useraction.dir = string2direction(snippet); // TODO
-		useraction.command = Move;
+		useraction.dir = string2direction(snippet);
+		useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 	}	
 	else // user typed sth else
 	{
 		// as it's no MOVE command, try to identify command on the map
 		auto iterator = commandMap.find(snippet);
-		iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
+		//iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid; // TODO validate!!
+		useraction.command = iterator != commandMap.end() ? iterator->second : Invalid;
 	}
 	
 	if(useraction.command == Invalid)
 	{
-		cout << "\nUnknown command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
+		cout << "\nInvalid command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
 		cout << "Press <ENTER> to try again." << flush;
 		getline(cin,userinput); // TODO: just some random string not used anymore
 	}
@@ -912,5 +926,46 @@ struct Useraction Game::getUseraction(void)
 void Game::setFieldOfView(struct position position, struct Grid fieldOfView)
 {
 	this->meinSpielbrett.setFieldOfView(position,fieldOfView);
+}
+
+enum Direction Game::string2direction(string str)
+{
+	// use toupper() in a Lambda expression to transform string to upper case
+	std::for_each( str.begin(), str.end(),
+		// pass each character by reference to callback
+		[](char &c){ c = ::toupper(c); }
+	);
+	
+	auto iterator = directionMap.find(str);
+	return iterator != directionMap.end() ? iterator->second : InvalidDirection;
+}
+
+struct position Game::string2position (string str)
+{
+	struct position pos {-1,-1};
+	char c;
+	
+	if (str.length() == 2)
+	{
+		// use toupper() in a Lambda expression to transform string to upper case
+		std::for_each( str.begin(), str.end(),
+			// pass each character by reference to callback
+			[](char &c){ c = ::toupper(c); }
+		);
+		
+		c = str.at(0);
+		if (c >= 'A' && c <= 'I')
+			pos.column = c - 65;
+		else if (c >= '1' && c <= '5')
+			pos.row = c - 49;
+		
+		c = str.at(1);
+		if (c >= 'A' && c <= 'I')
+			pos.column = c - 65;
+		else if (c >= '1' && c <= '5')
+			pos.row = c - 49;
+	}
+	
+	return pos;
 }
 
