@@ -39,34 +39,14 @@ char Token::asChar(enum Team team) // TODO: private??
 	return out;
 }
 
-//tokenGrid to check from where it could capture someone
-void Token::setGridValue(struct position pos, bool value)
-{
-	if(value == true)
-	{
-		//can capture one if would move there)
-		gridCapturing[pos.row][pos.column] = 1;
-	}
-	else
-	{
-		//cant capture one if would move ther
-		gridCapturing[pos.row][pos.column] = 0;
-	}
-}
-
-bool Token::getGridValue(struct position pos)
-{
-	return gridCapturing[pos.row][pos.column];
-}
-
 bool Token::getGridBool()
 {
-	gridBool = false;
+	bool gridBool = false;
 	for(int row=0; row<5; row++)
 	{
 		for(int column=0; column<9; column++)
 		{
-			if(gridCapturing[row][column] == 1)
+			if(fieldOfView.gridPosition[row][column] == 1)
 			{
 				gridBool = true;
 			}
@@ -75,4 +55,25 @@ bool Token::getGridBool()
 	return gridBool;
 }
 
+bool Token::getGridBool(struct position pos)
+{
+	bool gridBool = false;
+
+	if(fieldOfView.gridPosition[pos.row][pos.column] == 1)
+	{
+		gridBool = true;
+	}
+
+	return gridBool;
+}
+
+void Token::setFieldOfView(struct Grid fieldOfView)
+{
+	this->fieldOfView = fieldOfView;
+}
+
+struct Grid Token::getFieldOfView(void)
+{
+	return this->fieldOfView;
+}
 

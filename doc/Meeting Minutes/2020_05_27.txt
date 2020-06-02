@@ -1,0 +1,45 @@
+27/05/2020 - 14:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: continue useraction --> continued (move - useraction)
+	- Kerstin: improvement of capturing & makes tests, combine Annas & Kerstins
+	- Lukas: improve userinput (kleinbuchstaben, eingabe in klammer, direction in 1-2 buchstaben) --> mit Ingo mit usercommands, (Y)
+	- Anna: (F) --> continue/improve & test!, add flowchart of capturingPossible & wo einbauen in move/turn (draw.io), (X) --> continued, started testing 
+
+During Meeting:
+> Update of Tasks
+> useraction + direction --> how to combine
+	- ask user for start position + direction --> calculate end position as well in useraction
+> Goals: 
+	- finish game implementation
+> Meeting-Vorschlag with Mehnen: Fr.5 ab 14 Uhr, Do.4 ab 16 uhr
+
+Next Goals/Tasks: --> continue
+	- Ingo: continue useraction
+	- Kerstin: improvement of capturing & makes tests, combine Annas & Kerstins
+	- Lukas: improve userinput (eingabe in klammer, direction in 1-2 buchstaben) --> mit Ingo mit usercommands, (Y), merge (felder verbunden zu master)
+	- Anna: (F) --> continue/improve & test!, add flowchart of capturingPossible & wo einbauen in move/turn (draw.io), (X)
+
+Still to do:
+	- Style of enum team color in cout 
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw (D) --> warten bis (A) fertig
+	- 7) Beim ersten Zug --> schmeißen = Pflicht, dann weitere Züge optional:
+		- Player darf weiterfahren, wenn er mit darauffolgenden Zug wieder jemanden schmeißt --> dann kein Zug ohne schmeißen möglich
+		- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+	- Capture token --> ja/nein/welche? --> delete captured tokens, empty cell, subtract from numberTokens (leftTokens) (A)
+	- Erkennung ob gegnerische Tokens schmeißbar sind --> another move (+ Abfrage) --> 4) Zug muss jemanden schmeißen, wenn generell möglich, ansosnten "normales" ziehen möglich (F)
+	- Schauen ob Eingabe von Start- und Zielfeld gültig (im Board Bereich, 5x9) (B)
+	- setTokensLeft mit abzählen der einzelnen Tokens am Spielbrett
+	- another move --> ask user for input of row/column/skip --> cant skip first move
+	- ev.: Ausweg für quick return bei checkIfCapturePossible sobald einer schmeißen kann, damit man nicht alles durchrechnen muss
+	- better user interface (INGO)
+	- differentiate between first move and additional moves (with SAME token) --> save activeToken (X)
+	- combine Kerstin & Anna capturing/checkIfCanCapture to reduce redundant code
+	- globale errormessage --> was wenn mehrere messages, wieder resetten (Y)
+	- useraction - add: rule --> rules of funorona
+
+Next Meeting: Fr. 29.05, 17:00 Uhr
+
+

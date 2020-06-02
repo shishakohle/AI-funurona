@@ -10,12 +10,22 @@ struct lastMoveDirection
 
 #endif
 
-#ifndef POSITION
-#define POSITION
+#ifndef POSITION_H
+#define POSITION_H
 
-struct position
+struct position // TODO: upper case!
 {
 	int column,row;
+};
+
+#endif
+
+#ifndef GRID_H
+#define GRID_H
+
+struct Grid
+{
+	bool gridPosition[5][9];
 };
 
 #endif
@@ -32,16 +42,17 @@ class Token
 		struct lastMoveDirection getLastMoveDirection(void);
 		char asChar(void); // TODO invoke this when printing the board. or is this needed overall?
 		static char asChar(enum Team); // TODO: private??
-		void setGridValue(struct position,bool); //TODO: set und get position & update it somewhere
-		bool getGridValue(struct position);
 		bool getGridBool(void);
+		bool getGridBool(struct position);
+		void setFieldOfView(struct Grid);
+		struct Grid getFieldOfView(void);
 		
 	private:
 		enum Team team;
-		struct position pos;
 		struct lastMoveDirection lmd;
-		bool gridCapturing[5][9];
-		bool gridBool;
+		bool gridCapturingToken[5][9]; // TODO: abolish
+		struct Grid fieldOfView;
+		//bool gridBool; // TODO: needed? what for? ~ingo
 };
 
 #endif

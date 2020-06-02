@@ -1,0 +1,45 @@
+05/05/2020 - 15:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+> Create Flowchart --> Ingo --> Coming soon
+> Felder verbunden --> 2 positionen --> verbunden oder nicht? --> Lukas
+> board print mit wer dran ist und welches symbol --> Anna --> DONE (Ingo)
+> feld frei --> Kerstin --> Coming soon
+> ist token von meiner farbe --> Kerstin --> Coming soon
+> hat jemand gewonnen? --> boolean --> Anna --> DONE
+
+During Meeting:
+> Goal: 
+	- change current player
+	- define rules and how to implement
+> Tool for Flowchart: draw.io  
+> Bedingungen, die für eine valide Runde/Player (kann aus mehreren Zügen bestehen) erfüllt werden müssen: (Regeln)
+	1) Zielfeld muss frei sein
+	2) Startfeld muss mit Token von CurrentPlayer belegt sein
+	3) Start- und Zielfeld müssen verbunden sein (direkt benachbartes Feld)
+	4) Zug muss jemanden schmeißen, wenn generell möglich, ansosnten "normales" ziehen möglich
+	5) kein Feld pro Runde 2-Mal betretbar
+	6) nicht 2-Mal direkt hintereinander pro Runde in gleiche Richtung ziehen
+	7) Beim ersten Zug --> schmeißen = Pflicht, dann weitere Züge optional:
+		- Player darf weiterfahren, wenn er mit darauffolgenden Zug wieder jemanden schmeißt --> dann kein Zug ohne schmeißen möglich
+		- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+> Diese Regeln/Bedingungen in einen Zug pack: boolean validerZug(); --> Aufruf für einzelne Regeln
+> Abfrage: wen möchtest du schmeißen --> approach or widthdraw
+> Abfrage: hat Zug jemanden geschmissen
+> Unterscheidung Runde (turn) und Zug (move) (auch im CODE)!!
+
+Next Goals/Tasks:
+	- Ingo: Flowchart, mit Lukas: Peer-to-Peer (3)
+	- Kerstin: Zielfeld frei (1), Startfled mit Token CurrentPlayer (2)
+	- Lukas: nicht 2x hintereinander pro Richtung(6) 
+	- Anna:current Player change after each turn, (5) nicht 2x auf selbes Feld (Matrix kopieren, makieren, wo war ich schon)
+
+Later to do:
+	- Style of enum team color in cout 
+	- (4)
+
+Next Meeting: Fr. 08.05, 15 Uhr
+
+

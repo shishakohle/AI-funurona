@@ -1,0 +1,31 @@
+01/05/2020 - 15:00
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+> Tic Tac Toe Example (Mehnen) vertraut machen
+
+During Meeting:
+> Goal: choose token and make move
+	- class game
+	- class player
+	- ask player for coordinate input for start token und endposition
+	- check if chosen correct token and if move valid
+> Comment next steps and implementations --> divide for individual coding
+> Assumtion: Player plays perfect, know what he does and doesnt make mistakes --> for now only simple moves without checking if possible etc. 
+
+> Next Goals/Tasks:
+	- choose token and make move
+	- Create Flowchart --> Ingo
+	- Felder verbunden --> 2 positionen --> verbunden oder nicht? --> Lukas
+	- board print mit wer dran ist und welches symbol --> Anna
+	- feld frei --> Kerstin
+	- ist token von meiner farbe --> Kerstin
+	- hat jemand gewonnen? --> boolean --> Anna
+
+> Later to do:
+	- Style of enum team color in cout 
+
+> Next Meeting: Di. 05.05, 15 Uhr
+
+

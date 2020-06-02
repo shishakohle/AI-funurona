@@ -1,0 +1,39 @@
+20/05/2020 - 13:30
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: continue flowchart, better user interface --> commands fortschritte, rest: on it
+	- Kerstin: (B) continue mit action true --> löschen, sonst nicht, widthdraw or approach --> on it
+	- Lukas: checks do-while in move(ruleset) und macht ein ruleset (keine einzelne boolean Abfragen in move) --> on it
+	- Anna: (F), makefile GNU informieren --> make geht, rest: on it
+
+During Meeting:
+> Fixing Anna's make file problem --> took basically all the time --> Thanks 
+> Update of Tasks
+> Goals: 
+	- continue tasks from last time
+
+Next Goals/Tasks:
+	- Ingo: continue flowchart, better user interface, makefiel for Anna
+	- Kerstin: (B) continue mit action true --> löschen, sonst nicht, widthdraw or approach
+	- Lukas: checks do-while in move(ruleset) und macht ein ruleset (keine einzelne boolean Abfragen in move)
+	- Anna: (F), makefile GNU informieren
+
+Still to do:
+	- Style of enum team color in cout 
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw (D) --> warten bis (A) fertig
+	- 7) Beim ersten Zug --> schmeißen = Pflicht, dann weitere Züge optional:
+		- Player darf weiterfahren, wenn er mit darauffolgenden Zug wieder jemanden schmeißt --> dann kein Zug ohne schmeißen möglich
+		- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+	- Capture token --> ja/nein/welche? --> delete captured tokens, empty cell, subtract from numberTokens (leftTokens) (A)
+	- Erkennung ob gegnerische Tokens schmeißbar sind --> another move (+ Abfrage) --> 4) Zug muss jemanden schmeißen, wenn generell möglich, ansosnten "normales" ziehen möglich (F)
+	- Schauen ob Eingabe von Start- und Zielfeld gültig (im Board Bereich, 5x9) (B)
+	- setTokensLeft mit abzählen der einzelnen Tokens am Spielbrett
+	- another move --> ask user for input of row/column/skip --> cant skip first move
+	- ev.: Ausweg für quick return bei checkIfCapturePossible sobald einer schmeißen kann, damit man nicht alles durchrechnen muss
+	- better user interface (INGO)
+
+Next Meeting: Fr. 22.05, 15:00 Uhr
+
+

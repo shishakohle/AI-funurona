@@ -117,6 +117,12 @@ struct Useraction Game::move(struct Useraction lastPositions)
 		}
 		while(useraction.command == Invalid);
 		
+		cout << "USERACTION DETECTED:" << endl;
+		cout << "\tcommand: " << useraction.command << endl;
+		cout << "\tstart: row " << useraction.start.row << ", column " << useraction.start.column << endl;
+		cout << "\tstart: row " << useraction.end.row << ", column " << useraction.end.column << endl;
+		cout << "\tdirection: " << useraction.dir << endl;
+		
 		switch(useraction.command)
 		{
 			//case Invalid: break;
@@ -132,7 +138,6 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 
-	//TODO Anna: add capturingRight
 	}while(true);
 	//while(!isMoveValid(startPosition, endPosition, dir, lastPositions));
 	//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
@@ -167,24 +172,20 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	}
 
 	//war in diesem Zug schon mal auf diesem spielfeld?
-		
-	if(!beenThere(endPosition)){
+	if(!beenThere(endPosition, startPosition)){
 		returnvalue = false;
 		cout << "you have already been to this field in your turn" << endl;
 	}
-	//if beenThereVar = false --> dont move token --> ask again
-	//ev. endlos whileschleife von position auswahl + move machen, wenn alle if true --> break, sonst von vorne bis zug valid
-
-	//if can capture --> see if chose right token to right position, else cant capture anyway and any move possible
-	/*if(capturingYes)
+	
+	//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
+	if(capturingYes)
 	{
-		capturingRight = rightfulCapturing();
+		if(!rightfulCapturing(startPosition, endPosition))
+		{
+			returnvalue = false;
+			cout << "you are able to capture someone and therefore have to" << endl;
+		}
 	}
-	else
-	{
-		capturingRight = true:
-	}*/
-	//TODO: Anna
 
 	// Kann dieser Zug ausgeführt werden?
 	// - Ist die Position eine freie Position?
@@ -213,7 +214,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 void Game::turn(void)
 {
  struct Useraction lastPositions;
-	//check rules
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
 	{
@@ -224,34 +224,46 @@ void Game::turn(void)
 		cout << endl;
 	}
 
-	//wäre dann zB die Schleife die erneute Züge (moves) erlaubt, wenn man wieder wen schmeißen kann
+	//check if currentPlayer could capture anyone (true = yes)
+	capturingYes = capturingPossible(); 
+
+	//loop until cant/dont want to move and capture anymore
 	do
 	{
-			//test - capturingPossible
-			//capturingYes = capturingPossible();
-			struct position pos;
-			pos.row = 3;
-			pos.column = 4;
-			//updateGridToken(meinSpielbrett.getCell(pos).getToken(), pos);
-			checkIfCanCapture(-1, 0, meinSpielbrett.getCell(pos).getToken(), pos);
-
-			/*for(int row=0; row<5; row++)
+			//test - capturingPossible			
+			bool temp = capturingPossible();
+			for(int row=0; row<5; row++)
 			{
 				for(int column=0; column<9; column++)
 				{
 					struct position pos1;
 					pos1.row = row;
 					pos1.column = column;
-					//cout << cells[row][column].printStatus() << flush;
-					cout << meinSpielbrett.getCell(pos).getToken().getGridValue(pos1) << flush;
+					struct position pos;
+					pos.row = 3;
+					pos.column = 5;
+					cout << gridCapturing.gridPosition[pos1.row][pos1.column]<< flush;
 				}
 				cout << endl;
-			}*/
+			}
 
-			lastPositions = move(lastPositions); //TODO Anna later: give as argument capturingYes
-			anotherMove = false;
+			lastPositions = move(lastPositions);
+
+			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
+			
+			//is another move/capturing with latest token possible?
+			/*if(capturingAgain(lastPositions)) 
+			{
+				anotherMove = true;
+			} 
+			else
+			{
+				anotherMove = false;
+			}*/
+			
+			anotherMove = false; //TODO - Anna: replace later with upper
 	}
-	while(anotherMove); //TO-DO: need to adapt anotherMove --> only if additional move allowed
+	while(anotherMove); //maybe insert capturingAgain here?
 	
 }
 
@@ -268,8 +280,14 @@ bool Game::isTokenFromCurrentTeam(struct position position)
 	}
 }
 
-bool Game::beenThere(struct position endPosition)
+//make sure token doenst enter cell twice in a turn
+bool Game::beenThere(struct position endPosition, struct position startPosition) 
 {
+	//to ensure also first position cant be returned to
+	if(grid[startPosition.row][startPosition.column] == 0) 
+	{
+		grid[endPosition.row][endPosition.column] = 1;
+	}
 	if(grid[endPosition.row][endPosition.column] == 0)
 	{
 		grid[endPosition.row][endPosition.column] = 1;
@@ -277,8 +295,7 @@ bool Game::beenThere(struct position endPosition)
 	}
 	else
 	{
-		cout << "You have already been there. Move invalid. Choose another endposition." << endl;
-		return false;
+		return false; //been there already
 	}
 }
 
@@ -307,7 +324,6 @@ bool Game::isMoveDirectionValid(struct Useraction lastactions, int direction){
 
 }
 
-
 bool Game::areFieldsConnected(struct position startPosition, int direction)
 {
 	if (direction == Southeast || direction == Southwest || direction == Northeast || direction == Northwest)
@@ -328,9 +344,73 @@ bool Game::areFieldsConnected(struct position startPosition, int direction)
 
 }
 
+int Game::calculateDirection (struct position start, struct position end)
+{
+	//  0	  1		 2		3		4		  5			 6			7
+	//North, East, South, West, Northeast, Southeast, Southwest, Northwest
+	int row = end.row - start.row;
+	int column = end.column - start.column;
+	int direction = 0; //Attention: return North if same positions are entered
+
+	switch(row) //rows --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
+	{
+   		case -1: //Token moves to North  
+			switch(column) //columns --> 0 = N, +1 = NO, -1 = NW
+			{
+				case -1:
+					direction = 7;
+				; break;
+
+				case 0:
+					direction = 0;
+				; break;
+
+				case 1:
+					direction = 4;
+				; break;
+			} break;
+
+		case +1: //Token moves to South  
+			switch(column) //columns --> 0 = S, +1 = SO, -1 = SW
+			{
+				case -1:
+					direction = 6;
+				; break;
+
+				case 0:
+					direction = 2;
+				; break;
+
+				case 1:
+					direction = 5;
+				; break;
+			} break;
+
+		case 0: //Token stays in row 
+			switch(column) //columns --> 1 = O, -1 = W
+			{
+				case -1:
+					direction = 3;
+				; break;
+
+				case 1:
+					direction = 1;
+				; break;
+
+				case 0: //attention: stays - shouldnt give direcction
+					direction = 0; //now: north
+				; break;
+			} break;
+		//TODO?: need to return smtgh when 0-0 --> if yes: what?
+	}
+	return direction;
+}
+
 bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
 {
-	if(gridCapturing[startPosition.row][startPosition.column] == 1 && meinSpielbrett.getCell(endPosition).getToken().getGridValue(endPosition) == 1)
+	struct Grid gridTemp;
+	gridTemp = meinSpielbrett.getCell(endPosition).getToken().getFieldOfView();
+	if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && gridTemp.gridPosition[endPosition.row][endPosition.column] == 1)
 	{
 		return true;
 	}
@@ -340,79 +420,60 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 	}
 }
 
-//TO-DO: Anna add beenThere + areFieldsConnected
-//TO-DO Anna: remove tokenPosition --> DONE
-
-void Game::checkIfCanCapture(int i, int j, Token* t, struct position currentPosition)
+//checks if a token moved in a certain direction can capture someone
+bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 {
 	//approach
 	struct position endPos;
 	endPos.row = currentPosition.row+i;
 	endPos.column = currentPosition.column+j;
-
-	//getDirection
-
-    struct position startNeighbour = getNeighbour(currentPosition, East); //TODO change East with value from getDirection
-    struct position endNeighbour = getNeighbour(endPos, West); //TODO: change West with value from getDirection
-
-	//TODO: add isMoveLengthValid and check if cells are connected
-
-	capture("check", startNeighbour, North, endNeighbour, North, t, endPos);
-	
-	/*
-	struct position neighbour;			//TODO: CHANGE ALL
-	neighbour.row = endPos.row+i; //endPosition = currentPosition + North
+	struct position neighbour;			
+	neighbour.row = endPos.row+i; 
 	neighbour.column = endPos.column+j;
 
 	//widthdraw
-	struct position neighbour2;			//TODO: CHANGE ALL
-	neighbour2.row = endPos.row-(2*i); //endPosition = currentPosition + North
+	struct position neighbour2;			
+	neighbour2.row = endPos.row-(2*i); 
 	neighbour2.column = endPos.column-(2*j);
 
-	//struct direction dir1;
+	int direction = calculateDirection(currentPosition, endPos);
 
-	//move valid
-	//TODO: add isMoveLengthValid and check if cells are connected
-	if(freePosition(endPos)) //&& isMoveLengthValid(currentPosition, endPos, dir1)
+	if(positionInputValid(endPos)) // endPosition exists
 	{
-		cout << "move valid" << endl;
-		//TODO: include beenThere --> cant capture if already been there
-		//TODO: fields connected	
-		if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
-			//Token above from other team
-			if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
-			{
-				t.setGridValue(endPos,true);
-				cout << "kann schmeißen" << endl;
-			}
-			else
-			{
-				t.setGridValue(endPos,false);
-				cout << "kann nicht schmeißen" << endl;
-			}
-		} 
-		else //Feld unbelegt
+		//move valid
+		if(freePosition(endPos) && areFieldsConnected(currentPosition, direction))
 		{
-			if(positionInputValid(endPos))
+			// the neigboring cell (of endPos) is filled with a token
+			if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
+				
+				if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
+				{
+					return true; // captruing possible
+				}
+				else
+				{
+					return false; // neighboring token from my own team
+				}
+			} 
+			else //empty cell - no token to capture
 			{
-				t.setGridValue(endPos,false);
-				cout << "kann nicht schmeißen - feld leer" << endl;
-			}
-			else
-			{
-				cout << "whatever" << endl;
+				return false;
 			}
 		}
+		else //move not valis
+		{
+			return false;
+		}
 	}
-	else
+	else //can't move there because cell doesn't exist
 	{
-		cout << "move not valid" << endl;
+		return false;
 	}
-	*/
 }
 
-void Game::updateGridToken(Token* t, struct position currentPosition) //bool
+struct Grid Game::updateGridToken(struct position currentPosition) 
 {
+	struct Grid temporaryGrid;
 	//set grid 0
 	for(int row=0; row<5; row++)
 	{
@@ -422,7 +483,7 @@ void Game::updateGridToken(Token* t, struct position currentPosition) //bool
 			pos.column = column;
 			pos.row = row;
 
-			t->setGridValue(pos,false);
+			temporaryGrid.gridPosition[pos.row][pos.column] = false;
 		}
 		cout << endl;
 	}
@@ -442,15 +503,16 @@ void Game::updateGridToken(Token* t, struct position currentPosition) //bool
 
 			if(!(a==0 && b==0))
 			{
-				checkIfCanCapture(a, b, t, currentPosition);
-			}
+				bool valueTemp;
+				valueTemp = checkIfCanCapture(a, b, currentPosition); 
+				struct position endPos;
+				endPos.row = currentPosition.row+a;
+				endPos.column = currentPosition.column+b;
+				temporaryGrid.gridPosition[endPos.row][endPos.column] = valueTemp;
+			} //if doenst work again - add else here
 		}
 	}
-
-	//TODO: change i/j so that switch works! --> no iteration until now! --> for each??
-		// --> DONE
-
-	//TO-DO: from current position
+	return temporaryGrid;
 }
 
 //creates a grid with all cells marked where tokens are placed, that could possible capture someone
@@ -466,38 +528,77 @@ bool Game::capturingPossible()
 			pos.row = row;
 
 			//create a grid for token --> 1 = this token can capture someone, 0 --> token cant capture or from other team
-			gridCapturing[row][column] = 0;
+			gridCapturing.gridPosition[row][column] = false;
 			
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
 			{
-				updateGridToken(meinSpielbrett.getCell(pos).getToken(),pos);
+				struct Grid temporaryGrid;
+				temporaryGrid = updateGridToken(pos);
+				setFieldOfView(pos, temporaryGrid);
+				
 				//token from currentPlayer can capture someone
-				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true)
+				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true) // boolTemp
 				{
-					gridCapturing[row][column] = 1;
+					gridCapturing.gridPosition[row][column] = true;
 					var = true;
 				}
 
 				//token from currentPlayer but cant capture anyone
 				else
 				{
-					gridCapturing[row][column] = 0;	
+					gridCapturing.gridPosition[row][column] = false;	
 				}
 			}
 
 			//tokens are from other team
 			else
 			{
-				gridCapturing[row][column] = 0;
+				gridCapturing.gridPosition[row][column] = false;
 			}
 		}
-		cout << endl;
 	}
 	return var;
 }
 
-struct position Game::chooseToken(void) // TODO abolish
+//is another move/capturing with latest token possible?
+bool Game::capturingAgain(struct Useraction lastPositions)
+{
+	bool var = false;	
+	struct Grid temporaryGrid;
+	temporaryGrid = updateGridToken(lastPositions.end);
+
+	//sameDirection --> not allowed
+	int i = lastPositions.end.row - lastPositions.start.row;
+	int j = lastPositions.end.column - lastPositions.start.column;
+
+	struct position sameDirectionPosition;
+	sameDirectionPosition.row = lastPositions.end.row+i;
+	sameDirectionPosition.column = lastPositions.end.column+j;
+
+	//remove positions where cant go (beenThere, sameDirection)
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			if(grid[row][column]==1)
+			{
+				temporaryGrid.gridPosition[row][column] == 0;
+			}
+		}
+	}
+	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] == 0;
+
+
+	setFieldOfView(lastPositions.end, temporaryGrid);
+	if(meinSpielbrett.getCell(lastPositions.end).getToken().getGridBool() == true) 
+	{
+		var = true;
+	}
+	return var;
+}
+
+/*struct position Game::chooseToken(void) // TODO abolish
 {
 	int row, col;
 	char column;
@@ -514,22 +615,23 @@ struct position Game::chooseToken(void) // TODO abolish
 	position.row = row - 1;
 
 	return position;
-}
+}*/
 
 bool Game::positionInputValid(struct position position)
 {
-	if(position.row >= 0 && position.row <= 5 && position.column >= 0 && position.column <= 8){
+	if(position.row >= 0 && position.row <= 4 && position.column >= 0 && position.column <= 8){
  		return true;
- 	} else {
-		 return false;
-	 }
+ 	} else 
+	{
+		return false;
+	}
 }
 
 //check if game is over and who is winner
 void Game::gameOver(void)
 {
-	if(this->playerWhite.getLeftTokens() == 0 || this->playerBlack.getLeftTokens() == 0) //TO-DO: when player captures stones - subtract amount form total count
-	{
+
+	if(meinSpielbrett.getLeftTokensBlack() == 0 || meinSpielbrett.getLeftTokensWhite() == 0 ){
 		gameWon = true;
 		this->winner = currentPlayer;
 	}
@@ -547,7 +649,7 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	meinSpielbrett.setTokenOnCell(endPosition, tokenToMove);
 	meinSpielbrett.emptyCell(startPosition);
 
-/*	struct Useraction test;
+	struct Useraction test;
 	test.dir = South;
 	test.end.row = 2;
 	test.end.column= 4;
@@ -555,7 +657,7 @@ void Game::moveToken (struct position startPosition, struct position endPosition
 	test.start.column= 4;
 	test.command = Move;
 
-	captureToken(test);*/
+	captureToken(test);
 }
 
 struct position Game::getNeighbour(struct position position, Direction direction){
@@ -606,9 +708,7 @@ struct position Game::getNeighbour(struct position position, Direction direction
 	return neighbour;
 }
 
-static const position endPositionCapture = {1,1};
-
-void Game::capture(string mode, struct position startNeighbour, Direction startNeighbourDir = (North), struct position endNeighbour, Direction endNeighbourDir = (South), Token* token = NULL, struct position endPos = endPositionCapture){
+void Game::capture(struct position start, struct position startNeighbour, Direction startNeighbourDir, struct position endNeighbour, Direction endNeighbourDir){
 
     bool neighbourFieldEmpty = false;
     int capturedTokens = 0;
@@ -616,70 +716,48 @@ void Game::capture(string mode, struct position startNeighbour, Direction startN
     bool approach = false;
     string choice;
 
-			if(mode.compare("capture")){
-				//If neighbour of Startposition is not free and is Token from other Team && neighbour from endPosition is not free and is Token from other Team
-				if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
-					cout << "Please choose withdraw or approach";
-					cin >> choice;
+	if(meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour)){
+		cout << "Please choose withdraw or approach";
+		cin >> choice;
 
-					if(choice.compare("withdraw") == 0){
-						withdraw = true;
-					} else if(choice.compare("approach") == 0){
-						approach = true;
-					}
-				}
-			} else if (mode.compare("check") == 0){
-				withdraw = true;
-				approach = true;
+		if(choice.compare("withdraw") == 0){
+			withdraw = true;
+		} else if(choice.compare("approach") == 0){
+			approach = true;
+		}
+	}	
+	//Only Neighbour of endPosition is Token from other Team
+	else if(meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == false){ //Nachbar in Endposition schmeißen
+		while(!neighbourFieldEmpty){
+			if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
+				&& endNeighbour.row < 9 && endNeighbour.column > 0
+				&& endNeighbour.column < 5 && endNeighbour.column > 0){
+				//Capture
+				meinSpielbrett.emptyCell(endNeighbour);
+				endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
+				capturedTokens++;
+			} else{
+				neighbourFieldEmpty = true;
 			}
-
-
-            //Only Neighbour of endPosition is Token from other Team
-            if((((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9)) || approach){ //Nachbar in Endposition schmeißen
-                if(mode.compare("check") == 0)
-				{
-					token->setGridValue(endPos,true);
-				}
-				else if (mode.compare("capture") == 0)
-				{		
-					
-					while(!neighbourFieldEmpty){
-						if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
-							&& endNeighbour.row < 9 && endNeighbour.column > 0
-							&& endNeighbour.column < 5 && endNeighbour.column > 0){
-							//Capture
-							meinSpielbrett.emptyCell(endNeighbour);
-							endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
-							capturedTokens++;
-						} else{
-							neighbourFieldEmpty = true;
-						}
-					}
-				}
-            } 
-            //Only Neighbour of startPosition is Token from other Team
-            if(((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0)) || withdraw){ //Nachbar in Startposition schmeißen
-                if(mode.compare("check") == 0)
-				{
-					token->setGridValue(endPos,true);
-				}
-				else if (mode.compare("capture") == 0)
-				{	
-					while(!neighbourFieldEmpty){
-						if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
-						&& startNeighbour.row < 9 && startNeighbour.row > 0 
-						&& startNeighbour.row < 5 && startNeighbour.column > 0 ){
-							//Capture
-							meinSpielbrett.emptyCell(startNeighbour);
-							startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
-							capturedTokens++;
-						} else{
-							neighbourFieldEmpty = true;
-						}
-					}
-				}
-            }
+		}
+	} 
+	//Only Neighbour of startPosition is Token from other Team
+	else if(meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == false ){ //Nachbar in Startposition schmeißen
+		while(!neighbourFieldEmpty){
+			if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
+				&& startNeighbour.row < 9 && startNeighbour.row > 0 
+				&& startNeighbour.row < 5 && startNeighbour.column > 0 ){
+				//Capture
+				meinSpielbrett.emptyCell(startNeighbour);
+				startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
+				capturedTokens++;
+			} else{
+				neighbourFieldEmpty = true;
+			}
+		}
+	}
         cout << "Number of deleted tokens: " << capturedTokens << endl;
+		meinSpielbrett.updateLeftTokens();
 }
 
 
@@ -691,21 +769,21 @@ void Game::captureToken(struct Useraction userAction)
             struct position startNeighbour = getNeighbour(userAction.start, North);
             struct position endNeighbour = getNeighbour(userAction.end, South);
 
-            capture("capture", startNeighbour, North, endNeighbour, South);
+            capture(userAction.start, startNeighbour, North, endNeighbour, South);
         }
 
         case South: { //Token moves to South 
             struct position startNeighbour = getNeighbour(userAction.start, South);
             struct position endNeighbour = getNeighbour(userAction.end, North);
 
-            capture("capture", startNeighbour, South, endNeighbour, North);
+            capture(userAction.start, startNeighbour, South, endNeighbour, North);
         break;
         }
         case East:{ //Token moves to East - check neighbour in the East
             struct position startNeighbour = getNeighbour(userAction.start, East);
             struct position endNeighbour = getNeighbour(userAction.end, West);
 
-            capture("capture", startNeighbour, East, endNeighbour, West);
+            capture(userAction.start, startNeighbour, East, endNeighbour, West);
 
         break;
         }
@@ -713,35 +791,35 @@ void Game::captureToken(struct Useraction userAction)
             struct position startNeighbour = getNeighbour(userAction.start, West);
             struct position endNeighbour = getNeighbour(userAction.end, East);
 
-            capture("capture", startNeighbour, West, endNeighbour, East);
+            capture(userAction.start, startNeighbour, West, endNeighbour, East);
         break;
         }
         case Northwest: { //Token moves to Northwest - check neighbour in the Northwest
             struct position startNeighbour = getNeighbour(userAction.start, Northwest);
             struct position endNeighbour = getNeighbour(userAction.end, Southeast);
 
-            capture("capture", startNeighbour, Northwest, endNeighbour, Southeast);
+            capture(userAction.start, startNeighbour, Northwest, endNeighbour, Southeast);
         break;
         }
         case Southeast: { //Token moves to Southeast - check neighbour in the Southeast
             struct position startNeighbour = getNeighbour(userAction.start, Southeast);
             struct position endNeighbour = getNeighbour(userAction.end, Northwest);
 
-            capture("capture", startNeighbour, Southeast, endNeighbour, Northwest);
+            capture(userAction.start, startNeighbour, Southeast, endNeighbour, Northwest);
         break;
         }
         case Northeast: {//Token moves to Northeast - check neighbour in the Northeast
             struct position startNeighbour = getNeighbour(userAction.start, Northeast);
             struct position endNeighbour = getNeighbour(userAction.end, Southwest);
 
-            capture("capture", startNeighbour, Northeast, endNeighbour, Southwest);
+            capture(userAction.start, startNeighbour, Northeast, endNeighbour, Southwest);
         break;
         }
         case Southwest:{//Token moves to Southwest - check neighbour in the Southwest
             struct position startNeighbour = getNeighbour(userAction.start, Southwest);
             struct position endNeighbour = getNeighbour(userAction.end, Northeast);
 
-            capture("capture", startNeighbour, Southwest, endNeighbour, Northeast);
+            capture(userAction.start, startNeighbour, Southwest, endNeighbour, Northeast);
         break;
         }
     }
@@ -762,7 +840,7 @@ struct Useraction Game::getUseraction(void)
 	
 	string userinput;
 	
-	this->clearScreen();
+	//this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
 		
@@ -789,48 +867,102 @@ struct Useraction Game::getUseraction(void)
 	regex coordinateLiteral = regex("^[A-I][1-5]|[1-5][A-I]$");
 	regex directionLiteral  = regex("^N|NE|E|SE|S|SW|W|NW$");
 	
-	if( regex_match(snippet, coordinateLiteral) )
+	if( regex_match(snippet, coordinateLiteral) ) // user typed XY (...)
 	{
-		// useraction.start = string2position(snippet); // TODO
+		useraction.start = string2position(snippet);
 		
-		if (iss >> snippet)
+		if (iss >> snippet) // user typed XY dir
 		{
-			if( regex_match(snippet, coordinateLiteral) ) // user typed XY XY
+			/*
+			if( regex_match(snippet, directionLiteral) ) // user typed XY dir
 			{
-				// useraction.dir = coordinates2direction(useraction.start, string2position(snippert)); // TODO
-				useraction.command = Move;
+				useraction.dir = string2direction(snippet);
+				//useraction.command = Move;
+				useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 			}
-			else if( regex_match(snippet, directionLiteral) ) // user typed XY dir
+			else
 			{
-				// useraction.dir = string2direction(snippet); // TODO
-				useraction.command = Move;
+				useraction.command = Invalid;
 			}
+			*/
+			
+			useraction.dir = string2direction(snippet);
+			useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 		}
-		else
+		else // user typed XY (only)
 		{
-
 			useraction.command = Invalid;
 		}
+		
+		if (useraction.start.row < 0 || useraction.start.column < 0)
+			useraction.command = Invalid;
 	}
 	else if( regex_match(snippet, directionLiteral) ) // user typed dir
 	{
-		// useraction.dir = string2direction(snippet); // TODO
-		useraction.command = Move;
+		useraction.dir = string2direction(snippet);
+		useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 	}	
 	else // user typed sth else
 	{
 		// as it's no MOVE command, try to identify command on the map
 		auto iterator = commandMap.find(snippet);
-		iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid;
+		//iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid; // TODO validate!!
+		useraction.command = iterator != commandMap.end() ? iterator->second : Invalid;
 	}
 	
 	if(useraction.command == Invalid)
 	{
-		cout << "\nUnknown command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
+		cout << "\nInvalid command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
 		cout << "Press <ENTER> to try again." << flush;
 		getline(cin,userinput); // TODO: just some random string not used anymore
 	}
 	
 	return useraction;
+}
+
+void Game::setFieldOfView(struct position position, struct Grid fieldOfView)
+{
+	this->meinSpielbrett.setFieldOfView(position,fieldOfView);
+}
+
+enum Direction Game::string2direction(string str)
+{
+	// use toupper() in a Lambda expression to transform string to upper case
+	std::for_each( str.begin(), str.end(),
+		// pass each character by reference to callback
+		[](char &c){ c = ::toupper(c); }
+	);
+	
+	auto iterator = directionMap.find(str);
+	return iterator != directionMap.end() ? iterator->second : InvalidDirection;
+}
+
+struct position Game::string2position (string str)
+{
+	struct position pos {-1,-1};
+	char c;
+	
+	if (str.length() == 2)
+	{
+		// use toupper() in a Lambda expression to transform string to upper case
+		std::for_each( str.begin(), str.end(),
+			// pass each character by reference to callback
+			[](char &c){ c = ::toupper(c); }
+		);
+		
+		c = str.at(0);
+		if (c >= 'A' && c <= 'I')
+			pos.column = c - 65;
+		else if (c >= '1' && c <= '5')
+			pos.row = c - 49;
+		
+		c = str.at(1);
+		if (c >= 'A' && c <= 'I')
+			pos.column = c - 65;
+		else if (c >= '1' && c <= '5')
+			pos.row = c - 49;
+	}
+	
+	return pos;
 }
 
