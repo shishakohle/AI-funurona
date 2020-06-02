@@ -31,6 +31,7 @@ Game::Game(void)
 	this->playerBlack.setTeam(BLACK);
 
 	meinSpielbrett.init();
+	meinSpielbrett.updateLeftTokens();
 }
 
 void Game::start() // TODO: private??
@@ -702,7 +703,7 @@ struct position Game::getNeighbour(struct position position, Direction direction
 	return neighbour;
 }
 
-void Game::capture(struct position start, struct position startNeighbour, Direction startNeighbourDir, struct position endNeighbour, Direction endNeighbourDir){
+void Game::capture(struct position startNeighbour, Direction startNeighbourDir, struct position endNeighbour, Direction endNeighbourDir){
 
     bool neighbourFieldEmpty = false;
     int capturedTokens = 0;
@@ -710,11 +711,7 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
     bool approach = false;
     string choice;
 
-	meinSpielbrett.getCell(start).getToken().getGridBool();
-	cout << "start Start" <<  meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) << endl;
-	cout << "start End" <<  meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) << endl;
-
-	if(meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour)){
+	if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
 		//TODO: Include withdraw or approach into Useraction
 		cout << "Please choose withdraw or approach";
 		cin >> choice;
@@ -726,11 +723,11 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
 		}
 	}	
 	//Only Neighbour of endPosition is Token from other Team
-	else if((meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == false) || withdraw){ //Nachbar in Endposition schmeißen
+	if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9) || withdraw){ //Nachbar in Endposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
-				&& endNeighbour.row < 9 && endNeighbour.column > 0
-				&& endNeighbour.column < 5 && endNeighbour.column > 0){
+				&& endNeighbour.row <= 5 && endNeighbour.column >= 0
+				&& endNeighbour.column <= 9 && endNeighbour.column >= 0){
 				//Capture
 				meinSpielbrett.emptyCell(endNeighbour);
 				endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
@@ -741,13 +738,11 @@ void Game::capture(struct position start, struct position startNeighbour, Direct
 		}
 	} 
 	//Only Neighbour of startPosition is Token from other Team
-	else if((meinSpielbrett.getCell(start).getToken().getGridBool(startNeighbour) == true && meinSpielbrett.getCell(start).getToken().getGridBool(endNeighbour) == false) || approach){ //Nachbar in Startposition schmeißen
-		startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
-
+	else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || approach){ //Nachbar in Startposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
-				&& startNeighbour.row < 9 && startNeighbour.row >= 0 
-				&& startNeighbour.row < 5 && startNeighbour.column >= 0 ){
+				&& startNeighbour.row <= 5 && startNeighbour.row >= 0 
+				&& startNeighbour.column <= 9 && startNeighbour.column >= 0 ){
 				//Capture
 				meinSpielbrett.emptyCell(startNeighbour);
 				startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
@@ -767,60 +762,60 @@ void Game::captureToken(struct Useraction userAction)
     switch(userAction.dir)
     {
         case North: { //Token moves to North - check neighbour in the North
-            struct position startNeighbour = getNeighbour(userAction.start, North);
-            struct position endNeighbour = getNeighbour(userAction.end, South);
-
-            capture(userAction.start, startNeighbour, North, endNeighbour, South);
-        }
-		break;
-        case South: { //Token moves to South 
             struct position startNeighbour = getNeighbour(userAction.start, South);
             struct position endNeighbour = getNeighbour(userAction.end, North);
 
-            capture(userAction.start, startNeighbour, South, endNeighbour, North);
+            capture(startNeighbour, South, endNeighbour, North);
+        }
+		break;
+        case South: { //Token moves to South 
+            struct position startNeighbour = getNeighbour(userAction.start, North);
+            struct position endNeighbour = getNeighbour(userAction.end, South);
+
+            capture(startNeighbour, North, endNeighbour, South);
         break;
         }
         case East:{ //Token moves to East - check neighbour in the East
-            struct position startNeighbour = getNeighbour(userAction.start, East);
-            struct position endNeighbour = getNeighbour(userAction.end, West);
+            struct position startNeighbour = getNeighbour(userAction.start, West);
+            struct position endNeighbour = getNeighbour(userAction.end, East);
 
-            capture(userAction.start, startNeighbour, East, endNeighbour, West);
+            capture(startNeighbour, West, endNeighbour, East);
 
         break;
         }
         case West: {    //Token moves to West - check neighbour in the West
-            struct position startNeighbour = getNeighbour(userAction.start, West);
-            struct position endNeighbour = getNeighbour(userAction.end, East);
+            struct position startNeighbour = getNeighbour(userAction.start, East);
+            struct position endNeighbour = getNeighbour(userAction.end, West);
 
-            capture(userAction.start, startNeighbour, West, endNeighbour, East);
+            capture(startNeighbour, East, endNeighbour, West);
         break;
         }
         case Northwest: { //Token moves to Northwest - check neighbour in the Northwest
-            struct position startNeighbour = getNeighbour(userAction.start, Northwest);
-            struct position endNeighbour = getNeighbour(userAction.end, Southeast);
-
-            capture(userAction.start, startNeighbour, Northwest, endNeighbour, Southeast);
-        break;
-        }
-        case Southeast: { //Token moves to Southeast - check neighbour in the Southeast
             struct position startNeighbour = getNeighbour(userAction.start, Southeast);
             struct position endNeighbour = getNeighbour(userAction.end, Northwest);
 
-            capture(userAction.start, startNeighbour, Southeast, endNeighbour, Northwest);
+            capture(startNeighbour, Southeast, endNeighbour, Northwest);
+        break;
+        }
+        case Southeast: { //Token moves to Southeast - check neighbour in the Southeast
+            struct position startNeighbour = getNeighbour(userAction.start, Northwest);
+            struct position endNeighbour = getNeighbour(userAction.end, Southeast);
+
+            capture(startNeighbour, Northwest, endNeighbour, Southeast);
         break;
         }
         case Northeast: {//Token moves to Northeast - check neighbour in the Northeast
-            struct position startNeighbour = getNeighbour(userAction.start, Northeast);
-            struct position endNeighbour = getNeighbour(userAction.end, Southwest);
+            struct position startNeighbour = getNeighbour(userAction.start, Southwest);
+            struct position endNeighbour = getNeighbour(userAction.end, Northeast );
 
-            capture(userAction.start, startNeighbour, Northeast, endNeighbour, Southwest);
+            capture(startNeighbour, Southwest, endNeighbour, Northeast);
         break;
         }
         case Southwest:{//Token moves to Southwest - check neighbour in the Southwest
-            struct position startNeighbour = getNeighbour(userAction.start, Southwest);
-            struct position endNeighbour = getNeighbour(userAction.end, Northeast);
+            struct position startNeighbour = getNeighbour(userAction.start, Northeast );
+            struct position endNeighbour = getNeighbour(userAction.end, Southwest);
 
-            capture(userAction.start, startNeighbour, Southwest, endNeighbour, Northeast);
+            capture(startNeighbour, Northeast, endNeighbour, Southwest);
         break;
         }
     }
