@@ -141,14 +141,13 @@ struct Useraction Game::move(struct Useraction lastPositions)
 
 
 
+	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir, lastPositions));
+
 	moveToken(useraction);
-	}while(true);
-		/*!isMoveValid(useraction.start, useraction.end, useraction.dir, lastPositions));
-	//isMoveLengthOK, isEndPositionFree, beenThereVar, isStartTokenFromCurrentTeam, startPositionInputValid, endPositionInputValid, isDirectionOK));
-	
-	//lastPositions.start = startPosition;
-	//lastPositions.dir = useraction.dir;
-	//meinSpielbrett.print();*/
+	lastPositions.start = useraction.start;
+	lastPositions.dir = useraction.dir;
+
+	return lastPositions;
 }
 
 bool Game::isMoveValid(struct position startPosition, struct position endPosition, int direction, struct Useraction lastaction){
@@ -587,11 +586,12 @@ bool Game::capturingAgain(struct Useraction lastPositions)
 		{
 			if(grid[row][column]==1)
 			{
-				temporaryGrid.gridPosition[row][column] == 0;
+				temporaryGrid.gridPosition[row][column] = 0;
 			}
 		}
 	}
-	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] == 0;
+
+	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] = 0;
 
 
 	setFieldOfView(lastPositions.end, temporaryGrid);
@@ -698,6 +698,9 @@ struct position Game::getNeighbour(struct position position, Direction direction
 			neighbour.row = position.row + 1;
 			neighbour.column = position.column - 1;
 		break;
+
+		case InvalidDirection:
+		break;
 	}
 
 	return neighbour;
@@ -723,7 +726,7 @@ void Game::capture(struct position startNeighbour, Direction startNeighbourDir, 
 		}
 	}	
 	//Only Neighbour of endPosition is Token from other Team
-	if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9) || withdraw){ //Nachbar in Endposition schmeißen
+	if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9) || approach ){ //Nachbar in Endposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
 				&& endNeighbour.row <= 5 && endNeighbour.column >= 0
@@ -738,7 +741,7 @@ void Game::capture(struct position startNeighbour, Direction startNeighbourDir, 
 		}
 	} 
 	//Only Neighbour of startPosition is Token from other Team
-	else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || approach){ //Nachbar in Startposition schmeißen
+	else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || withdraw){ //Nachbar in Startposition schmeißen
 		while(!neighbourFieldEmpty){
 			if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
 				&& startNeighbour.row <= 5 && startNeighbour.row >= 0 
@@ -818,6 +821,8 @@ void Game::captureToken(struct Useraction userAction)
             capture(startNeighbour, Northeast, endNeighbour, Southwest);
         break;
         }
+		case InvalidDirection:
+		break;
     }
 }
 

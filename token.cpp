@@ -55,18 +55,6 @@ bool Token::getGridBool()
 	return gridBool;
 }
 
-bool Token::getGridBool(struct position pos)
-{
-	bool gridBool = false;
-
-	if(fieldOfView.gridPosition[pos.row][pos.column] == 1)
-	{
-		gridBool = true;
-	}
-
-	return gridBool;
-}
-
 void Token::setFieldOfView(struct Grid fieldOfView)
 {
 	this->fieldOfView = fieldOfView;

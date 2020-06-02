@@ -43,7 +43,6 @@ class Token
 		char asChar(void); // TODO invoke this when printing the board. or is this needed overall?
 		static char asChar(enum Team); // TODO: private??
 		bool getGridBool(void);
-		bool getGridBool(struct position);
 		void setFieldOfView(struct Grid);
 		struct Grid getFieldOfView(void);
 		
