@@ -945,7 +945,6 @@ struct Useraction Game::getUseraction(void)
 			if( regex_match(snippet, directionLiteral) ) // user typed XY dir
 			{
 				useraction.dir = string2direction(snippet);
-				//useraction.command = Move;
 				useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 			}
 			else
@@ -968,6 +967,7 @@ struct Useraction Game::getUseraction(void)
 	}
 	else if( regex_match(snippet, directionLiteral) ) // user typed dir
 	{
+		// TODO useraction.start = ...  ,  useraction.end = ...
 		useraction.dir = string2direction(snippet);
 		useraction.command = useraction.dir != InvalidDirection ? Move : Invalid; // TODO validate!!
 	}	
@@ -975,8 +975,7 @@ struct Useraction Game::getUseraction(void)
 	{
 		// as it's no MOVE command, try to identify command on the map
 		auto iterator = commandMap.find(snippet);
-		//iterator != commandMap.end() ? useraction.command = iterator->second : useraction.command = Invalid; // TODO validate!!
-		useraction.command = iterator != commandMap.end() ? iterator->second : Invalid;
+		useraction.command = iterator != commandMap.end() ? iterator->second : Invalid; // TODO validate!!
 	}
 	
 	if(useraction.command == Invalid)
