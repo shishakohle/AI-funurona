@@ -105,6 +105,7 @@ class Game
 		bool isMoveLengthOK;
 		bool isDirectionOK;
 		bool capturingYes;
+		int counterMoves;
 		
 		//RUNDE
 		struct Useraction move(struct Useraction lastPositions);
@@ -116,6 +117,7 @@ class Game
 		bool freePosition(struct position);
 		bool areFieldsConnected(struct position, int direction);
 		bool isMoveDirectionValid(struct Useraction, int direction);
+		bool sameTokenSelected(struct Useraction, struct position);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner

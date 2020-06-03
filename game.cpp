@@ -146,6 +146,7 @@ struct Useraction Game::move(struct Useraction lastPositions)
 	moveToken(useraction);
 	lastPositions.start = useraction.start;
 	lastPositions.dir = useraction.dir;
+	counterMoves++; 
 
 	return lastPositions;
 }
@@ -209,6 +210,13 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		cout << "your last move was in this direction" << endl;
 	}
 
+	//second++ moves in one turn: has to move with same token as before
+	if (!sameTokenSelected(lastaction, startPosition))
+	{
+		returnvalue = false;
+		cout << "you have to select the same token as in your previous moves" << endl;
+	}
+
 	return returnvalue;
 
 }
@@ -216,7 +224,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 // RUNDE
 void Game::turn(void)
 {
- struct Useraction lastPositions;
+ 	struct Useraction lastPositions;
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
 	{
@@ -226,6 +234,8 @@ void Game::turn(void)
 		}
 		cout << endl;
 	}
+
+	counterMoves = 1; //set: first move of current player
 
 	//check if currentPlayer could capture anyone (true = yes)
 	capturingYes = capturingPossible(); 
@@ -251,7 +261,7 @@ void Game::turn(void)
 			}
 
 			lastPositions = move(lastPositions);
-
+			
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
 			
 			//is another move/capturing with latest token possible?
@@ -347,6 +357,28 @@ bool Game::areFieldsConnected(struct position startPosition, int direction)
 
 }
 
+//second++ moves: is same token selected?
+bool Game::sameTokenSelected(struct Useraction lastActions, struct position startPosition)
+{
+	bool value;
+	if(counterMoves>1)
+	{
+		if(startPosition.row == lastActions.end.row && startPosition.column == lastActions.end.column)
+		{
+			value = true;
+		}
+		else
+		{
+			value = false;
+		}
+	}
+	else
+	{
+		value = true;
+	}
+	return value;
+}
+
 int Game::calculateDirection (struct position start, struct position end)
 {
 	//  0	  1		 2		3		4		  5			 6			7
@@ -426,6 +458,9 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 //checks if a token moved in a certain direction can capture someone
 bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 {
+	bool approach = false;
+	bool widthdraw = false;
+	bool returnValue;
 	//approach
 	struct position endPos;
 	endPos.row = currentPosition.row+i;
@@ -436,8 +471,8 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 
 	//widthdraw
 	struct position neighbour2;			
-	neighbour2.row = endPos.row-(2*i); 
-	neighbour2.column = endPos.column-(2*j);
+	neighbour2.row = currentPosition.row-i; 
+	neighbour2.column = currentPosition.column-j;
 
 	int direction = calculateDirection(currentPosition, endPos);
 
@@ -446,32 +481,49 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPosition)
 		//move valid
 		if(freePosition(endPos) && areFieldsConnected(currentPosition, direction))
 		{
-			// the neigboring cell (of endPos) is filled with a token
-			if((!freePosition(neighbour) && positionInputValid(neighbour))||(!freePosition(neighbour2) && positionInputValid(neighbour2))){ //feld oberhalb belegt
-				
-				if((meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) || (meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam()))
+			// the neigboring cell (of endPos - APPROACH) is filled with a token
+			if(!freePosition(neighbour) && positionInputValid(neighbour))
+			{ 
+				if(meinSpielbrett.getCell(neighbour).getToken().getTeam() != this->currentPlayer->getTeam()) 
 				{
-					return true; // captruing possible
+					approach = true; // captruing possible
 				}
 				else
 				{
-					return false; // neighboring token from my own team
+					approach = false; // neighboring token from my own team
+				}
+			} 
+			// the neigboring cell2 (of startPos - WIDTHDRAW) is filled with a token
+			if(!freePosition(neighbour2) && positionInputValid(neighbour2))
+			{ 
+				if(meinSpielbrett.getCell(neighbour2).getToken().getTeam() != this->currentPlayer->getTeam())
+				{
+					widthdraw = true; // captruing possible
+				}
+				else
+				{
+					widthdraw = false; // neighboring token from my own team
 				}
 			} 
 			else //empty cell - no token to capture
 			{
-				return false;
+				returnValue = false;
 			}
 		}
 		else //move not valis
 		{
-			return false;
+			returnValue = false;
 		}
 	}
 	else //can't move there because cell doesn't exist
 	{
-		return false;
+		returnValue = false;
 	}
+	if(approach == true || widthdraw == true)
+	{
+		returnValue = true;
+	}
+	return returnValue;
 }
 
 struct Grid Game::updateGridToken(struct position currentPosition) 
@@ -512,6 +564,20 @@ struct Grid Game::updateGridToken(struct position currentPosition)
 				endPos.row = currentPosition.row+a;
 				endPos.column = currentPosition.column+b;
 				temporaryGrid.gridPosition[endPos.row][endPos.column] = valueTemp;
+
+				//test
+				/*for(int row=0; row<5; row++)
+				{
+					for(int column=0; column<9; column++)
+					{
+						struct position pos1;
+						pos1.row = row;
+						pos1.column = column;
+						cout << temporaryGrid.gridPosition[pos1.row][pos1.column]<< flush;
+					}
+					cout << endl;
+				}
+				cout<<endl;*/
 			} //if doenst work again - add else here
 		}
 	}
@@ -534,8 +600,9 @@ bool Game::capturingPossible()
 			gridCapturing.gridPosition[row][column] = false;
 			
 			//check all tokens from currentPlayer
-			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam())
+			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam() && meinSpielbrett.getCell(pos).getOccupied() == true)
 			{
+				//TODO: cells with token captured = still have token on them...
 				struct Grid temporaryGrid;
 				temporaryGrid = updateGridToken(pos);
 				setFieldOfView(pos, temporaryGrid);
