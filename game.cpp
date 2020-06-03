@@ -603,9 +603,7 @@ bool Game::capturingPossible()
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam() && meinSpielbrett.getCell(pos).getOccupied() == true)
 			{
 				//TODO: cells with token captured = still have token on them...
-				struct Grid temporaryGrid;
-				temporaryGrid = updateGridToken(pos);
-				setFieldOfView(pos, temporaryGrid);
+				setFieldOfView(pos, updateGridToken(pos));
 				
 				//token from currentPlayer can capture someone
 				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true) // boolTemp
