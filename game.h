@@ -121,7 +121,7 @@ class Game
 		bool freePosition(struct position);
 		bool areFieldsConnected(struct position, int direction);
 		bool isMoveDirectionValid(enum Direction);
-		bool sameTokenSelected(struct Useraction, struct position);
+		bool sameTokenSelected(struct position);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner
@@ -132,7 +132,7 @@ class Game
 		bool capturingPossible();
 		bool checkIfCanCapture(int, int, struct position);
 		struct Grid updateGridToken(struct position);
-		bool capturingAgain(struct Useraction);
+		bool capturingAgain();
 		//move Token from start to end position
 		void moveToken (struct Useraction);
 		static struct position getNeighbour(struct position, Direction);
