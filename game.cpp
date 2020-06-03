@@ -289,7 +289,7 @@ bool Game::beenThere(struct position endPosition, struct position startPosition)
 	//to ensure also first position cant be returned to
 	if(grid[startPosition.row][startPosition.column] == 0) 
 	{
-		grid[endPosition.row][endPosition.column] = 1;
+		grid[startPosition.row][startPosition.column] = 1;
 	}
 	if(grid[endPosition.row][endPosition.column] == 0)
 	{
@@ -412,7 +412,7 @@ int Game::calculateDirection (struct position start, struct position end)
 bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
 {
 	struct Grid gridTemp;
-	gridTemp = meinSpielbrett.getCell(endPosition).getToken().getFieldOfView();
+	gridTemp = meinSpielbrett.getCell(startPosition).getToken().getFieldOfView();
 	if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && gridTemp.gridPosition[endPosition.row][endPosition.column] == 1)
 	{
 		return true;
