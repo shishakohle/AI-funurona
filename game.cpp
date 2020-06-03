@@ -102,7 +102,7 @@ void Game::start() // TODO: private??
 
 	
 // ZUG
-struct Useraction Game::move(struct Useraction lastPositions)
+void Game::move() //struct Useraction lastPositions
 {
 	// clear screen
 	/*struct position startPosition;
@@ -141,17 +141,20 @@ struct Useraction Game::move(struct Useraction lastPositions)
 
 
 
-	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir, lastPositions));
+	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir)); //, lastPositions
 
 	moveToken(useraction);
-	lastPositions.start = useraction.start;
-	lastPositions.dir = useraction.dir;
+	//lastPositions.start = useraction.start;
+	//lastPositions.dir = useraction.dir;
+	lastDirection = useraction.dir;
+	currentPosition = useraction.end;
+
 	counterMoves++; 
 
-	return lastPositions;
+	//return lastPositions;
 }
 
-bool Game::isMoveValid(struct position startPosition, struct position endPosition, int direction, struct Useraction lastaction){
+bool Game::isMoveValid(struct position startPosition, struct position endPosition, enum Direction direction){ //, struct Useraction lastaction
 	// Ist auf dieser Position ein Token von dem Team?
 
 	bool returnvalue = true;
@@ -205,17 +208,17 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		cout << "fields are not connected" << endl;
 	}
 
-	if (!isMoveDirectionValid(lastaction, direction)){
+	if (!isMoveDirectionValid(direction)){
 		returnvalue = false;
 		cout << "your last move was in this direction" << endl;
 	}
-
+	/*
 	//second++ moves in one turn: has to move with same token as before
 	if (!sameTokenSelected(lastaction, startPosition))
 	{
 		returnvalue = false;
 		cout << "you have to select the same token as in your previous moves" << endl;
-	}
+	}*/
 
 	return returnvalue;
 
@@ -224,7 +227,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 // RUNDE
 void Game::turn(void)
 {
- 	struct Useraction lastPositions;
+ 	//struct Useraction lastPositions;
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
 	{
@@ -260,8 +263,8 @@ void Game::turn(void)
 				cout << endl;
 			}
 
-			lastPositions = move(lastPositions);
-			
+			//lastPositions = move(lastPositions);
+			move();
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
 			
 			//is another move/capturing with latest token possible?
@@ -323,18 +326,15 @@ bool Game::freePosition(struct position position)
 	}
 }
 
-bool Game::isMoveDirectionValid(struct Useraction lastactions, int direction){
-	
-	
-	if (lastactions.dir == direction)
+bool Game::isMoveDirectionValid(enum Direction direction)
+{
+	if (lastDirection == direction)
 	{
 		return false;
 	}
 	else{
 		return true;
 	}
-
-
 }
 
 bool Game::areFieldsConnected(struct position startPosition, int direction)
@@ -638,6 +638,18 @@ bool Game::capturingAgain(struct Useraction lastPositions)
 	struct Grid temporaryGrid;
 	temporaryGrid = updateGridToken(lastPositions.end);
 
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			struct position pos1;
+			pos1.row = row;
+			pos1.column = column;
+			cout << temporaryGrid.gridPosition[pos1.row][pos1.column]<< flush;
+		}
+		cout << endl;
+	}
+	
 	//sameDirection --> not allowed
 	int i = lastPositions.end.row - lastPositions.start.row;
 	int j = lastPositions.end.column - lastPositions.start.column;
@@ -645,6 +657,8 @@ bool Game::capturingAgain(struct Useraction lastPositions)
 	struct position sameDirectionPosition;
 	sameDirectionPosition.row = lastPositions.end.row+i;
 	sameDirectionPosition.column = lastPositions.end.column+j;
+
+	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] = 0;
 
 	//remove positions where cant go (beenThere, sameDirection)
 	for(int row=0; row<5; row++)
@@ -658,7 +672,7 @@ bool Game::capturingAgain(struct Useraction lastPositions)
 		}
 	}
 
-	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] = 0;
+	
 
 
 	setFieldOfView(lastPositions.end, temporaryGrid);

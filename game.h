@@ -94,7 +94,7 @@ class Game
 		Player *winner;
 		Board meinSpielbrett; // TODO: rename
 		Player playerWhite, playerBlack;
-		bool grid[5][9];
+		bool grid[5][9]; //beenThere
 		struct Grid gridCapturing;
 		bool anotherMove;
 		bool isStartTokenFromCurrentTeam;
@@ -106,17 +106,21 @@ class Game
 		bool isDirectionOK;
 		bool capturingYes;
 		int counterMoves;
+
+		//of first move
+		struct position currentPosition;
+		enum Direction lastDirection;
 		
 		//RUNDE
-		struct Useraction move(struct Useraction lastPositions);
+		void move(); //struct Useraction lastPositions
 		//ZUG
 		void turn(void);
-		bool isMoveValid(struct position,  struct position, int direction, struct Useraction);
+		bool isMoveValid(struct position,  struct position, enum Direction); //, struct Useraction
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position, struct position);
 		bool freePosition(struct position);
 		bool areFieldsConnected(struct position, int direction);
-		bool isMoveDirectionValid(struct Useraction, int direction);
+		bool isMoveDirectionValid(enum Direction);
 		bool sameTokenSelected(struct Useraction, struct position);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
