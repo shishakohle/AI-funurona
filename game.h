@@ -25,6 +25,7 @@
 #define DIRECTION_H
 
 enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest, InvalidDirection};
+enum CaptureOption {Approach, Withdraw, Unset};
 
 static const map <string, Direction> directionMap
 {
@@ -69,10 +70,11 @@ static const map <string, Command> commandMap
 
 struct Useraction
 {
-	struct position  start;
-	struct position  end;
-	enum   Direction dir;
-	enum   Command   command;
+	struct position  		start;
+	struct position  		end;
+	enum   Direction		dir;
+	enum   Command 			command;
+	enum   CaptureOption	captureOption;
 };
 
 #endif
@@ -136,7 +138,7 @@ class Game
 		//move Token from start to end position
 		void moveToken (struct Useraction);
 		static struct position getNeighbour(struct position, Direction);
-		void capture(struct position, Direction, struct position, Direction);
+		void capture(struct Useraction, struct position, Direction, struct position, Direction);
 		void captureToken(struct Useraction);
 		void clearScreen(void);
 		struct Useraction getUseraction(void);
