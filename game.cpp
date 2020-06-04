@@ -117,11 +117,13 @@ void Game::move() //struct Useraction lastPositions
 		}
 		while(useraction.command == Invalid);
 		
+		/*
 		cout << "USERACTION DETECTED:" << endl;
 		cout << "\tcommand: " << useraction.command << endl;
 		cout << "\tstart: row " << useraction.start.row << ", column " << useraction.start.column << endl;
-		cout << "\end: row " << useraction.end.row << ", column " << useraction.end.column << endl;
+		cout << "\tend: row " << useraction.end.row << ", column " << useraction.end.column << endl;
 		cout << "\tdirection: " << useraction.dir << endl;
+		*/
 		
 		switch(useraction.command)
 		{
