@@ -142,11 +142,10 @@ void Game::move() //struct Useraction lastPositions
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
-
-
+	
 
 	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir)); //, lastPositions
-
+		
 	//update grid for beenThere
 	if(counterMoves == 1) 
 	{
@@ -158,6 +157,7 @@ void Game::move() //struct Useraction lastPositions
 	}
 
 	moveToken(useraction);
+	
 	//lastPositions.start = useraction.start;
 	//lastPositions.dir = useraction.dir;
 	lastDirection = useraction.dir;
@@ -263,10 +263,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			//errorcounter++;
 		}
 	}
-
-
-	
-
 	return returnvalue;
 }
 
@@ -293,8 +289,8 @@ void Game::turn(void)
 	{
 			move();
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
-			
 			//is another move/capturing with latest token possible?
+			
 			if(capturingAgain()) 
 			{
 				anotherMove = true;
@@ -470,34 +466,32 @@ int Game::calculateDirection (struct position start, struct position end)
 
 bool Game::rightfulCapturing(struct position startPosition, struct position endPosition)
 {
-	struct Grid gridTemp;
-	gridTemp = meinSpielbrett.getCell(startPosition).getToken().getFieldOfView();
+	bool value = false;
+	//struct Grid gridTemp;
+	//gridTemp = meinSpielbrett.getCell(startPosition).getToken().getFieldOfView();
 	if(counterMoves == 1)
 	{
-		if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && gridTemp.gridPosition[endPosition.row][endPosition.column] == 1)
+		if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
 		{
-			return true;
+			value = true;
 		}
 		else
 		{
-			return false;
-		}
-	}
-	else if(counterMoves > 1)
-	{
-		if(gridTemp.gridPosition[endPosition.row][endPosition.column] == 1)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
+			value = false;
 		}
 	}
 	else
 	{
-		return false;
+		if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
+		{
+			value = true;
+		}
+		else
+		{
+			value = false;
+		}
 	}
+	return value; 
 }
 
 //checks if a token moved in a certain direction can capture someone
@@ -792,8 +786,8 @@ void Game::gameOver(void)
 //move Token from start to end position
 void Game::moveToken (struct Useraction useraction)
 {
-	Token tokenToMove = meinSpielbrett.getCell(useraction.start).getToken();
-	meinSpielbrett.setTokenOnCell(useraction.end, tokenToMove);
+	//Token tokenToMove = meinSpielbrett.getCell(useraction.start).getToken();
+	meinSpielbrett.setTokenOnCell(useraction.end, meinSpielbrett.getCell(useraction.start).getToken()); //tokenToMove
 	meinSpielbrett.emptyCell(useraction.start);
 	captureToken(useraction);
 }
@@ -851,49 +845,65 @@ struct position Game::getNeighbour(struct position position, Direction direction
 
 void Game::capture(struct Useraction useraction, struct position startNeighbour, Direction startNeighbourDir, struct position endNeighbour, Direction endNeighbourDir){
 
-    bool neighbourFieldEmpty = false;
+	bool neighbourFieldEmpty = false;
     int capturedTokens = 0;
     string choice;
 
-	if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
-
-		while(choice.compare("W") != 0 && choice.compare("A") != 0 ){
-			cout << "Capturing not explicit: Please choose if you want to withdraw ('W') or approach ('A'):";
-			cin >> choice;
-			
-			if(choice.compare("W") == 0){
-				useraction.captureOption = Withdraw;
-			} else if(choice.compare("A") == 0){
-				useraction.captureOption = Approach;
+	if(positionInputValid(startNeighbour) && positionInputValid(endNeighbour))
+	{
+		//At start AND endPosition is Token from other Team
+		if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
+			while(choice.compare("W") != 0 && choice.compare("A") != 0 ){
+				cout << "Capturing not explicit: Please choose if you want to withdraw ('W') or approach ('A'):";
+				cin >> choice;
+				
+				if(choice.compare("W") == 0){
+					useraction.captureOption = Withdraw;
+				} else if(choice.compare("A") == 0){
+					useraction.captureOption = Approach;
+				}
 			}
 		}
 	}	
 	//Only Neighbour of endPosition is Token from other Team
-	if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && endNeighbour.row < 9) || useraction.captureOption == Approach ){ //Nachbar in Endposition schmeißen
-		while(!neighbourFieldEmpty){
-			if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)
-				&& endNeighbour.row <= 5 && endNeighbour.column >= 0
-				&& endNeighbour.column <= 9 && endNeighbour.column >= 0){
-				//Capture
-				meinSpielbrett.emptyCell(endNeighbour);
-				endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
-				capturedTokens++;
-			} else{
-				neighbourFieldEmpty = true;
+	if(positionInputValid(endNeighbour))
+	{
+		//TODO: shouldnt be able to check anything if cell doesnt exist
+		if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)) || useraction.captureOption == Approach ){ //Nachbar in Endposition schmeißen
+			while(!neighbourFieldEmpty){
+				if(positionInputValid(endNeighbour))
+				{
+					if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
+						//Capture
+						meinSpielbrett.emptyCell(endNeighbour);
+						endNeighbour = getNeighbour(endNeighbour, endNeighbourDir);
+						capturedTokens++;
+					} else{
+						neighbourFieldEmpty = true;
+					}
+				}
+				else
+				{
+					neighbourFieldEmpty = true;
+				}
 			}
-		}
-	} 
+		} 
+	}
 	//Only Neighbour of startPosition is Token from other Team
-	else if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || useraction.captureOption == Withdraw){ //Nachbar in Startposition schmeißen
+	if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || useraction.captureOption == Withdraw){ //Nachbar in Startposition schmeißen
 		while(!neighbourFieldEmpty){
-			if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour) 
-				&& startNeighbour.row <= 5 && startNeighbour.row >= 0 
-				&& startNeighbour.column <= 9 && startNeighbour.column >= 0 ){
-				//Capture
-				meinSpielbrett.emptyCell(startNeighbour);
-				startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
-				capturedTokens++;
-			} else{
+			if(positionInputValid(startNeighbour))
+			{
+				if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour)){
+					meinSpielbrett.emptyCell(startNeighbour);
+					startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
+					capturedTokens++;
+				} else{
+					neighbourFieldEmpty = true;
+				}
+			}
+			else
+			{
 				neighbourFieldEmpty = true;
 			}
 		}
@@ -905,7 +915,7 @@ void Game::capture(struct Useraction useraction, struct position startNeighbour,
 
 void Game::captureToken(struct Useraction userAction)
 {
-    switch(userAction.dir)
+	switch(userAction.dir)
     {
         case North: { //Token moves to North - check neighbour in the North
             struct position startNeighbour = getNeighbour(userAction.start, South);
@@ -937,7 +947,7 @@ void Game::captureToken(struct Useraction userAction)
         break;
         }
         case Northwest: { //Token moves to Northwest - check neighbour in the Northwest
-            struct position startNeighbour = getNeighbour(userAction.start, Southeast);
+			struct position startNeighbour = getNeighbour(userAction.start, Southeast);
             struct position endNeighbour = getNeighbour(userAction.end, Northwest);
 
             capture(userAction, startNeighbour, Southeast, endNeighbour, Northwest);
@@ -964,7 +974,7 @@ void Game::captureToken(struct Useraction userAction)
             capture(userAction, startNeighbour, Northeast, endNeighbour, Southwest);
         break;
         }
-		case InvalidDirection:
+		case InvalidDirection: 
 		break;
     }
 }
