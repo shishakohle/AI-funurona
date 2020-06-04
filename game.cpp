@@ -95,6 +95,7 @@ void Game::start() // TODO: private??
 		{
 			currentPlayer = &playerWhite;
 		}
+		lastDirection = InvalidDirection;
 	}
 	cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
 }
