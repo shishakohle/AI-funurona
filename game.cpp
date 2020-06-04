@@ -160,69 +160,75 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 
 	bool returnvalue = true;
 
-	if(!isTokenFromCurrentTeam(startPosition)){
-		returnvalue = false;
-		cout << "Token is not from current team" << endl;
-	}
-
-	// cout << "Choose endposition:" << endl;
-	// endPosition = chooseToken();
-	// 	cout << "\tEndposition COL: " << endPosition.column << endl;
-	// 	cout << "\tEndposition ROW: " << endPosition.row << endl;
-
-	if(!positionInputValid(startPosition)) {
-		returnvalue = false;
-		cout << "startposition input invalid" << endl;
-	}
-/*	if (!positionInputValid(endPosition)){ //wird das noch gebraucht?
-		returnvalue = false;
-		cout << "endpositioninput invalid" << endl;
-	}*/
-
-	//war in diesem Zug schon mal auf diesem spielfeld?
-	if(!beenThere(endPosition, startPosition)){
-		returnvalue = false;
-		cout << "you have already been to this field in your turn" << endl;
-	}
-	
-	//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
-	if(capturingYes)
+	//input needs to be valid before checking other rules
+	if(positionInputValid(startPosition) || positionInputValid(endPosition))
 	{
-		if(!rightfulCapturing(startPosition, endPosition))
+		if(!isTokenFromCurrentTeam(startPosition)){
+			returnvalue = false;
+			cout << "Token is not from current team" << endl;
+		}
+
+		// cout << "Choose endposition:" << endl;
+		// endPosition = chooseToken();
+		// 	cout << "\tEndposition COL: " << endPosition.column << endl;
+		// 	cout << "\tEndposition ROW: " << endPosition.row << endl;
+
+		//war in diesem Zug schon mal auf diesem spielfeld?
+		if(!beenThere(endPosition, startPosition)){
+			returnvalue = false;
+			cout << "you have already been to this field in your turn" << endl;
+		}
+		
+		//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
+		if(capturingYes)
+		{
+			if(!rightfulCapturing(startPosition, endPosition))
+			{
+				returnvalue = false;
+				cout << "you are able to capture someone and therefore have to" << endl;
+			}
+		}
+
+		// Kann dieser Zug ausgeführt werden?
+		// - Ist die Position eine freie Position?
+		if(!freePosition(endPosition))
 		{
 			returnvalue = false;
-			cout << "you are able to capture someone and therefore have to" << endl;
+			cout << "this position is taken by another token" << endl;
+		}
+		
+		// - ist dieses feld erreichbar? (felder müssen verbunden sein)
+		if(!areFieldsConnected(startPosition, direction)) {
+			returnvalue = false;
+			cout << "fields are not connected" << endl;
+		}
+
+		if (!isMoveDirectionValid(direction)){
+			returnvalue = false;
+			cout << "your last move was in this direction" << endl;
+		}
+		
+		//second++ moves in one turn: has to move with same token as before
+		if (!sameTokenSelected(startPosition))
+		{
+			returnvalue = false;
+			cout << "you have to select the same token as in your previous moves" << endl;
 		}
 	}
-
-	// Kann dieser Zug ausgeführt werden?
-	// - Ist die Position eine freie Position?
-	if(!freePosition(endPosition))
+	else
 	{
-		returnvalue = false;
-		cout << "this position is taken by another token" << endl;
+		if(!positionInputValid(startPosition)) 
+		{
+			returnvalue = false;
+			cout << "startposition input invalid" << endl;
+		}
+		if (!positionInputValid(endPosition))
+		{ 
+			returnvalue = false;
+			cout << "endpositioninput invalid" << endl;
+		}
 	}
-	
-	// - ist dieses feld erreichbar? (felder müssen verbunden sein)
-	if(!areFieldsConnected(startPosition, direction)) {
-		returnvalue = false;
-		cout << "fields are not connected" << endl;
-	}
-
-	if (!isMoveDirectionValid(direction)){
-		returnvalue = false;
-		cout << "your last move was in this direction" << endl;
-	}
-	
-	//second++ moves in one turn: has to move with same token as before
-	if (!sameTokenSelected(startPosition))
-	{
-		returnvalue = false;
-		cout << "you have to select the same token as in your previous moves" << endl;
-	}
-
 	return returnvalue;
-
 }
 
 // RUNDE
