@@ -169,13 +169,17 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	// Ist auf dieser Position ein Token von dem Team?
 
 	bool returnvalue = true;
+	std::vector<string> errorvec;
+	int errorcounter= -1;
 
 	//input needs to be valid before checking other rules
 	if(positionInputValid(startPosition) || positionInputValid(endPosition))
 	{
 		if(!isTokenFromCurrentTeam(startPosition)){
 			returnvalue = false;
-			cout << "Token is not from current team" << endl;
+			//cout << "Token is not from current team" << endl;
+			errorvec.push_back("Token is not from current team");
+			errorcounter++;
 		}
 
 		// cout << "Choose endposition:" << endl;
@@ -187,7 +191,9 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		if(!beenThere(endPosition))
 		{
 			returnvalue = false;
-			cout << "you have already been to this field in your turn" << endl;
+			//cout << "you have already been to this field in your turn" << endl;
+			errorvec.push_back("you have already been to this field in your turn");
+			errorcounter++;
 		}
 		
 		//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
@@ -196,7 +202,10 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			if(!rightfulCapturing(startPosition, endPosition))
 			{
 				returnvalue = false;
-				cout << "you are able to capture someone and therefore have to" << endl;
+				//cout << "you are able to capture someone and therefore have to" << endl;
+				errorvec.push_back("you are able to capture someone and therefore have to");
+				errorcounter++;
+				
 			}
 		}
 
@@ -205,25 +214,33 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		if(!freePosition(endPosition))
 		{
 			returnvalue = false;
-			cout << "this position is taken by another token" << endl;
+			//cout << "this position is taken by another token" << endl;
+			errorvec.push_back("this position is taken by another token");
+			errorcounter++;
 		}
 		
 		// - ist dieses feld erreichbar? (felder müssen verbunden sein)
 		if(!areFieldsConnected(startPosition, direction)) {
 			returnvalue = false;
-			cout << "fields are not connected" << endl;
+			//cout << "fields are not connected" << endl;
+			errorvec.push_back("fields are not connected");
+			errorcounter++;
 		}
 
 		if (!isMoveDirectionValid(direction)){
 			returnvalue = false;
-			cout << "your last move was in this direction" << endl;
+			//cout << "your last move was in this direction" << endl;
+			errorvec.push_back("your last move was in this direction");
+			errorcounter++;
 		}
 		
 		//second++ moves in one turn: has to move with same token as before
 		if (!sameTokenSelected(startPosition))
 		{
 			returnvalue = false;
-			cout << "you have to select the same token as in your previous moves" << endl;
+			//cout << "you have to select the same token as in your previous moves" << endl;
+			errorvec.push_back("you have to select the same token as in your previous moves");
+			errorcounter++;
 		}
 	}
 	else
@@ -231,12 +248,21 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		if(!positionInputValid(startPosition)) 
 		{
 			returnvalue = false;
-			cout << "startposition input invalid" << endl;
+			//cout << "startposition input invalid" << endl;
+			errorvec.push_back("startposition input invalid");
+			errorcounter++;
 		}
 		if (!positionInputValid(endPosition))
 		{ 
 			returnvalue = false;
-			cout << "endpositioninput invalid" << endl;
+			//cout << "endpositioninput invalid" << endl;
+			errorvec.push_back("endposition input input invalid");
+			errorcounter++;
+		}
+	}
+	if (errorcounter>=0){
+		for (int i=0; i<=errorcounter; i++){
+			cout << errorvec[i] << endl;
 		}
 	}
 	return returnvalue;
