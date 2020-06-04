@@ -144,6 +144,16 @@ void Game::move() //struct Useraction lastPositions
 
 	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir)); //, lastPositions
 
+	//update grid for beenThere
+	if(counterMoves == 1) 
+	{
+		grid[useraction.start.row][useraction.start.column] = 1;
+	}
+	if(grid[useraction.end.row][useraction.end.column] == 0)
+	{
+		grid[useraction.end.row][useraction.end.column] = 1;
+	}
+
 	moveToken(useraction);
 	//lastPositions.start = useraction.start;
 	//lastPositions.dir = useraction.dir;
@@ -174,7 +184,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		// 	cout << "\tEndposition ROW: " << endPosition.row << endl;
 
 		//war in diesem Zug schon mal auf diesem spielfeld?
-		if(!beenThere(endPosition, startPosition)){
+		if(!beenThere(endPosition))
+		{
 			returnvalue = false;
 			cout << "you have already been to this field in your turn" << endl;
 		}
@@ -283,16 +294,10 @@ bool Game::isTokenFromCurrentTeam(struct position position)
 }
 
 //make sure token doenst enter cell twice in a turn
-bool Game::beenThere(struct position endPosition, struct position startPosition) 
+bool Game::beenThere(struct position endPosition) 
 {
-	//to ensure also first position cant be returned to
-	if(counterMoves == 1) 
-	{
-		grid[startPosition.row][startPosition.column] = 1;
-	}
 	if(grid[endPosition.row][endPosition.column] == 0)
 	{
-		grid[endPosition.row][endPosition.column] = 1;
 		return true;
 	}
 	else

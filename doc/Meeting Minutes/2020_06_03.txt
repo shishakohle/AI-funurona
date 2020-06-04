@@ -1,0 +1,44 @@
+03/06/2020 - 18:30
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: ev. Useraction als member zur Klasse, Abfrage widthdraw/approach als useraction (enum), getUseraction mit Übergabe von lastUseraction (2.6)
+	- Kerstin: merge , mit Ingo useraction approach/widthdraw
+	- Lukas: globale errormessage --> was wenn mehrere messages, wieder resetten (Y) --> liste an error messages? --> dort wo wir wollen anzeigen, (B)
+	- Anna: (W) --> DONE
+	- ALLE: Gedanken zu AI machen, auf Meeting vorbereiten
+
+During Meeting:
+> Update of Tasks
+> change lastPositions (Rückgabe von letzter Useraction) to currentPosition and lastDirection
+> Ingo: finding error of capturingPossibile - updateGrid directly into setter of gridToken
+> Anna: implementatin of several moves (if can capture more)
+> Goals: 
+	- finish game implementation so that it all works
+> Meetingwith Mehnen: Do.4 um 16 Uhr auf Teams
+
+Next Goals/Tasks: --> continue
+	- Ingo: ev. Useraction als member zur Klasse, Abfrage widthdraw/approach als useraction (enum), getUseraction mit Übergabe von lastUseraction (2.6)
+	- Kerstin: merge , mit Ingo useraction approach/widthdraw
+	- Lukas: globale errormessage --> was wenn mehrere messages, wieder resetten (Y) --> liste an error messages? --> dort wo wir wollen anzeigen, (B)
+	- Anna: (W)
+	- ALLE: Gedanken zu AI machen, auf Meeting vorbereiten
+
+Still to do:
+	- Style of enum team color in cout 
+	- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+	- another move --> ask user for input of row/column/skip --> cant skip first move 
+	- ev.: Ausweg für quick return bei checkIfCapturePossible sobald einer schmeißen kann, damit man nicht alles durchrechnen muss
+	- globale errormessage --> was wenn mehrere messages, wieder resetten (Y) --> liste an error messages? --> Lukas
+	- useraction - add: rule --> rules of funorona
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw als useraction - wie? --> in useraction hinein und nur abfragen, wenn notwendig --> Ingo
+	- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar)
+		--> Second+ Move: getUseraction --> übergeben von lastuseraction (2.6) - Ingo
+		--> braucht validierung ob eh richtiger token - Regel (W) - Anna --> DONE
+	- cant skip first move - Regelabfrage (counter move) (B) - Lukas
+		--> differentiate between first move and additional moves (with SAME token) --> save activeToken (X)
+
+Next Meeting: Mi. 04.06, 15:00 Uhr (preparation for Mehnen)
+
+
