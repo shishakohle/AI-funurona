@@ -347,9 +347,16 @@ bool Game::freePosition(struct position position)
 
 bool Game::isMoveDirectionValid(enum Direction direction)
 {
-	if (lastDirection == direction)
+	if(counterMoves > 1)
 	{
-		return false;
+		if (lastDirection == direction)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 	else{
 		return true;
