@@ -21,9 +21,6 @@ all+run: all
 clean:
 	@ $(RM) $(OUT)
 
-test: test1
+test: $(OUT)
+	@ $(RUNPREFIX)$(OUT)
 
-test1: $(OUT) ./tests/test1_input.txt ./tests/test1_correct.txt
-	@./$(OUT) < ./tests/test1_input.txt > ./tests/test1_output.txt
-	diff ./tests/test1_correct.txt ./tests/test1_output.txt
-#	@$(RM) ./tests/outputXY.txt
