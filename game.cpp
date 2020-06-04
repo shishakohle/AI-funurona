@@ -113,10 +113,13 @@ void Game::move() //struct Useraction lastPositions
 	{
 		do
 		{
+		
 			useraction = getUseraction();
 		}
 		while(useraction.command == Invalid);
 		
+		
+
 		/*
 		cout << "USERACTION DETECTED:" << endl;
 		cout << "\tcommand: " << useraction.command << endl;
@@ -169,8 +172,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	// Ist auf dieser Position ein Token von dem Team?
 
 	bool returnvalue = true;
-	std::vector<string> errorvec;
-	int errorcounter= -1;
+	//std::vector<string> errorvec;
+	//int errorcounter= -1;
 
 	//input needs to be valid before checking other rules
 	if(positionInputValid(startPosition) || positionInputValid(endPosition))
@@ -179,7 +182,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "Token is not from current team" << endl;
 			errorvec.push_back("Token is not from current team");
-			errorcounter++;
+			//errorcounter++;
 		}
 
 		// cout << "Choose endposition:" << endl;
@@ -193,7 +196,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "you have already been to this field in your turn" << endl;
 			errorvec.push_back("you have already been to this field in your turn");
-			errorcounter++;
+			//errorcounter++;
 		}
 		
 		//if can capture --> see if chose right token to right position, else cant capture anyway and any (valid) move possible
@@ -204,7 +207,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 				returnvalue = false;
 				//cout << "you are able to capture someone and therefore have to" << endl;
 				errorvec.push_back("you are able to capture someone and therefore have to");
-				errorcounter++;
+				//errorcounter++;
 				
 			}
 		}
@@ -216,7 +219,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "this position is taken by another token" << endl;
 			errorvec.push_back("this position is taken by another token");
-			errorcounter++;
+			//errorcounter++;
 		}
 		
 		// - ist dieses feld erreichbar? (felder müssen verbunden sein)
@@ -224,14 +227,14 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "fields are not connected" << endl;
 			errorvec.push_back("fields are not connected");
-			errorcounter++;
+			//errorcounter++;
 		}
 
 		if (!isMoveDirectionValid(direction)){
 			returnvalue = false;
 			//cout << "your last move was in this direction" << endl;
 			errorvec.push_back("your last move was in this direction");
-			errorcounter++;
+			//errorcounter++;
 		}
 		
 		//second++ moves in one turn: has to move with same token as before
@@ -240,7 +243,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "you have to select the same token as in your previous moves" << endl;
 			errorvec.push_back("you have to select the same token as in your previous moves");
-			errorcounter++;
+			//errorcounter++;
 		}
 	}
 	else
@@ -250,21 +253,20 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			//cout << "startposition input invalid" << endl;
 			errorvec.push_back("startposition input invalid");
-			errorcounter++;
+			//errorcounter++;
 		}
 		if (!positionInputValid(endPosition))
 		{ 
 			returnvalue = false;
 			//cout << "endpositioninput invalid" << endl;
 			errorvec.push_back("endposition input input invalid");
-			errorcounter++;
+			//errorcounter++;
 		}
 	}
-	if (errorcounter>=0){
-		for (int i=0; i<=errorcounter; i++){
-			cout << errorvec[i] << endl;
-		}
-	}
+
+
+	
+
 	return returnvalue;
 }
 
@@ -976,9 +978,18 @@ struct Useraction Game::getUseraction(void)
 	
 	string userinput;
 	
-	//this->clearScreen();
+	this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
+
+	//show all errors
+			for(string entry : errorvec){
+				cout << entry << endl;
+			}
+			//clear all errors
+			errorvec.clear();
+
+			cout << endl;
 		
 	do
 	{
@@ -1048,9 +1059,10 @@ struct Useraction Game::getUseraction(void)
 	
 	if(useraction.command == Invalid)
 	{
-		cout << "\nInvalid command: " << snippet << "\nUse command \"help\" for a short manual." << endl;
-		cout << "Press <ENTER> to try again." << flush;
-		getline(cin,userinput); // TODO: just some random string not used anymore
+		string temp = "Invalid command: " + snippet + "\nUse command \"help\" for a short manual.";
+		errorvec.push_back(temp);
+		// cout << "Press <ENTER> to try again." << flush;
+		// getline(cin,userinput); // TODO: just some random string not used anymore
 	}
 	
 	return useraction;

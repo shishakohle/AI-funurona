@@ -17,9 +17,11 @@
 #define LINES_TO_CLEAR 50
 
 #include <map>
+#include <vector>
 	
 #include "board.h"
 #include "player.h"
+
 
 #ifndef DIRECTION_H
 #define DIRECTION_H
@@ -89,6 +91,7 @@ class Game
 		void start();
 		static enum Direction string2direction(string);
 		static struct position string2position(string);
+		vector<string> errorvec;
 		
 	private:
 		Player *currentPlayer;
