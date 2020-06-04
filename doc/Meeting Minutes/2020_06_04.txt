@@ -51,10 +51,66 @@ Still to do:
 	- cant skip first move - Regelabfrage (counter move) (B) - Lukas
 		--> differentiate between first move and additional moves (with SAME token) --> save activeToken (X)
 
+List of errors:
+	- E4 N (white), F2 NW (black) --> programm just stops (Anna) --> Fehler wo in moveToken
+	- E4 N (white) --> Segmentation fault (Ingo) 
+
 Meeting with Mehnen:
-	- 
+	- demonstartion of game 
+	- plan für KI: input user als object (useraction)
+		- min max algorithmus für alpha beta pruning (von tiktactoe nehmen)
+		- heuristic überlegen 
+			> Anzahl der schmeißbaren tokens
+			> je mehr ich behalten kann
+			> Gegner an Wände treiben
+			> bekommen dass Gegner token in einer Reihe
+			> selbst nicht schmeißbar und nicht in einer Reihe
+			> selbst im Zentrum bleiben
+			> eigene Steine verteilter
+		- Tiefe: Entscheidungsbaum recht breit --> überlegen welche Tiefe Sinn macht
+			> Speicherprobleme
+			> Analyse/Überlegen wie tief sinnvoll, dass es computer gerade noch packt (Zeit) 
+			> Tiefe von 7 (Tipp), ev mehr?
+			> beste für mich (max). schlechteste für gegner (min) 
+			> Baum als verkettete Liste
+			> Anfang weniger auf Tiefe fokusieren - wird kompliziert
+			> je besser heuristic desto geringer branching factor
+		- Ansatz von Grids: 
+			> zur Berechnung über Grids - speichern aber nur Endergebnis (wert der heuristic)
+		- bessere heuristic - mehr Tiefe!
+	- Analysen
+		- wie speicherplatz-intensiv
+		- KI Analyse (nicht Spielmechanik) - Zeit und Speicher
+		- GPROF, WHILEGRIND (?) - führen Applikation aus und messen - wo verlier ich Zeit?
+		- sind alle loops/berechnungen notwendig (GPROF)
+		- WHILEGRIND: wie gehts stack etc, wer hat wann wieviel Speicher, wieviel insgesamt
+		- WHILEGRIND: unter windows wird nicht gehen (weil andere Speicherverwaltung)
+		- Windows: anderes Analysetool verwenden (memory analyse visual studio)
+		- reicht wenn einer macht 
+		- "how to do whilegrind" anschaun 
+	- Makefile: 
+		- G++
+		- maketest mit GPROF und WHILEGRIND
+		- mingw hat GPROF inkludiert
+		- sollten make test targed
+		- ein korekter Aufruf auf Komandozeile
+		- maketest - zum richtigen Aufruf --> ruft ./funorona.out auf
+	- C++ 11 standard passt
+	- Next Steps:
+		- Heuristiken herstellen - wie gut ist ein Zug evaluieren
+		- Min Max rein (wenn fertig bei 80%)
+		- Heuristiken verbessern (mit Analysen)
+	- Deadline:
+		- 17. Juli 2020
+	- für perfekte Note (1)
+		- 1 GHz Rechner: SPIEL unter 2.5 - 5 sekunden!! (bei KI gegen KI)
+		- mehr heuristiken - warum welche gut (begründen) 
+		- Unentschieden: Katz-und-Maus Spiel --> wenn situation die jetzt schon mal oft genug verhanden (2 Mal) --> AUFHÖREN = UNENTSCHIEDEN
+		- Bei Mensch kein Unentschieden - hat andere strategische Möglichkeiten
 
+Lukas und Ingo: start with min-max and heuristics
+Kerstin und Anna: find errors and correct them
 
-Next Meeting: Fr. 05.06, 15:00 Uhr 
+Next Meeting: Mo. 08.06, 17:00 Uhr 
 
 
