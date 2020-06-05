@@ -292,7 +292,7 @@ void Game::turn(void)
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
 			//is another move/capturing with latest token possible?
 			
-			if(capturingAgain()) 
+			if(capturingAgain() && capturingYes) 
 			{
 				anotherMove = true;
 			} 
@@ -849,6 +849,8 @@ void Game::capture(struct Useraction useraction, struct position startNeighbour,
 	bool neighbourFieldEmpty = false;
     int capturedTokens = 0;
     string choice;
+	bool startNeighbourValid = false;
+	bool endNeighbourValid = false;
 
 	if(positionInputValid(startNeighbour) && positionInputValid(endNeighbour))
 	{
@@ -866,13 +868,32 @@ void Game::capture(struct Useraction useraction, struct position startNeighbour,
 			}
 		}
 	}	
+
+	if(positionInputValid(startNeighbour))
+	{
+		if(freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour))
+		{
+			startNeighbourValid = true;
+		}
+		else
+		{
+			startNeighbourValid = false;
+		}
+	}
+	else
+	{
+		startNeighbourValid = true;
+	}
+
+
 	//Only Neighbour of endPosition is Token from other Team
 	if(positionInputValid(endNeighbour))
 	{
 		//TODO: shouldnt be able to check anything if cell doesnt exist
-		if(((freePosition(startNeighbour) || isTokenFromCurrentTeam(startNeighbour)) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)) || useraction.captureOption == Approach ){ //Nachbar in Endposition schmeißen
+		if((startNeighbourValid == true && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)) || useraction.captureOption == Approach )
+		{
 			while(!neighbourFieldEmpty){
-				if(positionInputValid(endNeighbour))
+				if(positionInputValid(endNeighbour)) //need to check again because new endNeighbour
 				{
 					if(!freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
 						//Capture
@@ -890,27 +911,48 @@ void Game::capture(struct Useraction useraction, struct position startNeighbour,
 			}
 		} 
 	}
+
+	if(positionInputValid(endNeighbour))
+	{
+		if(freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour))
+		{
+			endNeighbourValid = true;
+		}
+		else
+		{
+			endNeighbourValid = false;
+		}
+	}
+	else
+	{
+		endNeighbourValid = true;
+	}
+
 	//Only Neighbour of startPosition is Token from other Team
-	if((!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && (freePosition(endNeighbour) || isTokenFromCurrentTeam(endNeighbour)) && startNeighbour.row > 0) || useraction.captureOption == Withdraw){ //Nachbar in Startposition schmeißen
-		while(!neighbourFieldEmpty){
-			if(positionInputValid(startNeighbour))
-			{
-				if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour)){
-					meinSpielbrett.emptyCell(startNeighbour);
-					startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
-					capturedTokens++;
-				} else{
+	if(positionInputValid(startNeighbour))
+	{
+		if((endNeighbourValid == true && !freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour)) || useraction.captureOption == Withdraw )
+		{
+			while(!neighbourFieldEmpty){
+				if(positionInputValid(startNeighbour))
+				{
+					if(!freePosition(startNeighbour) &&  !isTokenFromCurrentTeam(startNeighbour)){
+						meinSpielbrett.emptyCell(startNeighbour);
+						startNeighbour = getNeighbour(startNeighbour, startNeighbourDir);
+						capturedTokens++;
+					} else{
+						neighbourFieldEmpty = true;
+					}
+				}
+				else
+				{
 					neighbourFieldEmpty = true;
 				}
 			}
-			else
-			{
-				neighbourFieldEmpty = true;
-			}
 		}
 	}
-        cout << "Number of deleted tokens: " << capturedTokens << endl;
-		meinSpielbrett.updateLeftTokens();
+    cout << "Number of deleted tokens: " << capturedTokens << endl;
+	meinSpielbrett.updateLeftTokens();
 }
 
 
