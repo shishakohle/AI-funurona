@@ -1,0 +1,50 @@
+08/06/2020 - 17:00 
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: ev. Useraction als member zur Klasse, Abfrage widthdraw/approach als useraction (enum), getUseraction mit Übergabe von lastUseraction (2.6) --> widthdraw/approach = useraction DONE, position&direction statt useraction als klassen member (letztes hinfällig)
+	- Kerstin: merge , mit Ingo useraction approach/widthdraw --> DONE
+	- Lukas: globale errormessage --> was wenn mehrere messages, wieder resetten (Y) --> liste an error messages? --> dort wo wir wollen anzeigen, (B) --> DONE error messages
+	- Anna: clear errors
+	- ALLE: Gedanken zu AI machen, auf Meeting vorbereiten
+	- Anna und Kerstin: Spiel - Fehler beheben
+	- Lukas und Ingo: Min-Max ALgorithmen anschauen --> to be done
+
+During Meeting:
+	- Update of Tasks
+	- Goals: 
+		> start implementing AI, min-max algorithms and alpha-beta pruning
+
+Next Goals/Tasks: --> continue
+	- Ingo: useraction rules, min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Kerstin: min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Lukas: min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Anna: (B), rules ausformulieren, min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Links: https://github.com/GeorgeSeif/Tic-Tac-Toe-AI
+
+Still to do:
+	- Style of enum team color in cout --> hinfällig
+	- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar) --> DONE
+	- another move --> ask user for input of row/column/skip --> cant skip first move (B)
+	- ev.: Ausweg für quick return bei checkIfCapturePossible sobald einer schmeißen kann, damit man nicht alles durchrechnen muss --> hinfällig
+	- globale errormessage --> was wenn mehrere messages, wieder resetten (Y) --> liste an error messages? --> Lukas --> DONE
+	- useraction - add: rule --> rules of funorona --> Anna rules, ingo useraction
+	- Abfrage: wen möchtest du schmeißen --> approach or widthdraw als useraction - wie? --> in useraction hinein und nur abfragen, wenn notwendig --> Ingo --> DONE
+	- nur mit bereits in dieser Runde bewegten Token (pro Runde nur 1 Token bewegbar) --> DONE
+		--> Second+ Move: getUseraction --> übergeben von lastuseraction (2.6) - Ingo --> hinfällig
+	- cant skip first move - Regelabfrage (counter move) (B) - Anna
+		--> differentiate between first move and additional moves (with SAME token) --> save activeToken (X) --> save position and direction --> DONE
+	- Raum schaffen für AI:
+		--> wer will spielen? --> auswählbar zw. Spieler und AI
+		--> für memory analyse --> mit auswählen oder gleich starten?
+		--> wenn AI spielt --> beim Spielerwechsel keine getUseraction --> if/else abfrage
+		--> Spielername = AI --> spieler = AI
+
+List of errors:
+	- E4 N (white) --> Segmentation fault (Ingo) --> DONE
+	- when first move = not able to capture --> no more moves! --> DONE
+
+Next Meeting: Fr. 12.06, ? Uhr 
+
+
