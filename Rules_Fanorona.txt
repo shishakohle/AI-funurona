@@ -1,0 +1,48 @@
+Fanorona - Tsivy (RULES)
+
+The board is 9x5, with each field (.) connected by /, \, |, - 
+Each player has 22 tokens at the beginnin, one black (#) and the other white (O).
+The aim is to capture all the tokens from the opponent.
+
+Initial Setting (Start)
+  A-B-C-D-E-F-G-H-I
+1 #-#-#-#-#-#-#-#-#
+  |\|/|\|/|\|/|\|/|
+2 #-#-#-#-#-#-#-#-#
+  |/|\|/|\|/|\|/|\|
+3 #-O-#-O-.-#-O-#-O
+  |\|/|\|/|\|/|\|/|
+4 O-O-O-O-O-O-O-O-O
+  |/|\|/|\|/|\|/|\|
+5 O-O-O-O-O-O-O-O-O
+
+Player white starts by chosing a token from his/her own team/color (typing in coordinate) and
+places it on an empty field (.) by telling the program its direction, in which he/she wants to
+move the first token (e.g. F4 NE). A token can only be moved to a neighboring, connecting field.
+In order to capture the opponent's tokens there are two options:
+
+	- Approaching:  moving own token towards one (or more) token from opponent - all tokens
+		        on the continuation of this line will be captured
+			e.g. F4 NE -> token capture: D2, C1
+
+	- Widthdrawing: moving own token away from one (or more) token from opponent - all tokens
+			behind the inital position will be captured
+			e.g. F3  W -> token capture: G3
+
+	- If Approaching and Widthdrawing is possioble (example Widthdrawing) the current Player 
+	  can choose if he/she wants to approach or widthdraw
+
+	- When the continuation-line of captured tokens is interrupted by an empty field or the
+	  currents player tokens, the opponent's tokens behind will not be captured
+
+If the current player is able to capture someone, he/she has to do so. Otherwise he/she can move
+any other token, that allows a valid move. When the palyer was able to capture someone, and he/she
+can capture another token, he/she can take another move. This is only allowed with the already
+moved token. He/she has also the option to skip (SKIP) the move. While capturing as many tokens
+as possible within one turn, the player is not allowed to visit a cell twice within one turn.
+He/she also can't move in the same direction on two consecutive moves. Once you have captured all
+tokens of your opponenty, you have won the game.
+
+	       
+
+
