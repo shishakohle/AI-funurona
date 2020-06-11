@@ -120,13 +120,14 @@ class Game
 		void move(); //struct Useraction lastPositions
 		//ZUG
 		void turn(void);
-		bool isMoveValid(struct position,  struct position, enum Direction); //, struct Useraction
+		bool isMoveValid(struct position,  struct position, enum Direction, enum Command); //, struct Useraction
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);
 		bool areFieldsConnected(struct position, int direction);
 		bool isMoveDirectionValid(enum Direction);
 		bool sameTokenSelected(struct position);
+		bool cantSkipFirstMove(enum Command);
 		struct position chooseToken(void);
 		bool positionInputValid(struct position);
 		//check if game is over and who is winner

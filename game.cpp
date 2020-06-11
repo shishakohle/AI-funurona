@@ -139,13 +139,14 @@ void Game::move() //struct Useraction lastPositions
 			case Quit:    break;
 			// default: break;
 		}
+		//TODO: do something is a command
 
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 	
 
-	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir)); //, lastPositions
+	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir, useraction.command)); //, lastPositions
 		
 	//update grid for beenThere
 	if(counterMoves == 1) 
@@ -169,7 +170,7 @@ void Game::move() //struct Useraction lastPositions
 	//return lastPositions;
 }
 
-bool Game::isMoveValid(struct position startPosition, struct position endPosition, enum Direction direction){ //, struct Useraction lastaction
+bool Game::isMoveValid(struct position startPosition, struct position endPosition, enum Direction direction, enum Command command){ //, struct Useraction lastaction
 	// Ist auf dieser Position ein Token von dem Team?
 
 	bool returnvalue = true;
@@ -246,6 +247,12 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			errorvec.push_back("you have to select the same token as in your previous moves");
 			//errorcounter++;
 		}
+
+		if(!cantSkipFirstMove(command))
+		{
+			returnvalue = false;
+			errorvec.push_back("you can't skip the first move");
+		}
 	}
 	else
 	{
@@ -260,7 +267,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		{ 
 			returnvalue = false;
 			//cout << "endpositioninput invalid" << endl;
-			errorvec.push_back("endposition input input invalid");
+			errorvec.push_back("endposition input invalid");
 			//errorcounter++;
 		}
 	}
@@ -415,6 +422,18 @@ bool Game::sameTokenSelected(struct position startPosition)
 		value = true;
 	}
 	return value;
+}
+
+bool Game::cantSkipFirstMove(enum Command skip)
+{
+	if(counterMoves == 1 && skip == Skip)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 int Game::calculateDirection (struct position start, struct position end)
