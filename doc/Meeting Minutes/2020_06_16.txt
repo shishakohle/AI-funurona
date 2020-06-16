@@ -1,0 +1,46 @@
+16/06/2020 - 15:00 
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: useraction rules, min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Kerstin: min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Lukas: min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Anna: (B), rules ausformulieren, min-max algorithm & alpha-beta pruning (tiktaktoe)
+	- Links: https://github.com/GeorgeSeif/Tic-Tac-Toe-AI
+
+During Meeting:
+	- Update of Tasks
+	- Goals: 
+		> start implementing AI, min-max algorithms and alpha-beta pruning
+		> get all possible moves
+		> aplly heuristics to possible moves and figure out best
+		> wert für Baum - je größer Wert, desto besser move - depending on heuristics
+
+Next Goals/Tasks: --> continue
+	- Ingo: Datenstruktur für Baum bauen
+	- Kerstin: anzahl geschmissener (A), gerüst spieler (D), (E)
+	- Lukas: heuristics ausarbeiten (G)
+	- Anna: possible moves array (C), (F)
+	- Alle: weiter researchen
+
+Still to do:
+	- another move --> ask user for input of row/column/skip --> cant skip first move (B)
+	- useraction - add: rule --> rules of funorona --> Anna rules, ingo useraction
+	- cant skip first move - Regelabfrage (counter move) (B) - Anna
+	- Raum schaffen für AI:
+		--> wer will spielen? --> auswählbar zw. Spieler und AI
+		--> für memory analyse --> mit auswählen oder gleich starten?
+		--> wenn AI spielt --> beim Spielerwechsel keine getUseraction --> if/else abfrage (E)
+		--> Spielername = AI --> spieler = AI --> wer spielt? (D)
+	- fill useraction.command - not always move, but depending on input (F)
+	- Get all possible moves - array (C)
+	- Anfangen: erste heuristic = einfachste = wie viele tokens wurden geschmisssen - modus: soll wirklich geschmissen werden oder nur geschaut (A)	
+	- restlichen heuristics ausarbeiten (siehe Meeting Minutes Mehnen) (außer wieviele geschmissen) und coden (G)
+
+List of errors:
+	- 
+
+Next Meeting: Do. 18.06, 15:30 Uhr 
+
+
