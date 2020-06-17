@@ -52,7 +52,8 @@ enum Command {
 	Move,
 	Help,
 	Restart,
-	Quit
+	Quit,
+	Rules
 };
 
 static const map <string, Command> commandMap
@@ -62,7 +63,8 @@ static const map <string, Command> commandMap
 	{ "RESTART", Restart },
 	{ "QUIT",    Quit},
 	{ "EXIT",    Quit},
-	{ "BYE",     Quit}
+	{ "BYE",     Quit},
+	{ "RULES",   Rules}
 };
 
 #endif
@@ -88,7 +90,7 @@ class Game
 {
 	public:
 		Game(void);
-		void start();
+		bool start();
 		static enum Direction string2direction(string);
 		static struct position string2position(string);
 		vector<string> errorvec;
@@ -96,6 +98,9 @@ class Game
 	private:
 		Player *currentPlayer;
 		bool gameWon;
+		bool quit;
+		bool restart;
+		bool skip;
 		Player *winner;
 		Board meinSpielbrett; // TODO: rename
 		Player playerWhite, playerBlack;
@@ -120,7 +125,7 @@ class Game
 		void move(); //struct Useraction lastPositions
 		//ZUG
 		void turn(void);
-		bool isMoveValid(struct position,  struct position, enum Direction, enum Command); //, struct Useraction
+		bool isMoveValid(struct position,  struct position, enum Direction); //, struct Useraction, , enum Command
 		bool isTokenFromCurrentTeam(struct position);
 		bool beenThere(struct position);
 		bool freePosition(struct position);

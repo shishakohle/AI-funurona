@@ -27,6 +27,8 @@ Game::Game(void)
 {
 	this->currentPlayer = &playerWhite;
 	this->gameWon = false;
+	this->restart = false;
+	this->quit = false;
 	this->playerWhite.setTeam(WHITE);
 	this->playerBlack.setTeam(BLACK);
 
@@ -34,8 +36,9 @@ Game::Game(void)
 	meinSpielbrett.updateLeftTokens();
 }
 
-void Game::start() // TODO: private??
+bool Game::start() // TODO: private??
 {
+	bool anotherGame = false;
 	// clear screen
 	this->clearScreen();
 	
@@ -81,7 +84,7 @@ void Game::start() // TODO: private??
 	cout << "Press <ENTER> to start the game." << flush;
 	getline(cin,playerName);
   
-	while(!gameWon)
+	while(!gameWon && !quit && !restart)
 	{
 		//anotherMove = true; //(re)move later
 		turn();
@@ -97,7 +100,27 @@ void Game::start() // TODO: private??
 		}
 		lastDirection = InvalidDirection;
 	}
-	cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
+	if(gameWon)
+	{
+		cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
+		cout << "Would you like to play again?"<<endl;
+		anotherGame = false;
+	}
+	else if(restart)
+	{
+		cout<<"You have ended a game and started a new one."<<endl;
+		anotherGame = true;
+	}
+	else if(quit)
+	{
+		cout<<"You have ended the game."<<endl;
+		anotherGame = false;
+	}
+	else
+	{
+		anotherGame = false;
+	}
+	return anotherGame;
 }
 
 	
@@ -109,6 +132,8 @@ void Game::move() //struct Useraction lastPositions
 	struct position endPosition;
 	enum Direction dir;*/
 	struct Useraction useraction;  // TODO: maybe wanna declare somewhere else?
+	bool validAction = false;
+	skip = false;
 
 	do
 	{
@@ -132,22 +157,112 @@ void Game::move() //struct Useraction lastPositions
 		switch(useraction.command)
 		{
 			//case Invalid: break;
-			case Skip:    break;
-			case Move:    break;
-			case Help:    break;
-			case Restart: break;
-			case Quit:    break;
+			case Skip:
+				{
+					if(counterMoves == 1)
+					{
+						errorvec.push_back("You can't skip this move, since it's the first one in your turn.");
+						validAction = false;
+						skip = false;
+					}
+					else
+					{
+						validAction = true;
+						skip = true;
+					}
+
+				}; break;
+
+			case Move:
+				{
+					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
+					{
+						//update grid for beenThere
+						if(counterMoves == 1) 
+						{
+							grid[useraction.start.row][useraction.start.column] = 1;
+						}
+						if(grid[useraction.end.row][useraction.end.column] == 0)
+						{
+							grid[useraction.end.row][useraction.end.column] = 1;
+						}
+
+						moveToken(useraction);
+						
+						lastDirection = useraction.dir;
+						currentPosition = useraction.end;
+						counterMoves++; 
+
+						validAction = true; //true
+					}
+					else
+					{
+						validAction = false;
+					}
+
+				}; break;
+
+			case Help: 
+				{
+					ifstream helpScreenFile;
+					helpScreenFile.open("Help.txt");
+					if(helpScreenFile)
+					{
+						string line;
+						while( getline(helpScreenFile, line) )
+							cout << line << endl;
+					}
+					else
+					{
+						cout << "Make your next move!" << endl;
+					}
+					cout<<"Press enter to continue."<<endl;
+					getchar();
+					validAction = false;
+				}; break;
+
+			case Restart:
+				{
+					restart = true;
+					validAction = true;
+				}; break;
+
+			case Quit:
+				{
+					quit = true;
+					validAction = true;
+				}; break;
+
+			case Rules:
+				{
+					ifstream rulesScreenFile;
+					rulesScreenFile.open("Rules_Fanorona.txt");
+					if(rulesScreenFile)
+					{
+						string line;
+						while( getline(rulesScreenFile, line) )
+							cout << line << endl;
+					}
+					else
+					{
+						cout << "Make your next move!" << endl;
+					}
+					cout<<"Press enter to continue."<<endl;
+					getchar();
+					validAction = false;
+				}; break;
 			// default: break;
 		}
-		//TODO: do something is a command
 
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
 	
-
-	}while(!isMoveValid(useraction.start, useraction.end, useraction.dir, useraction.command)); //, lastPositions
+	//while validAction == false
+	//}while(!isMoveValid(useraction.start, useraction.end, useraction.dir, useraction.command)); //, lastPositions
+	}while(!validAction);
 		
+	/*	
 	//update grid for beenThere
 	if(counterMoves == 1) 
 	{
@@ -165,12 +280,12 @@ void Game::move() //struct Useraction lastPositions
 	lastDirection = useraction.dir;
 	currentPosition = useraction.end;
 
-	counterMoves++; 
+	counterMoves++; */
 
 	//return lastPositions;
 }
 
-bool Game::isMoveValid(struct position startPosition, struct position endPosition, enum Direction direction, enum Command command){ //, struct Useraction lastaction
+bool Game::isMoveValid(struct position startPosition, struct position endPosition, enum Direction direction){ //, struct Useraction lastaction, , enum Command command
 	// Ist auf dieser Position ein Token von dem Team?
 
 	bool returnvalue = true;
@@ -248,11 +363,11 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			//errorcounter++;
 		}
 
-		if(!cantSkipFirstMove(command))
+		/*if(!cantSkipFirstMove(command))
 		{
 			returnvalue = false;
 			errorvec.push_back("you can't skip the first move");
-		}
+		}*/
 	}
 	else
 	{
@@ -312,11 +427,17 @@ void Game::turn(void)
 			move();
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
 			//is another move/capturing with latest token possible?
-			
-			if(capturingAgain() && capturingYes) 
+			if(!restart && !quit)
 			{
-				anotherMove = true;
-			} 
+				if(capturingAgain() && capturingYes && !skip) 
+				{
+					anotherMove = true;
+				} 
+				else
+				{
+					anotherMove = false;
+				}
+			}
 			else
 			{
 				anotherMove = false;
@@ -424,7 +545,7 @@ bool Game::sameTokenSelected(struct position startPosition)
 	return value;
 }
 
-bool Game::cantSkipFirstMove(enum Command skip)
+/*bool Game::cantSkipFirstMove(enum Command skip)
 {
 	if(counterMoves == 1 && skip == Skip)
 	{
@@ -434,7 +555,7 @@ bool Game::cantSkipFirstMove(enum Command skip)
 	{
 		return true;
 	}
-}
+}*/
 
 int Game::calculateDirection (struct position start, struct position end)
 {

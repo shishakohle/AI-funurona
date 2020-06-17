@@ -1,0 +1,16 @@
+You can type in one of the following comands to proceed:
+
+1) Coordinate of the token you would like to move (e.g. F4) and a direction
+   (e.g. NW). This allows you to move a token to a free postion.
+
+2) If you are not sure about the rules, enter "Rules".
+
+3) "Restart" will clear this game and allows you to start again.
+
+4) If you don't want to continue playing, stop the game by entering "Quit".
+
+5) "Skip" lets you skip a move, which however can never be the first one in
+   your turn. 
+
+You can now type in your next command!
+				
