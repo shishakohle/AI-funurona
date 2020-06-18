@@ -58,3 +58,16 @@ char Player::getToken(void)
 	return token;
 }
 
+bool Player::getIsHuman()
+{
+	return isHuman;
+}
+
+void Player::setIsHuman(bool human){
+	if(human == true)
+	{
+		isHuman = true;
+	} else {
+		isHuman = false;
+	}
+}

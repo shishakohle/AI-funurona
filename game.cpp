@@ -61,22 +61,35 @@ bool Game::start() // TODO: private??
 	// create Player for team WHITE
 	do
 	{
-		cout << "Please enter the name for the WHITE player: " << flush;
+		cout << "Please enter the name for the WHITE player. If it's an AI please type in 'AI': " << flush;
 		getline(cin, playerName);
 	}
 	while( playerName.empty() );
 	this->playerWhite.setName(playerName);
+
+	if(playerName.compare("AI") == 0){
+		this->playerWhite.setIsHuman(false);
+	} else {
+		this->playerWhite.setIsHuman(true);
+	}
+
 	cout << "Hello " << this->playerWhite.getName() <<". " << flush;
 	cout << "You're on the WHITE team, your tokens look like this: " << Token::asChar(WHITE) << "\n" << endl;
 	
 	// create Player for team BLACK
 	do
 	{
-		cout << "Please enter the name for the BLACK player: " << flush;
+		cout << "Please enter the name for the BLACK player. If it's an AI please type in 'AI': " << flush;
 		getline(cin, playerName);
 	}
 	while( playerName.empty() );
 	this->playerBlack.setName(playerName);
+
+	if(playerName.compare("AI") == 0){
+		this->playerBlack.setIsHuman(false);
+	} else {
+		this->playerBlack.setIsHuman(true);
+	}
 	cout << "Hello " << this->playerBlack.getName() <<". " << flush;
 	cout << "You're on the BLACK team, your tokens look like this: " << Token::asChar(BLACK) << "\n" << endl;
 	
@@ -139,8 +152,14 @@ void Game::move() //struct Useraction lastPositions
 	{
 		do
 		{
+			if(currentPlayer->getIsHuman())
+			{
+				useraction = getHumanUseraction();
+			} else 
+			{
+				useraction = getKIUseraction();
+			}
 		
-			useraction = getUseraction();
 		}
 		while(useraction.command == Invalid);
 		
@@ -1205,7 +1224,7 @@ void Game::clearScreen(void)
 		cout << endl;
 }
 
-struct Useraction Game::getUseraction(void)
+struct Useraction Game::getHumanUseraction(void)
 {
 	struct Useraction useraction;
 	useraction.command = Invalid;
@@ -1300,6 +1319,13 @@ struct Useraction Game::getUseraction(void)
 		// getline(cin,userinput); // TODO: just some random string not used anymore
 	}
 	
+	return useraction;
+}
+
+struct Useraction Game::getKIUseraction(void)
+{
+	struct Useraction useraction;
+	useraction.command = Invalid;
 	return useraction;
 }
 

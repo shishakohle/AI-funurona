@@ -150,7 +150,8 @@ class Game
 		void capture(struct Useraction, struct position, Direction, struct position, Direction);
 		void captureToken(struct Useraction);
 		void clearScreen(void);
-		struct Useraction getUseraction(void);
+		struct Useraction getHumanUseraction(void);
+		struct Useraction getKIUseraction(void);
 		void setFieldOfView(struct position, struct Grid);
 };
 

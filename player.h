@@ -31,10 +31,13 @@ class Player
 		string getName(void);
 		enum Team getTeam(void);
 		char getToken(void);
+		bool getIsHuman();
+		void setIsHuman(bool);
 	private:
 		string name;
 		enum Team team;
 		int tokensLeft;
+		bool isHuman;
 };
 
 #endif
