@@ -157,7 +157,7 @@ void Game::move() //struct Useraction lastPositions
 				useraction = getHumanUseraction();
 			} else 
 			{
-				useraction = getKIUseraction();
+				useraction = getAIUseraction();
 			}
 		
 		}
@@ -1322,7 +1322,7 @@ struct Useraction Game::getHumanUseraction(void)
 	return useraction;
 }
 
-struct Useraction Game::getKIUseraction(void)
+struct Useraction Game::getAIUseraction(void)
 {
 	struct Useraction useraction;
 	useraction.command = Invalid;
