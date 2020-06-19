@@ -443,6 +443,9 @@ void Game::turn(void)
 	//loop until cant/dont want to move and capture anymore
 	do
 	{
+			getPossibleMoves();
+			cout<<counterPossibleMoves<<endl;
+
 			move();
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
 			//is another move/capturing with latest token possible?
@@ -872,7 +875,7 @@ bool Game::capturingPossible()
 	return var;
 }
 
-//is another move/capturing with latest token possible?
+//is another move/capturing with latest token possible?, update tokenGrid for currentToken
 bool Game::capturingAgain()
 {
 	bool var = false;	
@@ -909,6 +912,7 @@ bool Game::capturingAgain()
 			}
 		}
 	}
+
 
 	setFieldOfView(currentPosition, temporaryGrid);
 	
@@ -952,6 +956,132 @@ bool Game::capturingAgain()
 
 	return position;
 }*/
+
+void Game::getPossibleMoves()
+{
+	struct Useraction possibleUseraction;
+	int index = 0;
+	int count = 0;
+
+	if(counterMoves == 1)
+	{
+		if(capturingYes) //if can capture someone get position from gridCapturing and tokenGrid
+		{
+			for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					struct position startPosition;
+					startPosition.row = row;
+					startPosition.column = column;
+					if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1)
+					{
+						for(int row1=0; row1<5; row1++)
+						{
+							for(int column1=0; column1<9; column1++)
+							{
+								struct position endPosition;
+								endPosition.row = row1;
+								endPosition.column = column1;
+								if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
+								{
+									possibleUseraction.command = Move;
+									possibleUseraction.start = startPosition;
+									possibleUseraction.end = endPosition;
+									int direction = calculateDirection(startPosition, endPosition);
+									possibleUseraction.dir = getDirectionFromInteger(direction);
+									possibleMoves[index] = possibleUseraction;
+									index++;
+									count++;
+								}
+							}
+						}	
+					}
+				}
+			}
+
+		}
+		else //cant capture anyone - any valid move possible
+		{
+			for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					struct position startPosition;
+					startPosition.row = row;
+					startPosition.column = column;
+
+					//only token from current Player
+					if(meinSpielbrett.getCell(startPosition).getToken().getTeam() == this->currentPlayer->getTeam() && meinSpielbrett.getCell(startPosition).getOccupied() == true)
+					{
+						int i[] = { -1, 0, 1 };
+						int j[] = { -1, 0, 1 };
+		
+						for (int a : i) // rows = a --> 0 = W/O, +1 = S/SW/SO, -1 = N/NW/NO
+						{
+							for (int b : j) // columns = b 
+							{
+								// row = -1, columns --> 0 = N, +1 = NO, -1 = NW 
+								// row = +1, columns --> 0 = S, +1 = SO, -1 = SW
+								// row = 0,  columns --> 1 = O, -1 = W
+
+								if(!(a==0 && b==0))
+								{
+									//check if move in that direction is valid --> then add currentUseraction
+									struct position endPosition;
+									endPosition.row = startPosition.row+a;
+									endPosition.column = startPosition.column+b;
+									int direction = calculateDirection(startPosition, endPosition);
+									if(positionInputValid(endPosition)) //always check inputValid before checking anything else
+									{
+										if(freePosition(endPosition) && areFieldsConnected(startPosition, direction))
+										{
+											possibleUseraction.command = Move;
+											possibleUseraction.start = startPosition;
+											possibleUseraction.end = endPosition;
+											possibleUseraction.dir = getDirectionFromInteger(direction);
+											possibleMoves[index] = possibleUseraction;
+											index++;
+											count++;	
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	else //second+ move --> only checked again when can capture
+	{
+		struct Grid temporaryGrid;
+		temporaryGrid = meinSpielbrett.getCell(currentPosition).getToken().getFieldOfView();
+
+		for(int row=0; row<5; row++)
+		{
+			for(int column=0; column<9; column++)
+			{
+				struct position endPosition;
+				endPosition.row = row;
+				endPosition.column = column;
+
+				if(temporaryGrid.gridPosition[endPosition.row][endPosition.column] == 1) 
+				{
+					possibleUseraction.command = Move;
+					possibleUseraction.start = currentPosition;
+					possibleUseraction.end = endPosition;
+					int direction = calculateDirection(currentPosition, endPosition);
+					possibleUseraction.dir = getDirectionFromInteger(direction);
+					possibleMoves[index] = possibleUseraction;
+					index++;
+					count++;
+				}
+			}
+		}
+	}
+	counterPossibleMoves = count;
+}
 
 bool Game::positionInputValid(struct position position)
 {
@@ -1373,5 +1503,30 @@ struct position Game::string2position (string str)
 	}
 	
 	return pos;
+}
+
+enum Direction Game::getDirectionFromInteger (int direction)
+{
+	enum Direction result;
+
+	switch(direction) 
+	{
+   		case 0: result = North; break;
+		
+		case 1: result = East; break;
+
+		case 2: result = South; break;
+
+		case 3: result = West; break;
+
+		case 4: result = Northeast; break;
+
+		case 5: result = Southeast; break;
+
+		case 6: result = Southwest; break;
+
+		case 7: result = Northwest; break;
+	}
+	return result;
 }
 

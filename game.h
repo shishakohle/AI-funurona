@@ -116,6 +116,8 @@ class Game
 		bool isDirectionOK;
 		bool capturingYes;
 		int counterMoves;
+		int counterPossibleMoves;
+		struct Useraction possibleMoves[150];
 
 		//of first move
 		struct position currentPosition;
@@ -153,6 +155,8 @@ class Game
 		struct Useraction getHumanUseraction(void);
 		struct Useraction getAIUseraction(void);
 		void setFieldOfView(struct position, struct Grid);
+		void getPossibleMoves();
+		enum Direction getDirectionFromInteger (int);
 };
 
 #endif
