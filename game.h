@@ -149,7 +149,7 @@ class Game
 		//move Token from start to end position
 		void moveToken (struct Useraction);
 		static struct position getNeighbour(struct position, Direction);
-		void capture(struct Useraction, struct position, Direction, struct position, Direction);
+		int capture(struct Useraction, struct position, Direction, struct position, Direction, string);
 		void captureToken(struct Useraction);
 		void clearScreen(void);
 		struct Useraction getHumanUseraction(void);
