@@ -3,6 +3,7 @@
  */
 
 #include "game.h"
+#include "tree.h" // TODO test purposes only
 
 int main(void)
 {
