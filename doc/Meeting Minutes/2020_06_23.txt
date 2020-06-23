@@ -1,0 +1,44 @@
+23/06/2020 - 14:15 
+AI - Fanorona 
+Kerstin, Ingo, Lukas, Anna
+
+Tasks until today:
+	- Ingo: Datenstruktur für Baum bauen --> tree Entwurf - class note and tree (ein tree mehrere nodes/leaves) - value = daten wir in node speichern wollen
+	- Kerstin: anzahl geschmissener (A), (E) - continue --> capture = Rückgabewert (anzahl geschmissener token), modus als string abgefragt == CAPTURE (geschmissen), was adneres --> count tokens
+	- Lukas: heuristics ausarbeiten (G) --> implementierung --> Execle Feld mit Werten (varibalen noch änderbar)
+	- Anna: possible moves array (C) --> DONE
+	- Alle: weiter researchen
+
+During Meeting:
+	- Update of Tasks
+	- Goals: 
+		> start implementing AI, min-max algorithms and alpha-beta pruning
+		> get all possible moves
+		> aplly heuristics to possible moves and figure out best
+		> wert für Baum - je größer Wert, desto besser move - depending on heuristics
+		> für jede Ebene: possibleMoves berechnen wieviele "gecaptured" werden würden
+		> temporaryBoard verwenden - dort Tokens schmeißen und besten Pfad berechnen
+
+Next Goals/Tasks: --> continue
+	- Ingo: Baumstruktur von TicTacToe Repository anschauen und einbauen etc., weiter an Möglichkeiten arbeiten, wie wir das machen können
+		sind Trees gute Vorlage --> implementieren oder sonst selbst ausdenken
+	- Kerstin: getPossibleMoves durchlaufen = Capture ausführen --> um Costs zu erhalten, Anforderungen für den Baum erdenken (mit Anna)
+	- Lukas: heuristics ausarbeiten (G) --> weiter dran herumfeilen --> Werte in der Mitte sollten größer als Werte am Rand sein
+	- Anna: Array mit Vektor ersetzen (possibleMoves), überlegen wie possibleMoves für mehr depth
+	- Alle: weiter researchen
+
+Still to do:
+	- Raum schaffen für AI:
+		--> wer will spielen? --> auswählbar zw. Spieler und AI
+		--> für memory analyse --> mit auswählen oder gleich starten?
+		--> wenn AI spielt --> beim Spielerwechsel keine getUseraction --> if/else abfrage (E) --> DONE
+	- Get all possible moves - array (C) --> DONE
+	- Anfangen: erste heuristic = einfachste = wie viele tokens wurden geschmisssen - modus: soll wirklich geschmissen werden oder nur geschaut (A)	--> DONE
+	- restlichen heuristics ausarbeiten (siehe Meeting Minutes Mehnen) (außer wieviele geschmissen) und coden (G)
+
+List of errors:
+	- 
+
+Next Meeting: Di. 30.06, 15:30 Uhr 
+
+
