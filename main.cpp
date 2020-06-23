@@ -7,13 +7,8 @@
 int main(void)
 {
 	Game meinSpiel;
-	bool anotherGame = true;
-
-	do
-	{
-		anotherGame = true;
-		anotherGame = meinSpiel.start();
-	}while(anotherGame);
+	
+	while(meinSpiel.start());
 	
 	return 0;
 }
