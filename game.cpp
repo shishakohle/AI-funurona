@@ -443,7 +443,7 @@ void Game::turn(void)
 	//loop until cant/dont want to move and capture anymore
 	do
 	{
-			getPossibleMoves();
+			std::vector<Useraction> test = getPossibleMoves();
 			cout<<counterPossibleMoves<<endl;
 
 			move();
@@ -957,11 +957,13 @@ bool Game::capturingAgain()
 	return position;
 }*/
 
-void Game::getPossibleMoves()
+std::vector<Useraction> Game::getPossibleMoves()
 {
 	struct Useraction possibleUseraction;
 	int index = 0;
 	int count = 0;
+	std::vector<Useraction> listofMoves;
+	struct Useraction moveArray[20];
 
 	if(counterMoves == 1)
 	{
@@ -993,6 +995,7 @@ void Game::getPossibleMoves()
 									possibleMoves[index] = possibleUseraction;
 									index++;
 									count++;
+									listofMoves.push_back(possibleUseraction);
 								}
 							}
 						}	
@@ -1042,7 +1045,8 @@ void Game::getPossibleMoves()
 											possibleUseraction.dir = getDirectionFromInteger(direction);
 											possibleMoves[index] = possibleUseraction;
 											index++;
-											count++;	
+											count++;
+											listofMoves.push_back(possibleUseraction);
 										}
 									}
 								}
@@ -1076,11 +1080,14 @@ void Game::getPossibleMoves()
 					possibleMoves[index] = possibleUseraction;
 					index++;
 					count++;
+					listofMoves.push_back(possibleUseraction);
+
 				}
 			}
 		}
 	}
 	counterPossibleMoves = count;
+	return listofMoves;
 }
 
 bool Game::positionInputValid(struct position position)
@@ -1462,9 +1469,17 @@ struct Useraction Game::getHumanUseraction(void)
 
 struct Useraction Game::getAIUseraction(void)
 {
-	struct Useraction useraction;
-	useraction.command = Invalid;
-	return useraction;
+	struct Useraction bestMove;
+	std::vector<Useraction> possibleMoves = getPossibleMoves();
+	std::vector<Useraction>::const_iterator it ;
+	for (it=possibleMoves.begin(); it!=possibleMoves.end(); ++it){
+		std::cout << "Col" << it->start.column << endl;
+		std::cout << "Row" << it->start.row << endl;
+	}
+
+	bestMove = possibleMoves.at(2);
+
+	return bestMove;
 }
 
 void Game::setFieldOfView(struct position position, struct Grid fieldOfView)

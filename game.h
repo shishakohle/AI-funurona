@@ -17,8 +17,7 @@
 #define LINES_TO_CLEAR 50
 
 #include <map>
-#include <vector>
-	
+#include <vector>	
 #include "board.h"
 #include "player.h"
 
@@ -155,7 +154,7 @@ class Game
 		struct Useraction getHumanUseraction(void);
 		struct Useraction getAIUseraction(void);
 		void setFieldOfView(struct position, struct Grid);
-		void getPossibleMoves();
+		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
 };
 

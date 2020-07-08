@@ -1,7 +1,7 @@
 
  The MME-AI course at UAS Technikum presents
  ______ _    _ _   _
-|  ____| |  | | \ | |               Corona Editon
+|  ____| |  | | \ | |              Corona Edition
 | |__  | |  | |  \| | ___  _ __ ___  _ __   __ _ 
 |  __| | |  | | . ` |/ _ \| '__/ _ \| '_ \ / _` |
 | |    | |__| | |\  | (_) | | | (_) | | | | (_| |
