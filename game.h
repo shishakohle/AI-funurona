@@ -157,6 +157,7 @@ class Game
 		void setFieldOfView(struct position, struct Grid);
 		void getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
+		float getHeuristik2(struct position);
 };
 
 #endif

@@ -36,8 +36,36 @@ void Board::init(void)
 					default: break;
 				}
 			}
+
+
+			
+			float c1=2;
+			float c2=5/3;
+			float c3=4;
+			float c4;
+			
+			if ((column==0) || (column==8) || (row=0) || (row=5)){
+				c4=0.3;
+			}
+			else{
+				c4=1;
+			}
+			
+			heuristik2grid[row][column]=c3*(1/(abs(column-4)+c1))*(1/(abs(row-2)*c2 + c1))*c4;
+
+
+
+
+
+
+
 		}
 	}
+}
+
+float Board::getheuristik2(struct position position)
+{
+	return heuristik2grid[position.row][position.column];
 }
 
 void Board::print(void)
