@@ -962,8 +962,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 	struct Useraction possibleUseraction;
 	int index = 0;
 	int count = 0;
-	std::vector<Useraction> listofMoves;
-	struct Useraction moveArray[20];
+	std::vector<Useraction> possibleMoves;
 
 	if(counterMoves == 1)
 	{
@@ -995,7 +994,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 									possibleMoves[index] = possibleUseraction;
 									index++;
 									count++;
-									listofMoves.push_back(possibleUseraction);
+									possibleMoves.push_back(possibleUseraction);
 								}
 							}
 						}	
@@ -1046,7 +1045,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 											possibleMoves[index] = possibleUseraction;
 											index++;
 											count++;
-											listofMoves.push_back(possibleUseraction);
+											possibleMoves.push_back(possibleUseraction);
 										}
 									}
 								}
@@ -1080,14 +1079,14 @@ std::vector<Useraction> Game::getPossibleMoves()
 					possibleMoves[index] = possibleUseraction;
 					index++;
 					count++;
-					listofMoves.push_back(possibleUseraction);
+					possibleMoves.push_back(possibleUseraction);
 
 				}
 			}
 		}
 	}
 	counterPossibleMoves = count;
-	return listofMoves;
+	return possibleMoves;
 }
 
 bool Game::positionInputValid(struct position position)
@@ -1467,20 +1466,236 @@ struct Useraction Game::getHumanUseraction(void)
 	return useraction;
 }
 
-struct Useraction Game::getAIUseraction(void)
-{
-	struct Useraction bestMove;
+struct Useraction Game::getAIUseraction(void){
+	cout << "test";
+
+	Board currentBoard = meinSpielbrett;
+
+	Tree decisionTree;
+	decisionTree.root.setBoard(meinSpielbrett);
+
+	nextNode(decisionTree.root, 3, true);
+
+
+/*	for (int i=0; i < possibleMoves.size() ; ++i){
+		nextNode(decisionTree.root, possibleMoves.at(i), 3);
+	}*/
+
+	meinSpielbrett = currentBoard;
+
+	Useraction action;
+	action.command = Move;
+	action.dir = North;
+
+	return action;
+
+
+}
+
+float Game::nextNode(Node root, int depth, bool maximizingPlayer){
+
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
-	std::vector<Useraction>::const_iterator it ;
-	for (it=possibleMoves.begin(); it!=possibleMoves.end(); ++it){
-		std::cout << "Col" << it->start.column << endl;
-		std::cout << "Row" << it->start.row << endl;
+
+	for (int i=0; i < possibleMoves.size() ; ++i){
+
+		float tokensPosition = meinSpielbrett.getheuristik2(possibleMoves.at(i).end);
+
+		turnTest(root, possibleMoves.at(i));
+		//neues Spielbrett + userAction als child an root anhängen
+		Node n;
+		n.setBoard(meinSpielbrett);
+		n.setUseraction(possibleMoves.at(i));
+		root.addChild(n);
+
+		float capturedTokens = 0;
+		float tokensInLine = 0;
+
+		float cost = tokensPosition + capturedTokens + tokensInLine;
+
+		if(depth == 0){ //Abbrechen wenn depth 0 ist
+			return cost;
+		} else{
+			//neues Spielbrett übergeben
+			return cost + nextNode(root, depth-1, false);
+		}
+	}
+}
+
+void Game::turnTest(Node node, Useraction useraction){
+	//clear grid for check "beenThere"
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			grid[row][column] = 0;
+		}
+		cout << endl;
 	}
 
-	bestMove = possibleMoves.at(2);
+	counterMoves = 1; //set: first move of current player
+	anotherMove = true;
 
+	//check if currentPlayer could capture anyone (true = yes)
+	capturingYes = capturingPossible(); 
+
+
+	//loop until cant/dont want to move and capture anymore
+	do
+	{
+			move();
+			//is another move/capturing with latest token possible?
+			if(!restart && !quit)
+			{
+				if(capturingAgain() && capturingYes && !skip) 
+				{
+					anotherMove = true;
+				} 
+				else
+				{
+					anotherMove = false;
+				}
+			}
+			else
+			{
+				anotherMove = false;
+			}
+	}
+	while(anotherMove); //maybe insert capturingAgain here?
+
+		gameOver();
+		//change current player
+		if(currentPlayer->getTeam() == WHITE)
+		{
+			currentPlayer = &playerBlack;
+		}
+		else
+		{
+			currentPlayer = &playerWhite;
+		}
+		lastDirection = InvalidDirection;
+}
+
+
+void Game::moveNew(Useraction useraction){
+
+	bool validAction = false;
+	skip = false;
+
+		switch(useraction.command)
+		{
+			case Move:
+				{
+					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
+					{
+						//update grid for beenThere
+						if(counterMoves == 1) 
+						{
+							grid[useraction.start.row][useraction.start.column] = 1;
+						}
+						if(grid[useraction.end.row][useraction.end.column] == 0)
+						{
+							grid[useraction.end.row][useraction.end.column] = 1;
+						}
+
+						moveToken(useraction);
+						
+						lastDirection = useraction.dir;
+						currentPosition = useraction.end;
+						counterMoves++; 
+
+						validAction = true; //true
+					}
+					else
+					{
+						validAction = false;
+					}
+
+				}; break;
+
+		}
+}
+
+/*struct Useraction Game::getAIUseraction(void)
+{
+	//copy board to save current status
+	Board currentStatus = meinSpielbrett;
+	struct Useraction bestMove;
+	
+	
+	Tree baum;
+
+	//get all possible moves for this turn	
+	std::vector<Useraction> possibleMoves = getPossibleMoves();
+
+	int bestScore = 0;
+
+
+	//evaluate each move for this move
+	for (int i=0; i < possibleMoves.size() ; ++i){
+       //Move ausführen 
+	   //Heursik capture
+	   //heuristik in linie
+	   //Heuristik in Mitte 
+	   // alles zusammen = 
+		int score = minMaxAlgorithm(meinSpielbrett, 0, true);
+		meinSpielbrett = currentStatus; //undo changes on board
+		Node node;
+		node.setValue(score);
+		baum.root.addChild(node);
+		if(score > bestScore){
+			bestScore = score;
+			bestMove = possibleMoves.at(i);
+		}
+
+
+	}
+
+	meinSpielbrett = currentStatus;
+	bestMove = possibleMoves.at(0);
 	return bestMove;
 }
+
+int Game::minMaxAlgorithm(Board board, int depth, bool isMaximizingPlayer){
+		//check if somebody won
+		if(gameWon)
+		{
+			cout << "The game is over. "<< this->winner->getName() <<" won. Congratulations!" << endl;
+			return 1000;
+		}
+
+		std::vector<Useraction> possibleMoves = getPossibleMoves();
+		Board currentStatus = meinSpielbrett;
+
+		if(isMaximizingPlayer){
+			int bestScore = 0;
+
+			for (int i=0; i < possibleMoves.size() ; ++i){
+				       //Move ausführen 
+	   //Heursik capture
+	   //heuristik in linie
+	   //Heuristik in Mitte 
+	   // alles zusammen = 
+				int score = minMaxAlgorithm(meinSpielbrett, depth+1, false);
+				meinSpielbrett = currentStatus; //undo changes on board
+				if(score > bestScore){
+					bestScore = score;
+				}
+			}
+
+			return bestScore;
+		} else { //minimizing player
+			int bestScore = 0;
+
+			for (int i=0; i < possibleMoves.size() ; ++i){
+				moveToken(possibleMoves.at(i));
+				int score = minMaxAlgorithm(meinSpielbrett, depth+1, true);
+				meinSpielbrett = currentStatus; //undo changes on board
+				if(score < bestScore){
+					bestScore = score;
+				}
+			}
+		}
+}*/
 
 void Game::setFieldOfView(struct position position, struct Grid fieldOfView)
 {
