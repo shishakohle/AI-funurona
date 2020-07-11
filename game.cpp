@@ -40,7 +40,7 @@ bool Game::start() // TODO: private??
 {
 	bool anotherGame = false;
 	// clear screen
-	this->clearScreen();
+	//this->clearScreen();
 	
 	// print welcome screen
 	ifstream welcomeScreenFile;
@@ -160,10 +160,15 @@ void Game::move() //struct Useraction lastPositions
 				cout << "here";
 				useraction = getAIUseraction();
 								cout << "vorbei";
-					this->clearScreen();
+				//	this->clearScreen();
 					this->meinSpielbrett.print();
 					cout << endl;
-
+				
+				/*	cout << "Start Col: " << useraction.start.column << endl;
+					cout << "Start Row: " << useraction.start.row << endl;
+					cout << "End Col: " << useraction.end.column << endl;
+					cout << "End Row: " << useraction.end.row << endl;
+					cout << "Dir: " << useraction.dir << endl;*/
 			}
 		
 		}
@@ -995,9 +1000,12 @@ std::vector<Useraction> Game::getPossibleMoves()
 	int index = 0;
 	int count = 0;
 	std::vector<Useraction> listofMoves;
+	
 
 	if(counterMoves == 1)
 	{
+		//cout << currentPlayer->getName();
+
 		if(capturingYes) //if can capture someone get position from gridCapturing and tokenGrid
 		{
 			for(int row=0; row<5; row++)
@@ -1411,7 +1419,7 @@ struct Useraction Game::getHumanUseraction(void)
 	
 	string userinput;
 	
-	this->clearScreen();
+	//this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
 
@@ -1503,7 +1511,7 @@ struct Useraction Game::getHumanUseraction(void)
 
 struct Useraction Game::getAIUseraction(void){
 	//ONLY for testing - print board
-	this->clearScreen();
+	//this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
 
@@ -1528,6 +1536,7 @@ struct Useraction Game::getAIUseraction(void){
 	currentPlayer = savedPlayer;
 	counterMoves = counterSave;
 	currentPosition = newCurPos;
+	capturingPossible();
 
 	//reset beenThere
 	for(int row=0; row<5; row++)
@@ -1569,7 +1578,7 @@ struct Useraction Game::getAIUseraction(void){
 float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
-	cout << "possibleMoves: " << possibleMoves.size();
+	//cout << "possibleMoves: " << possibleMoves.size();
 	
 	Player *test = currentPlayer; 
 	Board savedBoard = meinSpielbrett;
@@ -1600,9 +1609,9 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 		capturingYes = capturingPossible(); 
 	
 		moveNew(possibleMoves.at(i));
-			this->clearScreen();
+			//this->clearScreen();
 			this->meinSpielbrett.print();
-			cout << endl;
+			//cout << endl;
 
 		//neues Spielbrett + userAction als child an root anhängen
 		Node n;
@@ -1632,7 +1641,7 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 		}
 	
 		if (!anotherMove && depth != 0){
-			counterMoves = 0;
+			counterMoves = 1;
 
 			//switch Player
 			if(currentPlayer->getTeam() == WHITE)
@@ -1645,13 +1654,16 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 			}
 			lastDirection = InvalidDirection;
 
-			cout << "Player Switching";
+			capturingYes = capturingPossible(); 
 
-			 nextNode(root, depth-1, true);
+
+			//cout << "Player Switching";
+
+			 nextNode(root, depth-1, false);
 		} else if(anotherMove && depth != 0){
 			cout << "Not switching";
 
-			 nextNode(root, depth-1, false);
+			 nextNode(root, depth-1, true);
 		} else if (depth == 0){ //Abbrechen wenn depth 0 ist
 				cout << "End depth";
 			return cost;
@@ -1730,7 +1742,10 @@ void Game::moveNew(Useraction useraction){
 		{
 			case Move:
 				{
-							/*cout << "Dir: " << useraction.dir << endl;
+					/*this->meinSpielbrett.print();
+					cout << endl;
+							cout << currentPlayer->getTeam() << endl;
+							cout << "Dir: " << useraction.dir << endl;
 							cout << "Cmd: " << useraction.command << endl;
 							cout << "CaptureOption: " << useraction.captureOption << endl;
 							cout << "End Row: " << useraction.end.row << endl;
@@ -1738,6 +1753,7 @@ void Game::moveNew(Useraction useraction){
 							cout << "Start Row: " << useraction.start.row << endl;
 							cout << "Start Column: " << useraction.start.column << endl;
 							cout << endl;*/
+
 
 					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
 					{
