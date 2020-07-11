@@ -3,7 +3,11 @@
 void Board::init(void)
 {
 	// rows 4 - 5
-	
+	float c1=2;
+	float c2=5/3;
+	float c3=4;
+	float c4;
+
 	for(int row=0; row<5; row++)
 	{
 		for(int column=0; column<9; column++)
@@ -39,12 +43,9 @@ void Board::init(void)
 
 
 			
-			float c1=2;
-			float c2=5/3;
-			float c3=4;
-			float c4;
 			
-			if ((column==0) || (column==8) || (row=0) || (row=5)){
+			
+			if ((column==0) || (column==8) || (row==0) || (row==4)){
 				c4=0.3;
 			}
 			else{
