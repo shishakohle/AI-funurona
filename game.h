@@ -157,6 +157,7 @@ class Game
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
 		float getHeuristik2(struct position);
+		int heuristik3(Team, Board);
 };
 
 #endif

@@ -20,6 +20,7 @@
 #include <sstream>
 #include <regex>
 #include "game.h"
+#include<cmath>
 
 using namespace std;
 
@@ -1553,5 +1554,142 @@ enum Direction Game::getDirectionFromInteger (int direction)
 	return result;
 }
 
+int Game::heuristik3(Team currentPlayer, Board board){
+	int counter=0;
+	Team PlayerOfLastToken=currentPlayer;
+	vector<int> heuristik3vec;
+	int returnvalue=0;
+
+	for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			struct position pos;
+			pos.row=i;
+			pos.column=j;
+
+			if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+					counter++;
+				}
+				else{
+					counter--;
+				}
+			}
+			else{
+				heuristik3vec.push_back(counter);
+			}
+				
+		
+
+			if (j==4){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+			}
+		}
+	}
+
+	for (int j=0; j<5; j++){
+		for (int i=0; i<9; i++){
+			struct position pos;
+			pos.row=i;
+			pos.column=j;
+
+			if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+					counter++;
+				}
+				else{
+					counter--;
+				}
+			}
+			else{
+				heuristik3vec.push_back(counter);
+			}
 
 
+			if (i==8){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+			}
+
+		}
+	}
+
+	for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			if ((i+j==4)|| (i+j==6)|| (i+j==8)|| (i+j==10)|| (i+j==12)){
+				struct position pos;
+				pos.row=i;
+				pos.column=j;
+
+				if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+					if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+						counter++;
+					}
+					else{
+						counter--;
+					}
+				}
+				else{
+					heuristik3vec.push_back(counter);
+				}
+
+
+				if ((i==8)||(j==4)){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+				}
+			}
+		}
+	}
+
+		for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			if ((i==j) || (i==j-2) || (i==j+2) || (i==j+4) || (i==j+6)){
+				struct position pos;
+				pos.row=i;
+				pos.column=j;
+
+				if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+					if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+						counter++;
+					}
+					else{
+						counter--;
+					}
+				}
+				else{
+					heuristik3vec.push_back(counter);
+				}
+
+
+				if ((i==8)||(j==4)){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+				}
+			}
+		}
+	}
+
+
+	float squarenumber=2;
+
+	for (int value : heuristik3vec){
+		returnvalue+=pow(value,squarenumber);
+	}
+
+	returnvalue= pow(returnvalue,1/squarenumber);
+
+	return returnvalue;
+}
+
+/* A B C D E F G H I
+ * #-#-#-#-#-#-#-#-# 1
+ * |\|/|\|/|\|/|\|/| 
+ * #-#-#-#-#-#-#-#-# 2
+ * |/|\|/|\|/|\|/|\| 
+ * #-O-#-O-.-#-O-#-O 3
+ * |\|/|\|/|\|/|\|/|
+ * O-O-O-O-O-O-O-O-O 4
+ * |/|\|/|\|/|\|/|\|
+ * O-O-O-O-O-O-O-O-O 5
+*/
