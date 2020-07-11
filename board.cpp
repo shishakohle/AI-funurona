@@ -37,7 +37,7 @@ void Board::init(void)
 				}
 			}
 
-
+/*
 			
 			float c1=2;
 			float c2=5/3;
@@ -55,7 +55,7 @@ void Board::init(void)
 
 
 
-
+*/
 
 
 
@@ -63,10 +63,10 @@ void Board::init(void)
 	}
 }
 
-float Board::getheuristik2(struct position position)
+/*float Board::getheuristik2(struct position position)
 {
 	return heuristik2grid[position.row][position.column];
-}
+}*/
 
 void Board::print(void)
 {

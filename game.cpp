@@ -157,7 +157,13 @@ void Game::move() //struct Useraction lastPositions
 				useraction = getHumanUseraction();
 			} else 
 			{
+				cout << "here";
 				useraction = getAIUseraction();
+								cout << "vorbei";
+					this->clearScreen();
+					this->meinSpielbrett.print();
+					cout << endl;
+
 			}
 		
 		}
@@ -194,6 +200,13 @@ void Game::move() //struct Useraction lastPositions
 
 			case Move:
 				{
+					/*cout << "Start Col: " << useraction.start.column << endl;
+					cout << "Start Row: " << useraction.start.row << endl;
+					cout << "End Col: " << useraction.end.column << endl;
+					cout << "End Row: " << useraction.end.row << endl;
+					cout << "Dir: " << useraction.dir << endl;
+					cout << currentPlayer->getName();*/
+
 					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
 					{
 						//update grid for beenThere
@@ -207,7 +220,7 @@ void Game::move() //struct Useraction lastPositions
 						}
 
 						moveToken(useraction);
-						
+
 						lastDirection = useraction.dir;
 						currentPosition = useraction.end;
 						counterMoves++; 
@@ -273,6 +286,9 @@ void Game::move() //struct Useraction lastPositions
 			// default: break;
 		}
 
+	if(!validAction){
+		return;
+	}
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
@@ -310,11 +326,11 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	bool returnvalue = true;
 	//std::vector<string> errorvec;
 	//int errorcounter= -1;
-
 	//input needs to be valid before checking other rules
 	if(positionInputValid(startPosition) || positionInputValid(endPosition))
 	{
 		if(!isTokenFromCurrentTeam(startPosition)){
+			cout << "not Team";
 			returnvalue = false;
 			//cout << "Token is not from current team" << endl;
 			errorvec.push_back("Token is not from current team");
@@ -329,6 +345,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		//war in diesem Zug schon mal auf diesem spielfeld?
 		if(!beenThere(endPosition))
 		{
+						cout << "been there";
+
 			returnvalue = false;
 			//cout << "you have already been to this field in your turn" << endl;
 			errorvec.push_back("you have already been to this field in your turn");
@@ -340,6 +358,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		{
 			if(!rightfulCapturing(startPosition, endPosition))
 			{
+										cout << "capture";
+
 				returnvalue = false;
 				//cout << "you are able to capture someone and therefore have to" << endl;
 				errorvec.push_back("you are able to capture someone and therefore have to");
@@ -352,6 +372,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		// - Ist die Position eine freie Position?
 		if(!freePosition(endPosition))
 		{
+									cout << "free";
+
 			returnvalue = false;
 			//cout << "this position is taken by another token" << endl;
 			errorvec.push_back("this position is taken by another token");
@@ -360,6 +382,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		
 		// - ist dieses feld erreichbar? (felder müssen verbunden sein)
 		if(!areFieldsConnected(startPosition, direction)) {
+									cout << "connected";
+
 			returnvalue = false;
 			//cout << "fields are not connected" << endl;
 			errorvec.push_back("fields are not connected");
@@ -367,6 +391,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		}
 
 		if (!isMoveDirectionValid(direction)){
+									cout << "dir valid";
+
 			returnvalue = false;
 			//cout << "your last move was in this direction" << endl;
 			errorvec.push_back("your last move was in this direction");
@@ -376,6 +402,8 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		//second++ moves in one turn: has to move with same token as before
 		if (!sameTokenSelected(startPosition))
 		{
+			cout << "not same T";
+
 			returnvalue = false;
 			//cout << "you have to select the same token as in your previous moves" << endl;
 			errorvec.push_back("you have to select the same token as in your previous moves");
@@ -387,6 +415,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			returnvalue = false;
 			errorvec.push_back("you can't skip the first move");
 		}*/
+
 	}
 	else
 	{
@@ -405,6 +434,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 			//errorcounter++;
 		}
 	}
+
 	return returnvalue;
 }
 
@@ -443,8 +473,8 @@ void Game::turn(void)
 	//loop until cant/dont want to move and capture anymore
 	do
 	{
-			std::vector<Useraction> test = getPossibleMoves();
-			cout<<counterPossibleMoves<<endl;
+			//std::vector<Useraction> test = getPossibleMoves();
+			//cout<<counterPossibleMoves<<endl;
 
 			move();
 			//TODO: struct Groß- und Kleinschreibung vereinheitlichen Useraction, position
@@ -878,9 +908,11 @@ bool Game::capturingPossible()
 //is another move/capturing with latest token possible?, update tokenGrid for currentToken
 bool Game::capturingAgain()
 {
+
 	bool var = false;	
 	struct Grid temporaryGrid;
 	temporaryGrid = updateGridToken(currentPosition);
+				
 
 	//test
 	/*for(int row=0; row<5; row++)
@@ -898,7 +930,7 @@ bool Game::capturingAgain()
 	//sameDirection --> not allowed
 	struct position sameDirectionPosition;
 	sameDirectionPosition = getNeighbour(currentPosition, lastDirection);
-	
+
 	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] = 0;
 
 	//remove positions where cant go (beenThere, sameDirection)
@@ -962,7 +994,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 	struct Useraction possibleUseraction;
 	int index = 0;
 	int count = 0;
-	std::vector<Useraction> possibleMoves;
+	std::vector<Useraction> listofMoves;
 
 	if(counterMoves == 1)
 	{
@@ -987,14 +1019,15 @@ std::vector<Useraction> Game::getPossibleMoves()
 								if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
 								{
 									possibleUseraction.command = Move;
+									possibleUseraction.captureOption = Approach;
 									possibleUseraction.start = startPosition;
 									possibleUseraction.end = endPosition;
 									int direction = calculateDirection(startPosition, endPosition);
 									possibleUseraction.dir = getDirectionFromInteger(direction);
-									possibleMoves[index] = possibleUseraction;
+								//	possibleMoves[index] = possibleUseraction;
 									index++;
 									count++;
-									possibleMoves.push_back(possibleUseraction);
+									listofMoves.push_back(possibleUseraction);
 								}
 							}
 						}	
@@ -1041,11 +1074,12 @@ std::vector<Useraction> Game::getPossibleMoves()
 											possibleUseraction.command = Move;
 											possibleUseraction.start = startPosition;
 											possibleUseraction.end = endPosition;
+											possibleUseraction.captureOption = Approach;
 											possibleUseraction.dir = getDirectionFromInteger(direction);
-											possibleMoves[index] = possibleUseraction;
+										//	possibleMoves[index] = possibleUseraction;
 											index++;
 											count++;
-											possibleMoves.push_back(possibleUseraction);
+											listofMoves.push_back(possibleUseraction);
 										}
 									}
 								}
@@ -1074,19 +1108,20 @@ std::vector<Useraction> Game::getPossibleMoves()
 					possibleUseraction.command = Move;
 					possibleUseraction.start = currentPosition;
 					possibleUseraction.end = endPosition;
+					possibleUseraction.captureOption = Approach;
 					int direction = calculateDirection(currentPosition, endPosition);
 					possibleUseraction.dir = getDirectionFromInteger(direction);
-					possibleMoves[index] = possibleUseraction;
+					//possibleMoves[index] = possibleUseraction;
 					index++;
 					count++;
-					possibleMoves.push_back(possibleUseraction);
+					listofMoves.push_back(possibleUseraction);
 
 				}
 			}
 		}
 	}
 	counterPossibleMoves = count;
-	return possibleMoves;
+	return listofMoves;
 }
 
 bool Game::positionInputValid(struct position position)
@@ -1185,7 +1220,7 @@ int Game::capture(struct Useraction useraction, struct position startNeighbour, 
 	if(positionInputValid(startNeighbour) && positionInputValid(endNeighbour))
 	{
 		//At start AND endPosition is Token from other Team
-		if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour)){
+		if(!freePosition(startNeighbour) && !isTokenFromCurrentTeam(startNeighbour) && !freePosition(endNeighbour) && !isTokenFromCurrentTeam(endNeighbour) && useraction.captureOption == Unset){
 			while(choice.compare("W") != 0 && choice.compare("A") != 0 ){
 				cout << "Capturing not explicit: Please choose if you want to withdraw ('W') or approach ('A'):";
 				cin >> choice;
@@ -1467,40 +1502,108 @@ struct Useraction Game::getHumanUseraction(void)
 }
 
 struct Useraction Game::getAIUseraction(void){
-	cout << "test";
+	//ONLY for testing - print board
+	this->clearScreen();
+	this->meinSpielbrett.print();
+	cout << endl;
 
-	Board currentBoard = meinSpielbrett;
+	//save current status of game
+	Board savedBoard = meinSpielbrett;
+	Player *savedPlayer = currentPlayer;
+	struct position newCurPos = currentPosition;
+	int counterSave = counterMoves;
+	cout << currentPlayer->getName();
+
+
 
 	Tree decisionTree;
 	decisionTree.root.setBoard(meinSpielbrett);
 
-	nextNode(decisionTree.root, 3, true);
+	nextNode(decisionTree.root, 1, true);
+	
 
 
-/*	for (int i=0; i < possibleMoves.size() ; ++i){
-		nextNode(decisionTree.root, possibleMoves.at(i), 3);
+	//reset game to status before testing possible moves
+	meinSpielbrett = savedBoard;
+	currentPlayer = savedPlayer;
+	counterMoves = counterSave;
+	currentPosition = newCurPos;
+
+	//reset beenThere
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			grid[row][column] = 0;
+		}
+		cout << endl;
+	}
+
+	/*std::vector<Useraction> possibleMoves = getPossibleMoves();
+
+	for (int i=0; i < possibleMoves.size() ; ++i){
+		cout << "Dir: " << possibleMoves.at(i).dir << endl;
+		cout << "Cmd: " << possibleMoves.at(i).command << endl;
+		cout << "CaptureOption: " << possibleMoves.at(i).captureOption << endl;
+		cout << "End Row: " << possibleMoves.at(i).end.row << endl;
+		cout << "End Column: " << possibleMoves.at(i).end.column << endl;
+		cout << "Start Row: " << possibleMoves.at(i).start.row << endl;
+		cout << "Start Column: " << possibleMoves.at(i).start.column << endl;
+		cout << endl;
+
 	}*/
 
-	meinSpielbrett = currentBoard;
-
+	//ONLY for testing dummy action
 	Useraction action;
+	action.captureOption = Unset;
 	action.command = Move;
 	action.dir = North;
+	action.start.row = 3;
+	action.start.column = 4;
+	action.end.row = 2;
+	action.end.column = 4;
 
 	return action;
-
-
 }
 
 float Game::nextNode(Node root, int depth, bool maximizingPlayer){
-
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
+
+	cout << "possibleMoves: " << possibleMoves.size();
+	
+	Player *test = currentPlayer; 
+	Board savedBoard = meinSpielbrett;
 
 	for (int i=0; i < possibleMoves.size() ; ++i){
 
-		float tokensPosition = meinSpielbrett.getheuristik2(possibleMoves.at(i).end);
+		currentPlayer = test;
+		meinSpielbrett = savedBoard;
 
-		turnTest(root, possibleMoves.at(i));
+		float tokensPosition = 0;
+		//meinSpielbrett.getheuristik2(possibleMoves.at(i).end);
+
+
+		//clear grid for check "beenThere"
+		for(int row=0; row<5; row++)
+		{
+			for(int column=0; column<9; column++)
+			{
+				grid[row][column] = 0;
+			}
+			cout << endl;
+		}
+
+		counterMoves = 1; //set: first move of current player
+		//anotherMove = true;
+
+		//check if currentPlayer could capture anyone (true = yes)
+		capturingYes = capturingPossible(); 
+	
+		moveNew(possibleMoves.at(i));
+			this->clearScreen();
+			this->meinSpielbrett.print();
+			cout << endl;
+
 		//neues Spielbrett + userAction als child an root anhängen
 		Node n;
 		n.setBoard(meinSpielbrett);
@@ -1512,16 +1615,56 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 
 		float cost = tokensPosition + capturedTokens + tokensInLine;
 
-		if(depth == 0){ //Abbrechen wenn depth 0 ist
-			return cost;
-		} else{
-			//neues Spielbrett übergeben
-			return cost + nextNode(root, depth-1, false);
+		if(!restart && !quit)
+		{
+				if(capturingAgain() && capturingYes && !skip) 
+				{
+					anotherMove = true;
+				} 
+				else
+				{
+					anotherMove = false;
+				}
 		}
-	}
-}
+		else
+		{
+				anotherMove = false;
+		}
+	
+		if (!anotherMove && depth != 0){
+			counterMoves = 0;
 
+			//switch Player
+			if(currentPlayer->getTeam() == WHITE)
+			{
+				currentPlayer = &playerBlack;
+			}
+			else
+			{
+				currentPlayer = &playerWhite;
+			}
+			lastDirection = InvalidDirection;
+
+			cout << "Player Switching";
+
+			 nextNode(root, depth-1, true);
+		} else if(anotherMove && depth != 0){
+			cout << "Not switching";
+
+			 nextNode(root, depth-1, false);
+		} else if (depth == 0){ //Abbrechen wenn depth 0 ist
+				cout << "End depth";
+			return cost;
+		}
+		
+	}
+
+
+}
+/*
 void Game::turnTest(Node node, Useraction useraction){
+	cout << "turnTest";
+
 	//clear grid for check "beenThere"
 	for(int row=0; row<5; row++)
 	{
@@ -1538,14 +1681,15 @@ void Game::turnTest(Node node, Useraction useraction){
 	//check if currentPlayer could capture anyone (true = yes)
 	capturingYes = capturingPossible(); 
 
-
 	//loop until cant/dont want to move and capture anymore
 	do
 	{
-			move();
+			moveNew(useraction);
 			//is another move/capturing with latest token possible?
 			if(!restart && !quit)
 			{
+				cout << "Passt eh";
+
 				if(capturingAgain() && capturingYes && !skip) 
 				{
 					anotherMove = true;
@@ -1562,6 +1706,7 @@ void Game::turnTest(Node node, Useraction useraction){
 	}
 	while(anotherMove); //maybe insert capturingAgain here?
 
+
 		gameOver();
 		//change current player
 		if(currentPlayer->getTeam() == WHITE)
@@ -1574,7 +1719,7 @@ void Game::turnTest(Node node, Useraction useraction){
 		}
 		lastDirection = InvalidDirection;
 }
-
+*/
 
 void Game::moveNew(Useraction useraction){
 
@@ -1585,6 +1730,15 @@ void Game::moveNew(Useraction useraction){
 		{
 			case Move:
 				{
+							/*cout << "Dir: " << useraction.dir << endl;
+							cout << "Cmd: " << useraction.command << endl;
+							cout << "CaptureOption: " << useraction.captureOption << endl;
+							cout << "End Row: " << useraction.end.row << endl;
+							cout << "End Column: " << useraction.end.column << endl;
+							cout << "Start Row: " << useraction.start.row << endl;
+							cout << "Start Column: " << useraction.start.column << endl;
+							cout << endl;*/
+
 					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
 					{
 						//update grid for beenThere
@@ -1603,7 +1757,7 @@ void Game::moveNew(Useraction useraction){
 						currentPosition = useraction.end;
 						counterMoves++; 
 
-						validAction = true; //true
+						validAction = true;
 					}
 					else
 					{

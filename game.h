@@ -101,7 +101,6 @@ class Game
 		void setFieldOfView(struct position, struct Grid);
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
-		float getHeuristik2(struct position);
 		int minMaxAlgorithm(Board, int, bool);
 		float nextNode(Node, int, bool);
 		void turnTest(Node, struct Useraction);
