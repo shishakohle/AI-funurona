@@ -158,6 +158,7 @@ class Game
 		enum Direction getDirectionFromInteger (int);
 		float getHeuristik2(struct position);
 		int heuristik3(Team, Board);
+		int heuristik1(Team, Board);
 };
 
 #endif

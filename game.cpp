@@ -1465,6 +1465,22 @@ struct Useraction Game::getHumanUseraction(void)
 		// getline(cin,userinput); // TODO: just some random string not used anymore
 	}
 	
+
+	// //debug lukas heuristiken
+	// int h1= heuristik1(this->currentPlayer->getTeam(),this->meinSpielbrett);
+	// float h2= this->meinSpielbrett.getheuristik2(useraction.end);
+	// int h3=heuristik3(this->currentPlayer->getTeam(),this->meinSpielbrett);
+	// float cost = h1+h2+h3;
+
+
+	// cout << "H1: " << h1 << endl;
+	// cout << "H2: " << h2 << endl;
+	// cout << "H3: " << h3 << endl;
+	// cout << "cost: " << cost << endl;
+
+
+
+
 	return useraction;
 }
 
@@ -1558,7 +1574,7 @@ int Game::heuristik3(Team currentPlayer, Board board){
 	int counter=0;
 	Team PlayerOfLastToken=currentPlayer;
 	vector<int> heuristik3vec;
-	int returnvalue=0;
+	//int returnvalue=0;
 
 	for (int i=0; i<9; i++){
 		for (int j=0; j<5; j++){
@@ -1672,24 +1688,57 @@ int Game::heuristik3(Team currentPlayer, Board board){
 
 
 	float squarenumber=2;
-
+	int returnvaluepos=0;
+	int returnvalueneg=0;
 	for (int value : heuristik3vec){
-		returnvalue+=pow(value,squarenumber);
+		if (value>0){
+			returnvaluepos+=pow(value,squarenumber);
+		}
+		else{
+			returnvalueneg+=pow(value,squarenumber);
+		}
+		
 	}
 
-	returnvalue= pow(returnvalue,1/squarenumber);
+	returnvaluepos= pow(returnvaluepos,1/squarenumber);
+	returnvalueneg= pow(returnvalueneg,1/squarenumber);
 
-	return returnvalue;
+	return returnvaluepos-returnvalueneg;
 }
 
-/* A B C D E F G H I
- * #-#-#-#-#-#-#-#-# 1
- * |\|/|\|/|\|/|\|/| 
- * #-#-#-#-#-#-#-#-# 2
- * |/|\|/|\|/|\|/|\| 
- * #-O-#-O-.-#-O-#-O 3
- * |\|/|\|/|\|/|\|/|
- * O-O-O-O-O-O-O-O-O 4
- * |/|\|/|\|/|\|/|\|
- * O-O-O-O-O-O-O-O-O 5
-*/
+int Game::heuristik1(Team currentPlayer,Board board){
+
+	int tokensLeftBlack = 0;
+	int tokensLeftWhite = 0;
+
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{			
+
+			struct position pos;
+			pos.row=row;
+			pos.column=column;
+
+			if(board.getCell(pos).getOccupied() && board.getCell(pos).getToken().getTeam() == BLACK){
+				tokensLeftBlack++;
+			}
+			else if( board.getCell(pos).getOccupied() && board.getCell(pos).getToken().getTeam() == WHITE){
+				tokensLeftWhite++;
+			}
+		}
+	}
+
+	int c1=10;
+	int returnvalue;
+	if (currentPlayer==WHITE){
+		returnvalue=c1*(tokensLeftWhite-tokensLeftBlack);
+	}
+	if(currentPlayer==BLACK){
+		returnvalue=c1*(tokensLeftBlack-tokensLeftWhite);
+	}
+
+	return returnvalue;
+	
+
+}
