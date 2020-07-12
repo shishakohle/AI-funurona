@@ -1763,4 +1763,6 @@ float Game::heuristik2(Team currentPlayer,Board board){
 			}
 		}
 	}
+	float c1=0.1;
+	return c1*returnvalue;
 }
