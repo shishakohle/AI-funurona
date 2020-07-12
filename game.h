@@ -159,6 +159,7 @@ class Game
 		float getHeuristik2(struct position);
 		int heuristik3(Team, Board);
 		int heuristik1(Team, Board);
+		float heuristik2(Team, Board);
 };
 
 #endif
