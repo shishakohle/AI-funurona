@@ -28,6 +28,7 @@ Game::Game(void)
 {
 	this->currentPlayer = &playerWhite;
 	this->gameWon = false;
+	this->gameDraw = false;
 	this->restart = false;
 	this->quit = false;
 	this->playerWhite.setTeam(WHITE);
@@ -98,11 +99,16 @@ bool Game::start() // TODO: private??
 	cout << "Press <ENTER> to start the game." << flush;
 	getline(cin,playerName);
   
-	while(!gameWon && !quit && !restart)
+	while(!gameWon && !quit && !restart && !gameDraw)
 	{
 		//anotherMove = true; //(re)move later
 		turn();
 		gameOver();
+
+		if(this->counterCapture >= 5){
+			gameDraw = true;
+		}
+
 		//change current player
 		if(currentPlayer->getTeam() == WHITE)
 		{
@@ -117,6 +123,12 @@ bool Game::start() // TODO: private??
 	if(gameWon)
 	{
 		cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
+		cout << "Would you like to play again?"<<endl;
+		anotherGame = false;
+	}
+	else if(gameDraw)
+	{
+		cout << "The game is over. There has been a draw!" << endl;
 		cout << "Would you like to play again?"<<endl;
 		anotherGame = false;
 	}
@@ -223,7 +235,14 @@ void Game::move() //struct Useraction lastPositions
 							grid[useraction.end.row][useraction.end.column] = 1;
 						}
 
-						moveToken(useraction);
+						int capturedTokens = moveToken(useraction);
+
+							if(capturedTokens == 0){
+								cout << "No capture";
+								this->counterCapture++;
+							} else{
+								this->counterCapture = 0;
+							}
 
 						lastDirection = useraction.dir;
 						currentPosition = useraction.end;
@@ -1157,12 +1176,14 @@ void Game::gameOver(void)
 }
 
 //move Token from start to end position
-void Game::moveToken (struct Useraction useraction)
+int Game::moveToken (struct Useraction useraction)
 {
 	//Token tokenToMove = meinSpielbrett.getCell(useraction.start).getToken();
 	meinSpielbrett.setTokenOnCell(useraction.end, meinSpielbrett.getCell(useraction.start).getToken()); //tokenToMove
 	meinSpielbrett.emptyCell(useraction.start);
-	captureToken(useraction);
+	int capturedTokens = captureToken(useraction);
+
+	return capturedTokens;
 }
 
 struct position Game::getNeighbour(struct position position, Direction direction){
@@ -1334,7 +1355,7 @@ int Game::capture(struct Useraction useraction, struct position startNeighbour, 
 }
 
 
-void Game::captureToken(struct Useraction userAction)
+int Game::captureToken(struct Useraction userAction)
 {
 	int capturedTokens;
 
@@ -1400,6 +1421,8 @@ void Game::captureToken(struct Useraction userAction)
 		case InvalidDirection: 
 		break;
     }
+
+	return capturedTokens;
 }
 
 
@@ -1537,7 +1560,7 @@ struct Useraction Game::getAIUseraction(void){
 
 	Tree decisionTree;
 
-	nextNode(&(decisionTree.root), 1); //create Tree 
+	nextNode(&(decisionTree.root), 2); //create Tree 
 	
 	//cout << "Tree:";
 	//printNodeScore(&(decisionTree.root), 1);
@@ -1834,7 +1857,7 @@ void Game::moveNew(Useraction useraction){
 							grid[useraction.end.row][useraction.end.column] = 1;
 						}
 
-						moveToken(useraction);
+						int capturedTokens = moveToken(useraction);
 						
 						lastDirection = useraction.dir;
 						currentPosition = useraction.end;

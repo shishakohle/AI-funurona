@@ -42,6 +42,7 @@ class Game
 	private:
 		Player *currentPlayer;
 		bool gameWon;
+		bool gameDraw;
 		bool quit;
 		bool restart;
 		bool skip;
@@ -61,6 +62,7 @@ class Game
 		bool capturingYes;
 		int counterMoves;
 		int counterPossibleMoves;
+		int counterCapture;
 		struct Useraction possibleMoves[150];
 
 		//of first move
@@ -91,10 +93,10 @@ class Game
 		struct Grid updateGridToken(struct position);
 		bool capturingAgain();
 		//move Token from start to end position
-		void moveToken (struct Useraction);
+		int moveToken (struct Useraction);
 		static struct position getNeighbour(struct position, Direction);
 		int capture(struct Useraction, struct position, Direction, struct position, Direction, string);
-		void captureToken(struct Useraction);
+		int captureToken(struct Useraction);
 		void clearScreen(void);
 		struct Useraction getHumanUseraction(void);
 		struct Useraction getAIUseraction(void);
