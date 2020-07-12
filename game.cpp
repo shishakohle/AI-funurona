@@ -1962,6 +1962,7 @@ struct position Game::string2position (string str)
 }
 
 enum Direction Game::getDirectionFromInteger (int direction)
+// TODO: why this conversion func? enums ARE integers! ~~ingo
 {
 	enum Direction result;
 
@@ -2180,3 +2181,4 @@ float Game::heuristik2(Team currentPlayer,Board board){
 		}
 	}
 }
+

@@ -14,7 +14,7 @@
  * colors: black -> # , white -> O , empty cell -> .
  */
 
-#define LINES_TO_CLEAR 50
+#define LINES_TO_CLEAR 0
 
 #include <map>
 #include <vector>	
