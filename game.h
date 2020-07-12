@@ -14,73 +14,18 @@
  * colors: black -> # , white -> O , empty cell -> .
  */
 
-#define LINES_TO_CLEAR 50
+#define LINES_TO_CLEAR 0
 
 #include <map>
 #include <vector>	
 #include "board.h"
 #include "player.h"
+#include "tree.h"
 
 
-#ifndef DIRECTION_H
-#define DIRECTION_H
 
-enum Direction {North, East, South, West, Northeast, Southeast, Southwest, Northwest, InvalidDirection};
-enum CaptureOption {Approach, Withdraw, Unset};
 
-static const map <string, Direction> directionMap
-{
-	{ "N" , North},
-	{ "NE", Northeast},
-	{ "E" , East},
-	{ "SE", Southeast},
-	{ "S" , South},
-	{ "SW", Southwest},
-	{ "W" , West},
-	{ "NW", Northwest}
-};
 
-#endif
-
-#ifndef COMMAND_H
-#define COMMAND_H
-
-enum Command {
-	Invalid, // TODO replace by InvalidCommand
-	Skip,
-	Move,
-	Help,
-	Restart,
-	Quit,
-	Rules
-};
-
-static const map <string, Command> commandMap
-{
-	{ "SKIP",    Skip },
-	{ "HELP",    Help },
-	{ "RESTART", Restart },
-	{ "QUIT",    Quit},
-	{ "EXIT",    Quit},
-	{ "BYE",     Quit},
-	{ "RULES",   Rules}
-};
-
-#endif
-
-#ifndef USERACTION_H
-#define USERACTION_H
-
-struct Useraction
-{
-	struct position  		start;
-	struct position  		end;
-	enum   Direction		dir;
-	enum   Command 			command;
-	enum   CaptureOption	captureOption;
-};
-
-#endif
 
 #ifndef GAME_H
 #define GAME_H
@@ -156,7 +101,12 @@ class Game
 		void setFieldOfView(struct position, struct Grid);
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
-		float getHeuristik2(struct position);
+		int minMaxAlgorithm(Board, int, bool);
+		float nextNode(Node *, int);
+		void printNodeScore(Node *, int);
+		Node* compareChildren(Node *);
+		void turnTest(Node, struct Useraction);
+		void moveNew(Useraction);
 		int heuristik3(Team, Board);
 		int heuristik1(Team, Board);
 		float heuristik2(Team, Board);
