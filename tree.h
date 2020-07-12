@@ -72,6 +72,9 @@ class Node
 		Board currentBoard; // TODO some sort of data we store to each node of the tree
 		Useraction userAction;
 		vector<Node> children;
+		float cost;
+		float alpha;
+		float beta;
 	public:
 		void setBoard(Board value){
 			this->currentBoard = value;
@@ -79,12 +82,27 @@ class Node
 		void setUseraction(Useraction value){
 			this->userAction = value;
 		}
+		void setCost(float value){
+			this->cost = value;
+		}
+		void setAlpha(float value){
+			this->alpha = value;
+		}
+		void setBeta(float value){
+			this->beta = value;
+		}
 		Board getBoard(){
 			return this->currentBoard;
+		}
+		float getCost(){
+			return this->cost;
 		}
 		void addChild(Node child)
 		{
 			children.push_back(child);
+		}
+		vector<Node> getChildren(){
+			return this->children;
 		}
 };
 

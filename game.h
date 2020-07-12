@@ -103,8 +103,11 @@ class Game
 		enum Direction getDirectionFromInteger (int);
 		int minMaxAlgorithm(Board, int, bool);
 		float nextNode(Node, int, bool);
+		void printNodeScore(Node);
 		void turnTest(Node, struct Useraction);
 		void moveNew(Useraction);
+		int heuristik3(Team, Board);
+		int heuristik1(Team, Board);
 };
 
 #endif

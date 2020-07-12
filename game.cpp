@@ -20,6 +20,7 @@
 #include <sstream>
 #include <regex>
 #include "game.h"
+#include<cmath>
 
 using namespace std;
 
@@ -160,9 +161,9 @@ void Game::move() //struct Useraction lastPositions
 				cout << "here";
 				useraction = getAIUseraction();
 								cout << "vorbei";
-				//	this->clearScreen();
-					this->meinSpielbrett.print();
-					cout << endl;
+				//7	this->clearScreen();
+				//	this->meinSpielbrett.print();
+				//	cout << endl;
 				
 				/*	cout << "Start Col: " << useraction.start.column << endl;
 					cout << "Start Row: " << useraction.start.row << endl;
@@ -1419,7 +1420,7 @@ struct Useraction Game::getHumanUseraction(void)
 	
 	string userinput;
 	
-	//this->clearScreen();
+	this->clearScreen();
 	this->meinSpielbrett.print();
 	cout << endl;
 
@@ -1506,14 +1507,30 @@ struct Useraction Game::getHumanUseraction(void)
 		// getline(cin,userinput); // TODO: just some random string not used anymore
 	}
 	
+
+	// //debug lukas heuristiken
+	// int h1= heuristik1(this->currentPlayer->getTeam(),this->meinSpielbrett);
+	// float h2= this->meinSpielbrett.getheuristik2(useraction.end);
+	// int h3=heuristik3(this->currentPlayer->getTeam(),this->meinSpielbrett);
+	// float cost = h1+h2+h3;
+
+
+	// cout << "H1: " << h1 << endl;
+	// cout << "H2: " << h2 << endl;
+	// cout << "H3: " << h3 << endl;
+	// cout << "cost: " << cost << endl;
+
+
+
+
 	return useraction;
 }
 
 struct Useraction Game::getAIUseraction(void){
 	//ONLY for testing - print board
 	//this->clearScreen();
-	this->meinSpielbrett.print();
-	cout << endl;
+	//this->meinSpielbrett.print();
+	//cout << endl;
 
 	//save current status of game
 	Board savedBoard = meinSpielbrett;
@@ -1562,6 +1579,13 @@ struct Useraction Game::getAIUseraction(void){
 
 	}*/
 
+	Useraction bestMove;
+	float bestScore = 0;
+
+
+
+	cout << "Tree:";
+	printNodeScore(decisionTree.root);
 	//ONLY for testing dummy action
 	Useraction action;
 	action.captureOption = Unset;
@@ -1575,6 +1599,25 @@ struct Useraction Game::getAIUseraction(void){
 	return action;
 }
 
+void Game::printNodeScore(Node root){
+	vector<Node> children =  root.getChildren();
+
+	for (int i=0; i < children.size() ; ++i){
+		cout << "Cost: " << children.at(i).getCost() << endl;
+		vector<Node> childrenNode =  root.getChildren();
+		if(childrenNode.size() > 0){
+			printNodeScore(children.at(i));
+		} else {
+			return;
+		}
+	} 
+}
+
+
+/*float Game::getBestScore(Node root, float cost){
+	root.get
+}*/
+
 float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
@@ -1587,9 +1630,7 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 
 		currentPlayer = test;
 		meinSpielbrett = savedBoard;
-
-		float tokensPosition = 0;
-		//meinSpielbrett.getheuristik2(possibleMoves.at(i).end);
+		cout << "possibleMove";
 
 
 		//clear grid for check "beenThere"
@@ -1610,19 +1651,16 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 	
 		moveNew(possibleMoves.at(i));
 			//this->clearScreen();
-			this->meinSpielbrett.print();
+			//this->meinSpielbrett.print();
 			//cout << endl;
 
 		//neues Spielbrett + userAction als child an root anhängen
 		Node n;
 		n.setBoard(meinSpielbrett);
 		n.setUseraction(possibleMoves.at(i));
-		root.addChild(n);
 
-		float capturedTokens = 0;
-		float tokensInLine = 0;
 
-		float cost = tokensPosition + capturedTokens + tokensInLine;
+
 
 		if(!restart && !quit)
 		{
@@ -1657,7 +1695,7 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 			capturingYes = capturingPossible(); 
 
 
-			//cout << "Player Switching";
+			cout << "Player Switching";
 
 			 nextNode(root, depth-1, false);
 		} else if(anotherMove && depth != 0){
@@ -1666,8 +1704,18 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 			 nextNode(root, depth-1, true);
 		} else if (depth == 0){ //Abbrechen wenn depth 0 ist
 				cout << "End depth";
+					int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
+					float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
+					float tokensPosition = meinSpielbrett.getheuristik2(possibleMoves.at(i).end);
+
+					float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
+					cout << "Costs: " << cost;
+					n.setCost(cost);
 			return cost;
 		}
+
+				root.addChild(n);
+
 		
 	}
 
@@ -1938,5 +1986,175 @@ enum Direction Game::getDirectionFromInteger (int direction)
 	return result;
 }
 
+int Game::heuristik3(Team currentPlayer, Board board){
+	int counter=0;
+	Team PlayerOfLastToken=currentPlayer;
+	vector<int> heuristik3vec;
+	//int returnvalue=0;
+
+	for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			struct position pos;
+			pos.row=i;
+			pos.column=j;
+
+			if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+					counter++;
+				}
+				else{
+					counter--;
+				}
+			}
+			else{
+				heuristik3vec.push_back(counter);
+			}
+				
+		
+
+			if (j==4){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+			}
+		}
+	}
+
+	for (int j=0; j<5; j++){
+		for (int i=0; i<9; i++){
+			struct position pos;
+			pos.row=i;
+			pos.column=j;
+
+			if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+					counter++;
+				}
+				else{
+					counter--;
+				}
+			}
+			else{
+				heuristik3vec.push_back(counter);
+			}
 
 
+			if (i==8){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+			}
+
+		}
+	}
+
+	for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			if ((i+j==4)|| (i+j==6)|| (i+j==8)|| (i+j==10)|| (i+j==12)){
+				struct position pos;
+				pos.row=i;
+				pos.column=j;
+
+				if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+					if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+						counter++;
+					}
+					else{
+						counter--;
+					}
+				}
+				else{
+					heuristik3vec.push_back(counter);
+				}
+
+
+				if ((i==8)||(j==4)){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+				}
+			}
+		}
+	}
+
+		for (int i=0; i<9; i++){
+		for (int j=0; j<5; j++){
+			if ((i==j) || (i==j-2) || (i==j+2) || (i==j+4) || (i==j+6)){
+				struct position pos;
+				pos.row=i;
+				pos.column=j;
+
+				if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
+					if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+						counter++;
+					}
+					else{
+						counter--;
+					}
+				}
+				else{
+					heuristik3vec.push_back(counter);
+				}
+
+
+				if ((i==8)||(j==4)){
+					PlayerOfLastToken=currentPlayer;
+					counter=0;
+				}
+			}
+		}
+	}
+
+
+	float squarenumber=2;
+	int returnvaluepos=0;
+	int returnvalueneg=0;
+	for (int value : heuristik3vec){
+		if (value>0){
+			returnvaluepos+=pow(value,squarenumber);
+		}
+		else{
+			returnvalueneg+=pow(value,squarenumber);
+		}
+		
+	}
+
+	returnvaluepos= pow(returnvaluepos,1/squarenumber);
+	returnvalueneg= pow(returnvalueneg,1/squarenumber);
+
+	return returnvaluepos-returnvalueneg;
+}
+
+int Game::heuristik1(Team currentPlayer,Board board){
+
+	int tokensLeftBlack = 0;
+	int tokensLeftWhite = 0;
+
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{			
+
+			struct position pos;
+			pos.row=row;
+			pos.column=column;
+
+			if(board.getCell(pos).getOccupied() && board.getCell(pos).getToken().getTeam() == BLACK){
+				tokensLeftBlack++;
+			}
+			else if( board.getCell(pos).getOccupied() && board.getCell(pos).getToken().getTeam() == WHITE){
+				tokensLeftWhite++;
+			}
+		}
+	}
+
+	int c1=10;
+	int returnvalue;
+	if (currentPlayer==WHITE){
+		returnvalue=c1*(tokensLeftWhite-tokensLeftBlack);
+	}
+	if(currentPlayer==BLACK){
+		returnvalue=c1*(tokensLeftBlack-tokensLeftWhite);
+	}
+
+	return returnvalue;
+	
+
+}
