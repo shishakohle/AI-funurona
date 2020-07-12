@@ -1534,10 +1534,11 @@ struct Useraction Game::getAIUseraction(void){
 
 	Tree decisionTree;
 
-	nextNode(&(decisionTree.root), 1, true);
+	nextNode(&(decisionTree.root), 1);
 	
 	cout << "Tree:";
-	printNodeScore(&(decisionTree.root));
+	printNodeScore(&(decisionTree.root), 1);
+	compareChildren(&(decisionTree.root));
 
 	//reset game to status before testing possible moves
 	meinSpielbrett = savedBoard;
@@ -1586,9 +1587,10 @@ struct Useraction Game::getAIUseraction(void){
 	return action;
 }
 
-void Game::printNodeScore(Node *root){
+void Game::printNodeScore(Node *root, int depth){
 	vector<Node *> children =  root->getChildren();
 	cout << "length: " << children.size() << endl;
+	cout << "IsMax: " << root->getIsMax() << endl;
 
 	for (int i=0; i < children.size() ; ++i){
 		cout << "Cost: " << (children)[i]->getCost() << endl;
@@ -1596,14 +1598,47 @@ void Game::printNodeScore(Node *root){
 		vector<Node *> childrenNode =  (children)[i]->getChildren();
 		cout << "Children length: " << childrenNode.size() << endl;
 
-		if(childrenNode.size() > 0){
-			printNodeScore((children)[i]);
-		} 
+		if(childrenNode.size() > 0){ // if there are more childs go deeper
+			printNodeScore((children)[i], depth-1);
+		} else { //no more children
+
+
+		}
 	} 
 }
 
+float Game::compareChildren(Node * root){
+	vector<Node *> children =  root->getChildren();
 
-float Game::nextNode(Node *root, int depth, bool maximizingPlayer){
+	float score = 1;
+
+	if(children.size() == 0){
+		return root->getCost();
+	}
+
+	for (int i=0; i < children.size() ; ++i){
+
+		float test = compareChildren((children)[i]);
+
+		if(root->getIsMax() == true){
+			if(score < test){
+				score = test;
+			}
+		} else{
+			if(score > test){
+				score = test;
+			}
+		}
+
+	}
+
+	cout << "Score: " << score << endl;
+
+	return score;
+}
+
+
+float Game::nextNode(Node *root, int depth){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
 	cout << "possibleMoves length: " << possibleMoves.size() << endl;
@@ -1674,12 +1709,13 @@ float Game::nextNode(Node *root, int depth, bool maximizingPlayer){
 
 			capturingYes = capturingPossible(); 
 			cout << "Player Switching" << endl;
-			nextNode(n, depth-1, false); // maybe causes segmentation fault
+			n->setIsMax(!(n->getIsMax()));
+			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if(anotherMove && depth != 0)
 		{
 			cout << "Not switching" << endl;
-			nextNode(n, depth-1, true); // maybe causes segmentation fault
+			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
 		{ 
@@ -1687,6 +1723,7 @@ float Game::nextNode(Node *root, int depth, bool maximizingPlayer){
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
+			//float tokensPosition = 2;
 
 			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
 			cout << "Heuristik 1: " << heuristik1TokenDel << endl;

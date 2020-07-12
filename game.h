@@ -102,8 +102,9 @@ class Game
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
 		int minMaxAlgorithm(Board, int, bool);
-		float nextNode(Node *, int, bool);
-		void printNodeScore(Node *);
+		float nextNode(Node *, int);
+		void printNodeScore(Node *, int);
+		float compareChildren(Node * );
 		void turnTest(Node, struct Useraction);
 		void moveNew(Useraction);
 		int heuristik3(Team, Board);

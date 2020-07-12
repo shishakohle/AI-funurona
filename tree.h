@@ -75,7 +75,7 @@ class Node
 		float cost;
 		float alpha;
 		float beta;
-		bool isMax;
+		bool isMax = true;
 	public:
 		void setBoard(Board value){
 			this->currentBoard = value;
@@ -92,15 +92,17 @@ class Node
 		void setBeta(float value){
 			this->beta = value;
 		}
+		void setIsMax(bool value){
+			this->isMax = value;
+		}
 		Board getBoard(){
 			return this->currentBoard;
 		}
 		float getCost(){
 			return this->cost;
 		}
-		void addChild(Node *child)
-		{
-			children.push_back(child);
+		bool getIsMax(){
+			return this->isMax;
 		}
 		Node* createNode(Useraction action)
 		{
