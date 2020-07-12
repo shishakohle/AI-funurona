@@ -104,7 +104,7 @@ class Game
 		int minMaxAlgorithm(Board, int, bool);
 		float nextNode(Node *, int);
 		void printNodeScore(Node *, int);
-		float compareChildren(Node * );
+		Node* compareChildren(Node *);
 		void turnTest(Node, struct Useraction);
 		void moveNew(Useraction);
 		int heuristik3(Team, Board);

@@ -1538,7 +1538,17 @@ struct Useraction Game::getAIUseraction(void){
 	
 	cout << "Tree:";
 	printNodeScore(&(decisionTree.root), 1);
-	compareChildren(&(decisionTree.root));
+	Node* bestNode = compareChildren(&(decisionTree.root));
+
+	Useraction bestAction = bestNode->getUseraction();
+
+	cout << "Dir: " << bestAction.dir << endl;
+	cout << "Cmd: " << bestAction.command << endl;
+	cout << "CaptureOption: " << bestAction.captureOption << endl;
+	cout << "End Row: " << bestAction.end.row << endl;
+	cout << "End Column: " << bestAction.end.column << endl;
+	cout << "Start Row: " << bestAction.start.row << endl;
+	cout << "Start Column: " << bestAction.start.column << endl;
 
 	//reset game to status before testing possible moves
 	meinSpielbrett = savedBoard;
@@ -1607,26 +1617,38 @@ void Game::printNodeScore(Node *root, int depth){
 	} 
 }
 
-float Game::compareChildren(Node * root){
+Node* Game::compareChildren(Node * root){
 	vector<Node *> children =  root->getChildren();
 
-	float score = 1;
+	float score= 349823;
+
+	Node* bestNode;
 
 	if(children.size() == 0){
-		return root->getCost();
+		return root;
 	}
 
 	for (int i=0; i < children.size() ; ++i){
 
-		float test = compareChildren((children)[i]);
+		Node* c = compareChildren((children)[i]);
+		float test = c->getCost();
 
 		if(root->getIsMax() == true){
 			if(score < test){
 				score = test;
+				bestNode = root;
+			} else if (score == 349823){
+				score = test;
+				bestNode = root;
 			}
 		} else{
 			if(score > test){
 				score = test;
+				bestNode = root;
+
+			} else if (score == 349823){
+				score = test;
+				bestNode = root;
 			}
 		}
 
@@ -1634,7 +1656,7 @@ float Game::compareChildren(Node * root){
 
 	cout << "Score: " << score << endl;
 
-	return score;
+	return bestNode;
 }
 
 

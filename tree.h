@@ -98,6 +98,9 @@ class Node
 		Board getBoard(){
 			return this->currentBoard;
 		}
+		Useraction getUseraction(){
+			return this->userAction;
+		}
 		float getCost(){
 			return this->cost;
 		}
