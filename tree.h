@@ -71,10 +71,11 @@ class Node
 	private:
 		Board currentBoard; // TODO some sort of data we store to each node of the tree
 		Useraction userAction;
-		vector<Node> children;
+		vector<Node *> children;
 		float cost;
 		float alpha;
 		float beta;
+		bool isMax;
 	public:
 		void setBoard(Board value){
 			this->currentBoard = value;
@@ -97,11 +98,18 @@ class Node
 		float getCost(){
 			return this->cost;
 		}
-		void addChild(Node child)
+		void addChild(Node *child)
 		{
 			children.push_back(child);
 		}
-		vector<Node> getChildren(){
+		Node* createNode(Useraction action)
+		{
+			Node *n = new Node();
+			n->setUseraction(action);
+			children.push_back(n);
+			return n;
+		}
+		vector<Node *> getChildren(){
 			return this->children;
 		}
 };
