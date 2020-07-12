@@ -1876,8 +1876,8 @@ int Game::heuristik3(Team currentPlayer, Board board){
 	for (int i=0; i<9; i++){
 		for (int j=0; j<5; j++){
 			struct position pos;
-			pos.row=i;
-			pos.column=j;
+			pos.row=j;
+			pos.column=i;
 
 			if (board.getCell(pos).getToken().getTeam()==PlayerOfLastToken){
 				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
@@ -2042,22 +2042,22 @@ int Game::heuristik1(Team currentPlayer,Board board){
 
 float Game::heuristik2(Team currentPlayer,Board board){
 
-	float returnvalue= 0;
+	float returnvalue = 0;
 
 	for (int i=0; i<9; i++){
 		for (int j=0; j<5; j++){
-			if ((i+j==4)|| (i+j==6)|| (i+j==8)|| (i+j==10)|| (i+j==12)){
-				struct position pos;
-				pos.row=i;
-				pos.column=j;
+			struct position pos;
+			pos.row=j;
+			pos.column=i;
 
-				if (board.getCell(pos).getToken().getTeam()==currentPlayer){
-					returnvalue+=board.getheuristik2(pos);
-				}
-				else{
-					returnvalue-=board.getheuristik2(pos);
-				}
+			if (board.getCell(pos).getToken().getTeam()==currentPlayer){
+				returnvalue+=board.getheuristik2(pos);
+				//cout << board.getheuristik2(pos) << endl << i << "," << j<<  endl << endl;
 			}
+			else{
+				returnvalue-=board.getheuristik2(pos);
+			}
+			
 		}
 	}
 	float c1=0.1;

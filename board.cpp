@@ -52,8 +52,8 @@ void Board::init(void)
 				c4=1;
 			}
 			
-			heuristik2grid[row][column]=c3*(1/(abs(column-4)+c1))*(1/(abs(row-2)*c2 + c1))*c4;
-
+			heuristik2grid[row][column]=c3*(1/(abs(column-4)+c1))*(1/((abs(row-2))*c2 + c1))*c4;
+			//cout << heuristik2grid[row][column] << endl << endl;
 
 
 
