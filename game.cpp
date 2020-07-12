@@ -158,7 +158,6 @@ void Game::move() //struct Useraction lastPositions
 				useraction = getHumanUseraction();
 			} else 
 			{
-				cout << "here";
 				useraction = getAIUseraction();
 								cout << "vorbei";
 				//7	this->clearScreen();
@@ -454,7 +453,7 @@ void Game::turn(void)
 		{
 			grid[row][column] = 0;
 		}
-		cout << endl;
+		//cout << endl;
 	}
 
 	counterMoves = 1; //set: first move of current player
@@ -815,7 +814,7 @@ struct Grid Game::updateGridToken(struct position currentPos)
 
 			temporaryGrid.gridPosition[pos.row][pos.column] = false;
 		}
-		cout << endl;
+		//cout << endl;
 	}
 
 	int i[] = { -1, 0, 1 };
@@ -1527,26 +1526,18 @@ struct Useraction Game::getHumanUseraction(void)
 }
 
 struct Useraction Game::getAIUseraction(void){
-	//ONLY for testing - print board
-	//this->clearScreen();
-	//this->meinSpielbrett.print();
-	//cout << endl;
-
 	//save current status of game
 	Board savedBoard = meinSpielbrett;
 	Player *savedPlayer = currentPlayer;
 	struct position newCurPos = currentPosition;
 	int counterSave = counterMoves;
-	cout << currentPlayer->getName();
-
-
 
 	Tree decisionTree;
-	decisionTree.root.setBoard(meinSpielbrett);
 
-	nextNode(decisionTree.root, 1, true);
+	nextNode(&(decisionTree.root), 1, true);
 	
-
+	cout << "Tree:";
+	printNodeScore(&(decisionTree.root));
 
 	//reset game to status before testing possible moves
 	meinSpielbrett = savedBoard;
@@ -1562,7 +1553,7 @@ struct Useraction Game::getAIUseraction(void){
 		{
 			grid[row][column] = 0;
 		}
-		cout << endl;
+		//cout << endl;
 	}
 
 	/*std::vector<Useraction> possibleMoves = getPossibleMoves();
@@ -1582,10 +1573,6 @@ struct Useraction Game::getAIUseraction(void){
 	Useraction bestMove;
 	float bestScore = 0;
 
-
-
-	cout << "Tree:";
-	printNodeScore(decisionTree.root);
 	//ONLY for testing dummy action
 	Useraction action;
 	action.captureOption = Unset;
@@ -1599,39 +1586,37 @@ struct Useraction Game::getAIUseraction(void){
 	return action;
 }
 
-void Game::printNodeScore(Node root){
-	vector<Node> children =  root.getChildren();
+void Game::printNodeScore(Node *root){
+	vector<Node *> children =  root->getChildren();
+	cout << "length: " << children.size() << endl;
 
 	for (int i=0; i < children.size() ; ++i){
-		cout << "Cost: " << children.at(i).getCost() << endl;
-		vector<Node> childrenNode =  root.getChildren();
+		cout << "Cost: " << (children)[i]->getCost() << endl;
+
+		vector<Node *> childrenNode =  (children)[i]->getChildren();
+		cout << "Children length: " << childrenNode.size() << endl;
+
 		if(childrenNode.size() > 0){
-			printNodeScore(children.at(i));
-		} else {
-			return;
-		}
+			printNodeScore((children)[i]);
+		} 
 	} 
 }
 
 
-/*float Game::getBestScore(Node root, float cost){
-	root.get
-}*/
-
-float Game::nextNode(Node root, int depth, bool maximizingPlayer){
+float Game::nextNode(Node *root, int depth, bool maximizingPlayer){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
-	//cout << "possibleMoves: " << possibleMoves.size();
+	cout << "possibleMoves length: " << possibleMoves.size() << endl;
 	
 	Player *test = currentPlayer; 
 	Board savedBoard = meinSpielbrett;
+	
 
 	for (int i=0; i < possibleMoves.size() ; ++i){
-
 		currentPlayer = test;
 		meinSpielbrett = savedBoard;
-		cout << "possibleMove";
-
+		Node* n = root->createNode(possibleMoves.at(i));
+		cout << "Child created" << endl;
 
 		//clear grid for check "beenThere"
 		for(int row=0; row<5; row++)
@@ -1640,7 +1625,7 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 			{
 				grid[row][column] = 0;
 			}
-			cout << endl;
+		//	cout << endl;
 		}
 
 		counterMoves = 1; //set: first move of current player
@@ -1650,33 +1635,28 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 		capturingYes = capturingPossible(); 
 	
 		moveNew(possibleMoves.at(i));
-			//this->clearScreen();
-			//this->meinSpielbrett.print();
-			//cout << endl;
-
-		//neues Spielbrett + userAction als child an root anhängen
-		Node n;
-		n.setBoard(meinSpielbrett);
-		n.setUseraction(possibleMoves.at(i));
-
-
+			this->clearScreen();
+			this->meinSpielbrett.print();
+			cout << endl;
 
 
 		if(!restart && !quit)
 		{
-				if(capturingAgain() && capturingYes && !skip) 
-				{
-					anotherMove = true;
-				} 
-				else
-				{
-					anotherMove = false;
-				}
+			if(capturingAgain() && capturingYes && !skip) 
+			{
+				anotherMove = true;
+			} 
+			else
+			{
+				anotherMove = false;
+			}
 		}
 		else
 		{
 				anotherMove = false;
 		}
+
+		cout << "depth: " << depth << endl;
 	
 		if (!anotherMove && depth != 0){
 			counterMoves = 1;
@@ -1693,93 +1673,37 @@ float Game::nextNode(Node root, int depth, bool maximizingPlayer){
 			lastDirection = InvalidDirection;
 
 			capturingYes = capturingPossible(); 
+			cout << "Player Switching" << endl;
+			nextNode(n, depth-1, false); // maybe causes segmentation fault
+		} 
+		else if(anotherMove && depth != 0)
+		{
+			cout << "Not switching" << endl;
+			nextNode(n, depth-1, true); // maybe causes segmentation fault
+		} 
+		else if (depth == 0) //Abbrechen wenn depth 0 ist
+		{ 
+			cout << "End depth" << endl;
+			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
+			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
+			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
 
+			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
+			cout << "Heuristik 1: " << heuristik1TokenDel << endl;
+			cout << "Heuristik 2: " << tokensPosition << endl;
+			cout << "Heuristik 3: " << tokensInLine << endl;
 
-			cout << "Player Switching";
-
-			 nextNode(root, depth-1, false);
-		} else if(anotherMove && depth != 0){
-			cout << "Not switching";
-
-			 nextNode(root, depth-1, true);
-		} else if (depth == 0){ //Abbrechen wenn depth 0 ist
-				cout << "End depth";
-					int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
-					float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
-					float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
-
-					float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
-					cout << "Costs: " << cost;
-					n.setCost(cost);
-			return cost;
+			n->setCost(cost);
 		}
-
-				root.addChild(n);
-
-		
 	}
 
 
+
+	/*printNodeScore(root);
+
+		vector<Node *> children =  root->getChildren();
+		cout << "length X: " << children.size();*/
 }
-/*
-void Game::turnTest(Node node, Useraction useraction){
-	cout << "turnTest";
-
-	//clear grid for check "beenThere"
-	for(int row=0; row<5; row++)
-	{
-		for(int column=0; column<9; column++)
-		{
-			grid[row][column] = 0;
-		}
-		cout << endl;
-	}
-
-	counterMoves = 1; //set: first move of current player
-	anotherMove = true;
-
-	//check if currentPlayer could capture anyone (true = yes)
-	capturingYes = capturingPossible(); 
-
-	//loop until cant/dont want to move and capture anymore
-	do
-	{
-			moveNew(useraction);
-			//is another move/capturing with latest token possible?
-			if(!restart && !quit)
-			{
-				cout << "Passt eh";
-
-				if(capturingAgain() && capturingYes && !skip) 
-				{
-					anotherMove = true;
-				} 
-				else
-				{
-					anotherMove = false;
-				}
-			}
-			else
-			{
-				anotherMove = false;
-			}
-	}
-	while(anotherMove); //maybe insert capturingAgain here?
-
-
-		gameOver();
-		//change current player
-		if(currentPlayer->getTeam() == WHITE)
-		{
-			currentPlayer = &playerBlack;
-		}
-		else
-		{
-			currentPlayer = &playerWhite;
-		}
-		lastDirection = InvalidDirection;
-}
-*/
 
 void Game::moveNew(Useraction useraction){
 
@@ -1833,87 +1757,6 @@ void Game::moveNew(Useraction useraction){
 		}
 }
 
-/*struct Useraction Game::getAIUseraction(void)
-{
-	//copy board to save current status
-	Board currentStatus = meinSpielbrett;
-	struct Useraction bestMove;
-	
-	
-	Tree baum;
-
-	//get all possible moves for this turn	
-	std::vector<Useraction> possibleMoves = getPossibleMoves();
-
-	int bestScore = 0;
-
-
-	//evaluate each move for this move
-	for (int i=0; i < possibleMoves.size() ; ++i){
-       //Move ausführen 
-	   //Heursik capture
-	   //heuristik in linie
-	   //Heuristik in Mitte 
-	   // alles zusammen = 
-		int score = minMaxAlgorithm(meinSpielbrett, 0, true);
-		meinSpielbrett = currentStatus; //undo changes on board
-		Node node;
-		node.setValue(score);
-		baum.root.addChild(node);
-		if(score > bestScore){
-			bestScore = score;
-			bestMove = possibleMoves.at(i);
-		}
-
-
-	}
-
-	meinSpielbrett = currentStatus;
-	bestMove = possibleMoves.at(0);
-	return bestMove;
-}
-
-int Game::minMaxAlgorithm(Board board, int depth, bool isMaximizingPlayer){
-		//check if somebody won
-		if(gameWon)
-		{
-			cout << "The game is over. "<< this->winner->getName() <<" won. Congratulations!" << endl;
-			return 1000;
-		}
-
-		std::vector<Useraction> possibleMoves = getPossibleMoves();
-		Board currentStatus = meinSpielbrett;
-
-		if(isMaximizingPlayer){
-			int bestScore = 0;
-
-			for (int i=0; i < possibleMoves.size() ; ++i){
-				       //Move ausführen 
-	   //Heursik capture
-	   //heuristik in linie
-	   //Heuristik in Mitte 
-	   // alles zusammen = 
-				int score = minMaxAlgorithm(meinSpielbrett, depth+1, false);
-				meinSpielbrett = currentStatus; //undo changes on board
-				if(score > bestScore){
-					bestScore = score;
-				}
-			}
-
-			return bestScore;
-		} else { //minimizing player
-			int bestScore = 0;
-
-			for (int i=0; i < possibleMoves.size() ; ++i){
-				moveToken(possibleMoves.at(i));
-				int score = minMaxAlgorithm(meinSpielbrett, depth+1, true);
-				meinSpielbrett = currentStatus; //undo changes on board
-				if(score < bestScore){
-					bestScore = score;
-				}
-			}
-		}
-}*/
 
 void Game::setFieldOfView(struct position position, struct Grid fieldOfView)
 {
@@ -2180,5 +2023,7 @@ float Game::heuristik2(Team currentPlayer,Board board){
 			}
 		}
 	}
+	float c1=0.1;
+	return c1*returnvalue;
 }
 
