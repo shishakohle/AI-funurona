@@ -108,6 +108,7 @@ class Game
 		void moveNew(Useraction);
 		int heuristik3(Team, Board);
 		int heuristik1(Team, Board);
+		float heuristik2(Team, Board);
 };
 
 #endif
