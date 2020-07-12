@@ -1,14 +1,9 @@
-The MME-AI course at UAS Technikum presents
- ______ _    _ _   _
-|  ____| |  | | \ | |              Corona Edition
-| |__  | |  | |  \| | ___  _ __ ___  _ __   __ _ 
-|  __| | |  | | . ` |/ _ \| '__/ _ \| '_ \ / _` |
-| |    | |__| | |\  | (_) | | | (_) | | | | (_| |
-|_|     \____/|_| \_|\___/|_|  \___/|_| |_|\__,_|
 
- A. Friedl, K. Pegler, L. Riedler, I. Weigel
- Vienna, 2020
+## FUNorona
+
+A. Friedl, K. Pegler, L. Riedler, I. Weigel </br>
+Vienna, 2020</br>
 
 
-To compile program run: make all
-To run the program run: ./funorona.out OR ./funorona.exe (depending on OS)
+To compile program run: make all </br>
+To run the program run: ./funorona.out OR ./funorona.exe (depending on OS) </br>
