@@ -1618,6 +1618,7 @@ void Game::printNodeScore(Node *root, int depth){
 }
 
 Node* Game::compareChildren(Node * root){
+
 	vector<Node *> children =  root->getChildren();
 
 	float score= 349823;
@@ -1636,19 +1637,19 @@ Node* Game::compareChildren(Node * root){
 		if(root->getIsMax() == true){
 			if(score < test){
 				score = test;
-				bestNode = root;
+				bestNode = c;
 			} else if (score == 349823){
 				score = test;
-				bestNode = root;
+				bestNode = c;
 			}
 		} else{
 			if(score > test){
 				score = test;
-				bestNode = root;
+				bestNode = c;
 
 			} else if (score == 349823){
 				score = test;
-				bestNode = root;
+				bestNode = c;
 			}
 		}
 
@@ -1745,7 +1746,6 @@ float Game::nextNode(Node *root, int depth){
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
-			//float tokensPosition = 2;
 
 			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
 			cout << "Heuristik 1: " << heuristik1TokenDel << endl;
