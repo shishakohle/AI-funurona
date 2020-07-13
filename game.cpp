@@ -309,9 +309,9 @@ void Game::move() //struct Useraction lastPositions
 			// default: break;
 		}
 
-	if(!validAction){
+	/*if(!validAction){
 		return;
-	}
+	}*/
 
 	//TO-DO: LUKAS
 	//only move when all rules are true (Lukas - combination rule se) --> otherwise: chose again
@@ -353,7 +353,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 	if(positionInputValid(startPosition) || positionInputValid(endPosition))
 	{
 		if(!isTokenFromCurrentTeam(startPosition)){
-			cout << "not Team";
 			returnvalue = false;
 			//cout << "Token is not from current team" << endl;
 			errorvec.push_back("Token is not from current team");
@@ -381,8 +380,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		{
 			if(!rightfulCapturing(startPosition, endPosition))
 			{
-										cout << "capture";
-
 				returnvalue = false;
 				//cout << "you are able to capture someone and therefore have to" << endl;
 				errorvec.push_back("you are able to capture someone and therefore have to");
@@ -395,8 +392,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		// - Ist die Position eine freie Position?
 		if(!freePosition(endPosition))
 		{
-									cout << "free";
-
 			returnvalue = false;
 			//cout << "this position is taken by another token" << endl;
 			errorvec.push_back("this position is taken by another token");
@@ -1711,7 +1706,6 @@ float Game::nextNode(Node *root, int depth){
 			{
 				grid[row][column] = 0;
 			}
-		//	cout << endl;
 		}
 		counterMoves = 1; //set: first move of current player
 		//anotherMove = true;
