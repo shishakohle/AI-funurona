@@ -701,7 +701,7 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 	//gridTemp = meinSpielbrett.getCell(startPosition).getToken().getFieldOfView();
 	if(counterMoves == 1)
 	{
-		if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1 && meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
+		if(gridCapturing.gridPosition[startPosition.row][startPosition.column].capture == 1 && meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column].capture == 1)
 		{
 			value = true;
 		}
@@ -712,7 +712,7 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 	}
 	else
 	{
-		if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
+		if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column].capture == 1)
 		{
 			value = true;
 		}
@@ -725,7 +725,7 @@ bool Game::rightfulCapturing(struct position startPosition, struct position endP
 }
 
 //checks if a token moved in a certain direction can capture someone
-bool Game::checkIfCanCapture(int i, int j, struct position currentPos)
+CheckcaptureAW Game::checkIfCanCapture(int i, int j, struct position currentPos)
 {
 	bool approach = false;
 	bool widthdraw = false;
@@ -815,7 +815,11 @@ bool Game::checkIfCanCapture(int i, int j, struct position currentPos)
 		returnValue = true;
 	}
 
-	return returnValue;
+	CheckcaptureAW returnStruct;
+	returnStruct.capture = returnValue;
+	returnStruct.approach = approach;
+
+	return returnStruct;
 }
 
 struct Grid Game::updateGridToken(struct position currentPos) 
@@ -830,7 +834,7 @@ struct Grid Game::updateGridToken(struct position currentPos)
 			pos.column = column;
 			pos.row = row;
 
-			temporaryGrid.gridPosition[pos.row][pos.column] = false;
+			temporaryGrid.gridPosition[pos.row][pos.column].capture = false;
 		}
 		//cout << endl;
 	}
@@ -850,7 +854,7 @@ struct Grid Game::updateGridToken(struct position currentPos)
 
 			if(!(a==0 && b==0))
 			{
-				bool valueTemp;
+				CheckcaptureAW valueTemp;
 				valueTemp = checkIfCanCapture(a, b, currentPos); 
 				struct position endPos;
 				endPos.row = currentPos.row+a;
@@ -894,7 +898,7 @@ bool Game::capturingPossible()
 			pos.row = row;
 
 			//create a grid for token --> 1 = this token can capture someone, 0 --> token cant capture or from other team
-			gridCapturing.gridPosition[row][column] = false;
+			gridCapturing.gridPosition[row][column].capture = false;
 			
 			//check all tokens from currentPlayer
 			if(meinSpielbrett.getCell(pos).getToken().getTeam() == this->currentPlayer->getTeam() && meinSpielbrett.getCell(pos).getOccupied() == true)
@@ -907,21 +911,21 @@ bool Game::capturingPossible()
 				//token from currentPlayer can capture someone
 				if(meinSpielbrett.getCell(pos).getToken().getGridBool() == true) // boolTemp
 				{
-					gridCapturing.gridPosition[row][column] = true;
+					gridCapturing.gridPosition[row][column].capture = true;
 					var = true;
 				}
 
 				//token from currentPlayer but cant capture anyone
 				else
 				{
-					gridCapturing.gridPosition[row][column] = false;	
+					gridCapturing.gridPosition[row][column].capture = false;	
 				}
 			}
 
 			//tokens are from other team
 			else
 			{
-				gridCapturing.gridPosition[row][column] = false;
+				gridCapturing.gridPosition[row][column].capture = false;
 			}
 		}
 	}
@@ -954,7 +958,7 @@ bool Game::capturingAgain()
 	struct position sameDirectionPosition;
 	sameDirectionPosition = getNeighbour(currentPosition, lastDirection);
 
-	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column] = 0;
+	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column].capture = 0;
 
 	//remove positions where cant go (beenThere, sameDirection)
 	for(int row=0; row<5; row++)
@@ -963,7 +967,7 @@ bool Game::capturingAgain()
 		{
 			if(grid[row][column]==1)
 			{
-				temporaryGrid.gridPosition[row][column] = 0;
+				temporaryGrid.gridPosition[row][column].capture = 0;
 			}
 		}
 	}
@@ -1033,7 +1037,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 					struct position startPosition;
 					startPosition.row = row;
 					startPosition.column = column;
-					if(gridCapturing.gridPosition[startPosition.row][startPosition.column] == 1)
+					if(gridCapturing.gridPosition[startPosition.row][startPosition.column].capture == 1)
 					{
 						for(int row1=0; row1<5; row1++)
 						{
@@ -1042,7 +1046,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 								struct position endPosition;
 								endPosition.row = row1;
 								endPosition.column = column1;
-								if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column] == 1)
+								if(meinSpielbrett.getCell(startPosition).getToken().getFieldOfView().gridPosition[endPosition.row][endPosition.column].capture == 1)
 								{
 									possibleUseraction.command = Move;
 									possibleUseraction.captureOption = Approach;
@@ -1100,7 +1104,7 @@ std::vector<Useraction> Game::getPossibleMoves()
 											possibleUseraction.command = Move;
 											possibleUseraction.start = startPosition;
 											possibleUseraction.end = endPosition;
-											possibleUseraction.captureOption = Approach;
+											possibleUseraction.captureOption = Unset;
 											possibleUseraction.dir = getDirectionFromInteger(direction);
 										//	possibleMoves[index] = possibleUseraction;
 											index++;
@@ -1129,12 +1133,18 @@ std::vector<Useraction> Game::getPossibleMoves()
 				endPosition.row = row;
 				endPosition.column = column;
 
-				if(temporaryGrid.gridPosition[endPosition.row][endPosition.column] == 1) 
+				if(temporaryGrid.gridPosition[endPosition.row][endPosition.column].capture == 1) 
 				{
 					possibleUseraction.command = Move;
 					possibleUseraction.start = currentPosition;
 					possibleUseraction.end = endPosition;
-					possibleUseraction.captureOption = Approach;
+
+					if(temporaryGrid.gridPosition[endPosition.row][endPosition.column].approach){
+						possibleUseraction.captureOption = Approach;
+					} else{
+						possibleUseraction.captureOption = Withdraw;
+					}
+
 					int direction = calculateDirection(currentPosition, endPosition);
 					possibleUseraction.dir = getDirectionFromInteger(direction);
 					//possibleMoves[index] = possibleUseraction;
@@ -1446,13 +1456,13 @@ struct Useraction Game::getHumanUseraction(void)
 	cout << endl;
 
 	//show all errors
-			for(string entry : errorvec){
-				cout << entry << endl;
-			}
-			//clear all errors
-			errorvec.clear();
+	for(string entry : errorvec){
+		cout << entry << endl;
+	}
+	//clear all errors
+	errorvec.clear();
 
-			cout << endl;
+	cout << endl;
 		
 	do
 	{
@@ -1590,7 +1600,6 @@ struct Useraction Game::getAIUseraction(void){
 		{
 			grid[row][column] = 0;
 		}
-		//cout << endl;
 	}
 
 	/*std::vector<Useraction> possibleMoves = getPossibleMoves();
@@ -1677,46 +1686,6 @@ Node* Game::compareChildren(Node * root)
 	
 	root->setCost(winningChild->getCost());
 	return winningChild;
-
-	/*vector<Node *> children =  root->getChildren();
-
-	float score= 349823;
-
-	Node* bestNode;
-
-	if(children.size() == 0){
-		return root;
-	}
-
-	for (int i=0; i < children.size() ; ++i){
-
-		Node* c = compareChildren((children)[i]);
-		float test = c->getCost();
-
-		if(root->getIsMax() == true){
-			if(score < test){
-				score = test;
-				bestNode = c;
-			} else if (score == 349823){
-				score = test;
-				bestNode = c;
-			}
-		} else{
-			if(score > test){
-				score = test;
-				bestNode = c;
-
-			} else if (score == 349823){
-				score = test;
-				bestNode = c;
-			}
-		}
-
-	}
-
-	cout << "Score: " << score << endl;
-
-	return bestNode;*/
 }
 
 
@@ -1744,7 +1713,6 @@ float Game::nextNode(Node *root, int depth){
 			}
 		//	cout << endl;
 		}
-
 		counterMoves = 1; //set: first move of current player
 		//anotherMove = true;
 

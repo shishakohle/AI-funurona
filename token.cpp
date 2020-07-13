@@ -46,7 +46,7 @@ bool Token::getGridBool()
 	{
 		for(int column=0; column<9; column++)
 		{
-			if(fieldOfView.gridPosition[row][column] == 1)
+			if(fieldOfView.gridPosition[row][column].capture == 1)
 			{
 				gridBool = true;
 			}
