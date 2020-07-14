@@ -1547,8 +1547,13 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
+<<<<<<< Updated upstream
 	///depth sollte 3 sein
 	nextNode(&(decisionTree.root), 2); //create Tree 
+=======
+
+	nextNode(&(decisionTree.root), 4); //create Tree 
+>>>>>>> Stashed changes
 	
 	//cout << "Tree:";
 	//printNodeScore(&(decisionTree.root), 1);
