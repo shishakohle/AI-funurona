@@ -1522,21 +1522,6 @@ struct Useraction Game::getHumanUseraction(void)
 	}
 	
 
-	// //debug lukas heuristiken
-	// int h1= heuristik1(this->currentPlayer->getTeam(),this->meinSpielbrett);
-	// float h2= this->meinSpielbrett.getheuristik2(useraction.end);
-	// int h3=heuristik3(this->currentPlayer->getTeam(),this->meinSpielbrett);
-	// float cost = h1+h2+h3;
-
-
-	// cout << "H1: " << h1 << endl;
-	// cout << "H2: " << h2 << endl;
-	// cout << "H3: " << h3 << endl;
-	// cout << "cost: " << cost << endl;
-
-
-
-
 	return useraction;
 }
 
@@ -1562,7 +1547,7 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-
+	///depth sollte 3 sein
 	nextNode(&(decisionTree.root), 2); //create Tree 
 	
 	//cout << "Tree:";
@@ -1570,6 +1555,8 @@ struct Useraction Game::getAIUseraction(void){
 	Node* bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
 
 	Useraction bestAction = bestNode->getUseraction();
+
+	
 
 	/*cout << "Dir: " << bestAction.dir << endl;
 	cout << "Cmd: " << bestAction.command << endl;
@@ -1789,9 +1776,10 @@ float Game::nextNode(Node *root, int depth){
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
 
 			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
-			/*cout << "Heuristik 1: " << heuristik1TokenDel << endl;
-			cout << "Heuristik 2: " << tokensPosition << endl;
-			cout << "Heuristik 3: " << tokensInLine << endl;*/
+			// cout << "Heuristik 1: " << heuristik1TokenDel << endl;
+			// cout << "Heuristik 2: " << tokensPosition << endl;
+			// cout << "Heuristik 3: " << tokensInLine << endl;
+			// cout << possibleMoves[i].start.column <<  "," << possibleMoves[i].start.row << ";" << possibleMoves[i].dir << ": cost" << cost << endl;
 
 			n->setCost(cost);
 		}
