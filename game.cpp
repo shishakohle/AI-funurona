@@ -122,12 +122,18 @@ bool Game::start() // TODO: private??
 	}
 	if(gameWon)
 	{
-		cout << "The game is over. "<< this->winner->getName() <<", you won. Congratulations!" << endl;
+		this->clearScreen();
+		this->meinSpielbrett.print();
+		cout << endl;
+		cout << "The game is over. Player [" << Token::asChar( this->winner->getTeam() ) << "] " << this->winner->getName() <<", you won. Congratulations!" << endl;
 		cout << "Would you like to play again?"<<endl;
 		anotherGame = false;
 	}
 	else if(gameDraw)
 	{
+		this->clearScreen();
+		this->meinSpielbrett.print();
+		cout << endl;
 		cout << "The game is over. There has been a draw!" << endl;
 		cout << "Would you like to play again?"<<endl;
 		anotherGame = false;
@@ -934,8 +940,6 @@ bool Game::capturingAgain()
 	bool var = false;	
 	struct Grid temporaryGrid;
 	temporaryGrid = updateGridToken(currentPosition);
-				
-
 	//test
 	/*for(int row=0; row<5; row++)
 	{
@@ -953,7 +957,10 @@ bool Game::capturingAgain()
 	struct position sameDirectionPosition;
 	sameDirectionPosition = getNeighbour(currentPosition, lastDirection);
 
-	temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column].capture = 0;
+	if(positionInputValid(sameDirectionPosition)){
+		temporaryGrid.gridPosition[sameDirectionPosition.row][sameDirectionPosition.column].capture = 0;
+	}
+
 
 	//remove positions where cant go (beenThere, sameDirection)
 	for(int row=0; row<5; row++)
@@ -969,7 +976,7 @@ bool Game::capturingAgain()
 
 
 	setFieldOfView(currentPosition, temporaryGrid);
-	
+
 	//test
 	/*for(int row=0; row<5; row++)
 	{
@@ -987,6 +994,7 @@ bool Game::capturingAgain()
 	{
 		var = true;
 	}
+
 	return var;
 }
 
@@ -1691,11 +1699,15 @@ float Game::nextNode(Node *root, int depth){
 	
 	Player *test = currentPlayer; 
 	Board savedBoard = meinSpielbrett;
+	struct position newCurPos = currentPosition;
+	int counterSave = counterMoves;
 	
 
 	for (int i=0; i < possibleMoves.size() ; ++i){
 		currentPlayer = test;
 		meinSpielbrett = savedBoard;
+		currentPosition = newCurPos;
+		counterMoves = counterSave;
 		Node* n = root->createNode(possibleMoves.at(i));
 		//cout << "Child created" << endl;
 
@@ -1712,15 +1724,29 @@ float Game::nextNode(Node *root, int depth){
 
 		//check if currentPlayer could capture anyone (true = yes)
 		capturingYes = capturingPossible(); 
+
 	
 		moveNew(possibleMoves.at(i));
-			/*this->clearScreen();
+		/*	this->clearScreen();
 			this->meinSpielbrett.print();
-			cout << endl;*/
-
-
+			cout << endl;
+*/
 		if(!restart && !quit)
 		{
+			/*cout << "TEst 1 " << endl;
+
+				cout << "Dir: " << possibleMoves.at(i).dir << endl;
+				cout << "End Row: " << possibleMoves.at(i).end.row << endl;
+				cout << "End Column: " << possibleMoves.at(i).end.column << endl;
+				cout << "Start Row: " << possibleMoves.at(i).start.row << endl;
+				cout << "Start Column: " << possibleMoves.at(i).start.column << endl;
+				cout << endl;
+
+			cout << capturingYes << endl;
+			cout << capturingAgain() << endl;
+			cout << "test";
+			cout << !skip << endl;*/
+
 			if(capturingAgain() && capturingYes && !skip) 
 			{
 				anotherMove = true;
@@ -1729,16 +1755,18 @@ float Game::nextNode(Node *root, int depth){
 			{
 				anotherMove = false;
 			}
+
 		}
 		else
 		{
 				anotherMove = false;
 		}
 
-		//cout << "depth: " << depth << endl;
+		//cout << "move: " << anotherMove << endl;
 	
 		if (!anotherMove && depth != 0){
 			counterMoves = 1;
+
 
 			//switch Player
 			if(currentPlayer->getTeam() == WHITE)
@@ -1752,18 +1780,18 @@ float Game::nextNode(Node *root, int depth){
 			lastDirection = InvalidDirection;
 
 			capturingYes = capturingPossible(); 
-			//cout << "Player Switching" << endl;
+		//	cout << "Player Switching" << endl;
 			n->setIsMax(!(n->getIsMax()));
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if(anotherMove && depth != 0)
 		{
-			//cout << "Not switching" << endl;
+		//	cout << "Not switching" << endl;
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
 		{ 
-			//cout << "End depth" << endl;
+		//	cout << "End depth" << endl;
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
