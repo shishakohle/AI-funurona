@@ -89,7 +89,7 @@ class Game
 		//can another token be capture?
 		bool rightfulCapturing(struct position, struct position);
 		bool capturingPossible();
-		bool checkIfCanCapture(int, int, struct position);
+		CheckcaptureAW checkIfCanCapture(int, int, struct position);
 		struct Grid updateGridToken(struct position);
 		bool capturingAgain();
 		//move Token from start to end position

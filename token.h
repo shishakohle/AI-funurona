@@ -10,6 +10,17 @@ struct lastMoveDirection
 
 #endif
 
+#ifndef CHECKCAPTUREAW_H
+#define CHECKCAPTUREAW_H
+
+struct CheckcaptureAW
+{
+	bool capture;
+	bool approach;
+};
+
+#endif
+
 #ifndef POSITION_H
 #define POSITION_H
 
@@ -25,7 +36,7 @@ struct position // TODO: upper case!
 
 struct Grid
 {
-	bool gridPosition[5][9];
+	CheckcaptureAW gridPosition[5][9];
 };
 
 #endif
