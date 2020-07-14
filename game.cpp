@@ -177,29 +177,12 @@ void Game::move() //struct Useraction lastPositions
 			} else 
 			{
 				useraction = getAIUseraction();
-				//7	this->clearScreen();
-				//	this->meinSpielbrett.print();
-				//	cout << endl;
-				
-				/*	cout << "Start Col: " << useraction.start.column << endl;
-					cout << "Start Row: " << useraction.start.row << endl;
-					cout << "End Col: " << useraction.end.column << endl;
-					cout << "End Row: " << useraction.end.row << endl;
-					cout << "Dir: " << useraction.dir << endl;*/
 			}
 		
 		}
 		while(useraction.command == Invalid);
 		
-		
-
-		/*
-		cout << "USERACTION DETECTED:" << endl;
-		cout << "\tcommand: " << useraction.command << endl;
-		cout << "\tstart: row " << useraction.start.row << ", column " << useraction.start.column << endl;
-		cout << "\tend: row " << useraction.end.row << ", column " << useraction.end.column << endl;
-		cout << "\tdirection: " << useraction.dir << endl;
-		*/
+	
 		
 		switch(useraction.command)
 		{
@@ -244,7 +227,6 @@ void Game::move() //struct Useraction lastPositions
 						int capturedTokens = moveToken(useraction);
 
 							if(capturedTokens == 0){
-								cout << "No capture";
 								this->counterCapture++;
 							} else{
 								this->counterCapture = 0;
@@ -373,8 +355,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		//war in diesem Zug schon mal auf diesem spielfeld?
 		if(!beenThere(endPosition))
 		{
-						cout << "been there";
-
 			returnvalue = false;
 			//cout << "you have already been to this field in your turn" << endl;
 			errorvec.push_back("you have already been to this field in your turn");
@@ -1566,6 +1546,15 @@ struct Useraction Game::getAIUseraction(void){
 	Player *savedPlayer = currentPlayer;
 	struct position newCurPos = currentPosition;
 	int counterSave = counterMoves;
+	bool beenThereSave[5][9];
+
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			beenThereSave[row][column] = grid[row][column];
+		}
+	}
 
 	this->clearScreen();
 	this->meinSpielbrett.print();
@@ -1601,7 +1590,7 @@ struct Useraction Game::getAIUseraction(void){
 	{
 		for(int column=0; column<9; column++)
 		{
-			grid[row][column] = 0;
+			grid[row][column] = beenThereSave[row][column];
 		}
 	}
 
@@ -1701,52 +1690,46 @@ float Game::nextNode(Node *root, int depth){
 	Board savedBoard = meinSpielbrett;
 	struct position newCurPos = currentPosition;
 	int counterSave = counterMoves;
-	
 
+	// hier grid speichern
+	bool beenThereSave[5][9];
+
+	for(int row=0; row<5; row++)
+	{
+		for(int column=0; column<9; column++)
+		{
+			beenThereSave[row][column] = grid[row][column];
+		}
+	}
+	
 	for (int i=0; i < possibleMoves.size() ; ++i){
 		currentPlayer = test;
 		meinSpielbrett = savedBoard;
 		currentPosition = newCurPos;
 		counterMoves = counterSave;
 		Node* n = root->createNode(possibleMoves.at(i));
-		//cout << "Child created" << endl;
 
-		//clear grid for check "beenThere"
 		for(int row=0; row<5; row++)
 		{
 			for(int column=0; column<9; column++)
 			{
-				grid[row][column] = 0;
+				grid[row][column] = beenThereSave[row][column];
 			}
 		}
+
 		counterMoves = 1; //set: first move of current player
-		//anotherMove = true;
 
 		//check if currentPlayer could capture anyone (true = yes)
 		capturingYes = capturingPossible(); 
 
 	
 		moveNew(possibleMoves.at(i));
-		/*	this->clearScreen();
-			this->meinSpielbrett.print();
-			cout << endl;
-*/
+		/*this->clearScreen();
+		this->meinSpielbrett.print();
+		cout << endl;*/
+
 		if(!restart && !quit)
 		{
-			/*cout << "TEst 1 " << endl;
-
-				cout << "Dir: " << possibleMoves.at(i).dir << endl;
-				cout << "End Row: " << possibleMoves.at(i).end.row << endl;
-				cout << "End Column: " << possibleMoves.at(i).end.column << endl;
-				cout << "Start Row: " << possibleMoves.at(i).start.row << endl;
-				cout << "Start Column: " << possibleMoves.at(i).start.column << endl;
-				cout << endl;
-
-			cout << capturingYes << endl;
-			cout << capturingAgain() << endl;
-			cout << "test";
-			cout << !skip << endl;*/
-
 			if(capturingAgain() && capturingYes && !skip) 
 			{
 				anotherMove = true;
@@ -1761,14 +1744,10 @@ float Game::nextNode(Node *root, int depth){
 		{
 				anotherMove = false;
 		}
-
-		//cout << "move: " << anotherMove << endl;
 	
-		if (!anotherMove && depth != 0){
+		if (!anotherMove && depth != 0){ //switch Player
 			counterMoves = 1;
 
-
-			//switch Player
 			if(currentPlayer->getTeam() == WHITE)
 			{
 				currentPlayer = &playerBlack;
@@ -1779,19 +1758,25 @@ float Game::nextNode(Node *root, int depth){
 			}
 			lastDirection = InvalidDirection;
 
+			//clear grid for check "beenThere"
+			for(int row=0; row<5; row++)
+			{
+				for(int column=0; column<9; column++)
+				{
+					grid[row][column] = 0;
+				}
+			}
+
 			capturingYes = capturingPossible(); 
-		//	cout << "Player Switching" << endl;
 			n->setIsMax(!(n->getIsMax()));
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
-		else if(anotherMove && depth != 0)
+		else if(anotherMove && depth != 0) //another move for same player
 		{
-		//	cout << "Not switching" << endl;
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
 		{ 
-		//	cout << "End depth" << endl;
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
@@ -1804,13 +1789,6 @@ float Game::nextNode(Node *root, int depth){
 			n->setCost(cost);
 		}
 	}
-
-
-
-	/*printNodeScore(root);
-
-		vector<Node *> children =  root->getChildren();
-		cout << "length X: " << children.size();*/
 }
 
 void Game::moveNew(Useraction useraction){
@@ -1822,19 +1800,6 @@ void Game::moveNew(Useraction useraction){
 		{
 			case Move:
 				{
-					/*this->meinSpielbrett.print();
-					cout << endl;
-							cout << currentPlayer->getTeam() << endl;
-							cout << "Dir: " << useraction.dir << endl;
-							cout << "Cmd: " << useraction.command << endl;
-							cout << "CaptureOption: " << useraction.captureOption << endl;
-							cout << "End Row: " << useraction.end.row << endl;
-							cout << "End Column: " << useraction.end.column << endl;
-							cout << "Start Row: " << useraction.start.row << endl;
-							cout << "Start Column: " << useraction.start.column << endl;
-							cout << endl;*/
-
-
 					if(isMoveValid(useraction.start, useraction.end, useraction.dir)) //enum Command command
 					{
 						//update grid for beenThere
