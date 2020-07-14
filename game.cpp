@@ -1545,6 +1545,7 @@ struct Useraction Game::getAIUseraction(void){
 	Board savedBoard = meinSpielbrett;
 	Player *savedPlayer = currentPlayer;
 	struct position newCurPos = currentPosition;
+	enum Direction saveDir = lastDirection;
 	int counterSave = counterMoves;
 	bool beenThereSave[5][9];
 
@@ -1582,6 +1583,7 @@ struct Useraction Game::getAIUseraction(void){
 	meinSpielbrett = savedBoard;
 	currentPlayer = savedPlayer;
 	counterMoves = counterSave;
+	lastDirection = saveDir;
 	currentPosition = newCurPos;
 	capturingPossible();
 
@@ -1689,6 +1691,7 @@ float Game::nextNode(Node *root, int depth){
 	Player *test = currentPlayer; 
 	Board savedBoard = meinSpielbrett;
 	struct position newCurPos = currentPosition;
+	enum Direction savedDir = lastDirection;
 	int counterSave = counterMoves;
 
 	// hier grid speichern
@@ -1707,6 +1710,7 @@ float Game::nextNode(Node *root, int depth){
 		meinSpielbrett = savedBoard;
 		currentPosition = newCurPos;
 		counterMoves = counterSave;
+		lastDirection = savedDir;
 		Node* n = root->createNode(possibleMoves.at(i));
 
 		for(int row=0; row<5; row++)
@@ -1719,10 +1723,11 @@ float Game::nextNode(Node *root, int depth){
 
 		counterMoves = 1; //set: first move of current player
 
+		//cout << "Calculate" << endl;
+
 		//check if currentPlayer could capture anyone (true = yes)
 		capturingYes = capturingPossible(); 
 
-	
 		moveNew(possibleMoves.at(i));
 		/*this->clearScreen();
 		this->meinSpielbrett.print();
@@ -1730,6 +1735,8 @@ float Game::nextNode(Node *root, int depth){
 
 		if(!restart && !quit)
 		{
+							
+
 			if(capturingAgain() && capturingYes && !skip) 
 			{
 				anotherMove = true;
@@ -1788,6 +1795,8 @@ float Game::nextNode(Node *root, int depth){
 
 			n->setCost(cost);
 		}
+
+
 	}
 }
 
