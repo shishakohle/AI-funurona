@@ -1547,13 +1547,8 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-<<<<<<< Updated upstream
-	///depth sollte 3 sein
-	nextNode(&(decisionTree.root), 2); //create Tree 
-=======
 
-	nextNode(&(decisionTree.root), 4); //create Tree 
->>>>>>> Stashed changes
+	nextNode(&(decisionTree.root), 2); //create Tree 
 	
 	//cout << "Tree:";
 	//printNodeScore(&(decisionTree.root), 1);
@@ -1696,6 +1691,9 @@ float Game::nextNode(Node *root, int depth){
 			beenThereSave[row][column] = grid[row][column];
 		}
 	}
+
+	if(possibleMoves.size() > 0){
+
 	
 	for (int i=0; i < possibleMoves.size() ; ++i){
 		currentPlayer = test;
@@ -1788,8 +1786,19 @@ float Game::nextNode(Node *root, int depth){
 
 			n->setCost(cost);
 		}
+	}
+	} else {
+			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
+			float tokensInLine = heuristik3(currentPlayer->getTeam(), meinSpielbrett);
+			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
 
+			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
+			// cout << "Heuristik 1: " << heuristik1TokenDel << endl;
+			// cout << "Heuristik 2: " << tokensPosition << endl;
+			// cout << "Heuristik 3: " << tokensInLine << endl;
+			// cout << possibleMoves[i].start.column <<  "," << possibleMoves[i].start.row << ";" << possibleMoves[i].dir << ": cost" << cost << endl;
 
+			root->setCost(cost);
 	}
 }
 
@@ -2022,7 +2031,7 @@ int Game::heuristik3(Team currentPlayer, Board board){
 	}
 
 
-	float squarenumber=2;
+	float squarenumber=3;
 	int returnvaluepos=0;
 	int returnvalueneg=0;
 	for (int value : heuristik3vec){
@@ -2064,7 +2073,7 @@ int Game::heuristik1(Team currentPlayer,Board board){
 		}
 	}
 
-	int c1=10;
+	int c1=8;
 	int returnvalue;
 	if (currentPlayer==WHITE){
 		returnvalue=c1*(tokensLeftWhite-tokensLeftBlack);
@@ -2098,7 +2107,7 @@ float Game::heuristik2(Team currentPlayer,Board board){
 			
 		}
 	}
-	float c1=0.1;
+	float c1=5;
 	return c1*returnvalue;
 }
 
