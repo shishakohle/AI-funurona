@@ -366,6 +366,7 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		{
 			if(!rightfulCapturing(startPosition, endPosition))
 			{
+				cout << "Capturing possible";
 				returnvalue = false;
 				//cout << "you are able to capture someone and therefore have to" << endl;
 				errorvec.push_back("you are able to capture someone and therefore have to");
@@ -910,6 +911,7 @@ bool Game::capturingPossible()
 			}
 		}
 	}
+
 	return var;
 }
 
@@ -1533,6 +1535,7 @@ struct Useraction Game::getAIUseraction(void){
 	enum Direction saveDir = lastDirection;
 	int counterSave = counterMoves;
 	bool beenThereSave[5][9];
+	bool capturingYesSave = capturingYes;
 
 	for(int row=0; row<5; row++)
 	{
@@ -1547,16 +1550,15 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
+	Useraction emptyAction;
 
-	nextNode(&(decisionTree.root), 2); //create Tree 
+	nextNode(&(decisionTree.root), 2, emptyAction); //create Tree 
 	
-	//cout << "Tree:";
-	//printNodeScore(&(decisionTree.root), 1);
+
 	Node* bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
 
+	//printNodeScore(&(decisionTree.root), 2);
 	Useraction bestAction = bestNode->getUseraction();
-
-	
 
 	/*cout << "Dir: " << bestAction.dir << endl;
 	cout << "Cmd: " << bestAction.command << endl;
@@ -1572,6 +1574,7 @@ struct Useraction Game::getAIUseraction(void){
 	counterMoves = counterSave;
 	lastDirection = saveDir;
 	currentPosition = newCurPos;
+	capturingYes = capturingYesSave;
 	capturingPossible();
 
 	//reset beenThere
@@ -1597,18 +1600,6 @@ struct Useraction Game::getAIUseraction(void){
 
 	}*/
 
-	Useraction bestMove;
-	float bestScore = 0;
-
-	//ONLY for testing dummy action
-	Useraction action;
-	action.captureOption = Unset;
-	action.command = Move;
-	action.dir = North;
-	action.start.row = 3;
-	action.start.column = 4;
-	action.end.row = 2;
-	action.end.column = 4;
 
 	return bestAction;
 }
@@ -1662,7 +1653,7 @@ Node* Game::compareChildren(Node * root)
 	} 
 	else
 	{
-		return NULL;
+		return root;
 	}
 	
 	root->setCost(winningChild->getCost());
@@ -1670,7 +1661,7 @@ Node* Game::compareChildren(Node * root)
 }
 
 
-float Game::nextNode(Node *root, int depth){
+float Game::nextNode(Node *root, int depth, Useraction lastAction){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
 	//cout << "possibleMoves length: " << possibleMoves.size() << endl;
@@ -1680,6 +1671,7 @@ float Game::nextNode(Node *root, int depth){
 	struct position newCurPos = currentPosition;
 	enum Direction savedDir = lastDirection;
 	int counterSave = counterMoves;
+	bool capturingYesSaved = capturingYes;
 
 	// hier grid speichern
 	bool beenThereSave[5][9];
@@ -1693,14 +1685,13 @@ float Game::nextNode(Node *root, int depth){
 	}
 
 	if(possibleMoves.size() > 0){
-
-	
 	for (int i=0; i < possibleMoves.size() ; ++i){
 		currentPlayer = test;
 		meinSpielbrett = savedBoard;
 		currentPosition = newCurPos;
 		counterMoves = counterSave;
 		lastDirection = savedDir;
+		capturingYes = capturingYesSaved;
 		Node* n = root->createNode(possibleMoves.at(i));
 
 		for(int row=0; row<5; row++)
@@ -1766,11 +1757,11 @@ float Game::nextNode(Node *root, int depth){
 
 			capturingYes = capturingPossible(); 
 			n->setIsMax(!(n->getIsMax()));
-			nextNode(n, depth-1); // maybe causes segmentation fault
+			nextNode(n, depth-1, (possibleMoves)[i]); // maybe causes segmentation fault
 		} 
 		else if(anotherMove && depth != 0) //another move for same player
 		{
-			nextNode(n, depth-1); // maybe causes segmentation fault
+			nextNode(n, depth-1, (possibleMoves)[i]); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
 		{ 
@@ -1793,11 +1784,7 @@ float Game::nextNode(Node *root, int depth){
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
 
 			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
-			// cout << "Heuristik 1: " << heuristik1TokenDel << endl;
-			// cout << "Heuristik 2: " << tokensPosition << endl;
-			// cout << "Heuristik 3: " << tokensInLine << endl;
-			// cout << possibleMoves[i].start.column <<  "," << possibleMoves[i].start.row << ";" << possibleMoves[i].dir << ": cost" << cost << endl;
-
+			//root->setUseraction(lastAction);
 			root->setCost(cost);
 	}
 }
