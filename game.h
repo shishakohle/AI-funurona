@@ -104,7 +104,7 @@ class Game
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
 		int minMaxAlgorithm(Board, int, bool);
-		float nextNode(Node *, int, Useraction);
+		float nextNode(Node *, int);
 		void printNodeScore(Node *, int);
 		Node* compareChildren(Node *);
 		void turnTest(Node, struct Useraction);

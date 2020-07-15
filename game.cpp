@@ -366,7 +366,6 @@ bool Game::isMoveValid(struct position startPosition, struct position endPositio
 		{
 			if(!rightfulCapturing(startPosition, endPosition))
 			{
-				cout << "Capturing possible";
 				returnvalue = false;
 				//cout << "you are able to capture someone and therefore have to" << endl;
 				errorvec.push_back("you are able to capture someone and therefore have to");
@@ -1550,9 +1549,7 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-	Useraction emptyAction;
-
-	nextNode(&(decisionTree.root), 2, emptyAction); //create Tree 
+	nextNode(&(decisionTree.root), 2); //create Tree 
 	
 
 	Node* bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
@@ -1661,7 +1658,7 @@ Node* Game::compareChildren(Node * root)
 }
 
 
-float Game::nextNode(Node *root, int depth, Useraction lastAction){
+float Game::nextNode(Node *root, int depth){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
 	//cout << "possibleMoves length: " << possibleMoves.size() << endl;
@@ -1757,11 +1754,11 @@ float Game::nextNode(Node *root, int depth, Useraction lastAction){
 
 			capturingYes = capturingPossible(); 
 			n->setIsMax(!(n->getIsMax()));
-			nextNode(n, depth-1, (possibleMoves)[i]); // maybe causes segmentation fault
+			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if(anotherMove && depth != 0) //another move for same player
 		{
-			nextNode(n, depth-1, (possibleMoves)[i]); // maybe causes segmentation fault
+			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
 		{ 
@@ -1784,7 +1781,6 @@ float Game::nextNode(Node *root, int depth, Useraction lastAction){
 			float tokensPosition = heuristik2(currentPlayer->getTeam(), meinSpielbrett);
 
 			float cost = tokensPosition + heuristik1TokenDel + tokensInLine;
-			//root->setUseraction(lastAction);
 			root->setCost(cost);
 	}
 }
