@@ -21,7 +21,6 @@ all+run: all
 clean:
 	@ $(RM) $(OUT)
 	@ $(RM) gmon.out
-	@ $(RM) memcheck.txt
 
 test: $(OUT)
 	@ $(RUNPREFIX)$(OUT)
@@ -44,7 +43,8 @@ memcheck: clean $(SOURCES)
 	@ echo
 	@ echo " +++ [MAKE MEMCHECK] Execution memory check completed. Here's a summary for you: +++"
 	@ grep -A 2 'HEAP SUMMARY' memcheck.txt
-	@ grep -A 5 'LEAK SUMMARY' memcheck.txt
+	@ grep -A 5 'LEAK SUMMARY' memcheck.txt || true
+	@ grep -A 0 'All heap blocks were freed' memcheck.txt || true
 	@ grep -A 0 'ERROR SUMMARY' memcheck.txt
 	@ echo " +++ [MAKE MEMCHECK] Checkout the memcheck.txt file for more... +++"
 
