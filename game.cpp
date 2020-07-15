@@ -126,7 +126,7 @@ bool Game::start() // TODO: private??
 		this->meinSpielbrett.print();
 		cout << endl;
 		cout << "The game is over. Player [" << Token::asChar( this->winner->getTeam() ) << "] " << this->winner->getName() <<", you won. Congratulations!" << endl;
-		cout << "Would you like to play again?"<<endl;
+		//cout << "Would you like to play again?"<<endl;
 		anotherGame = false;
 	}
 	else if(gameDraw)
@@ -135,7 +135,7 @@ bool Game::start() // TODO: private??
 		this->meinSpielbrett.print();
 		cout << endl;
 		cout << "The game is over. There has been a draw!" << endl;
-		cout << "Would you like to play again?"<<endl;
+		//cout << "Would you like to play again?"<<endl;
 		anotherGame = false;
 	}
 	else if(restart)
