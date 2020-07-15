@@ -1773,7 +1773,8 @@ float Game::nextNode(Node *root, int depth){
 			// cout << possibleMoves[i].start.column <<  "," << possibleMoves[i].start.row << ";" << possibleMoves[i].dir << ": cost" << cost << endl;
 
 			n->setCost(cost);
-		}
+		}	
+	delete (n); // to keep the Heap empty on application terminating, so Valgrind Leak summary looks nicer :)
 	}
 	} else {
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
