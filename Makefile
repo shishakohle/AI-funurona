@@ -1,4 +1,4 @@
-SOURCES=*.cpp
+	SOURCES=*.cpp
 CXX=g++
 CXXSTANDARD=c++11
 
