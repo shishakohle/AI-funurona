@@ -1774,7 +1774,7 @@ float Game::nextNode(Node *root, int depth){
 
 			n->setCost(cost);
 		}	
-	delete (n); // to keep the Heap empty on application terminating, so Valgrind Leak summary looks nicer :)
+	//delete (n); // to keep the Heap empty on application terminating, so Valgrind Leak summary looks nicer :)
 	}
 	} else {
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
