@@ -105,7 +105,7 @@ bool Game::start() // TODO: private??
 		turn();
 		gameOver();
 
-		if(this->counterCapture >= 5){
+		if(this->counterCapture >= 10){
 			gameDraw = true;
 		}
 
@@ -1549,7 +1549,7 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-	nextNode(&(decisionTree.root), 2); //create Tree 
+	nextNode(&(decisionTree.root), 3); //create Tree 
 	
 
 	Node* bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
@@ -2015,7 +2015,7 @@ int Game::heuristik3(Team currentPlayer, Board board){
 	}
 
 
-	float squarenumber=3;
+	float squarenumber=1.5;
 	int returnvaluepos=0;
 	int returnvalueneg=0;
 	for (int value : heuristik3vec){
@@ -2057,7 +2057,7 @@ int Game::heuristik1(Team currentPlayer,Board board){
 		}
 	}
 
-	int c1=8;
+	int c1=5;
 	int returnvalue;
 	if (currentPlayer==WHITE){
 		returnvalue=c1*(tokensLeftWhite-tokensLeftBlack);
@@ -2091,7 +2091,7 @@ float Game::heuristik2(Team currentPlayer,Board board){
 			
 		}
 	}
-	float c1=5;
+	float c1=3.5;
 	return c1*returnvalue;
 }
 
