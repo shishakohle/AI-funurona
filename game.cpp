@@ -40,6 +40,99 @@ Game::Game(void)
 
 bool Game::start() // TODO: private??
 {
+Tree testTree;
+    testTree.root.setIsMax(true);
+    testTree.root.setCost(std::numeric_limits<float>::min());
+
+    Node min2x1;
+    min2x1.setIsMax(false);
+    min2x1.setCost(std::numeric_limits<float>::max());
+    testTree.root.addChild(&min2x1);
+
+        Node max3x1;
+        max3x1.setIsMax(true);
+        max3x1.setCost(std::numeric_limits<float>::min());
+        min2x1.addChild(&max3x1);
+
+            Node min4x1;
+            min4x1.setIsMax(false);
+            min4x1.setCost(4);
+            max3x1.addChild(&min4x1);
+
+            Node min4x2;
+            min4x2.setIsMax(false);
+            min4x2.setCost(8);
+            max3x1.addChild(&min4x2);
+
+        Node  max3x2;
+        max3x2.setIsMax(true);
+        max3x2.setCost(std::numeric_limits<float>::min());
+        min2x1.addChild(&max3x2);
+
+            Node  min4x3;
+            min4x3.setIsMax(false);
+            min4x3.setCost(9);
+            max3x2.addChild(&min4x3);
+
+            Node min4x4;
+            min4x4.setIsMax(false);
+            min4x4.setCost(3);
+            max3x2.addChild(&min4x4);
+
+    Node min2x2;
+    min2x2.setIsMax(false);
+    min2x2.setCost(std::numeric_limits<float>::max());
+    testTree.root.addChild(&min2x2);
+
+        Node max3x3;
+        max3x3.setIsMax(true);
+        max3x3.setCost(std::numeric_limits<float>::min());
+        min2x2.addChild(&max3x3);
+
+            Node min4x5;
+            min4x5.setIsMax(false);
+            min4x5.setCost(2);
+            max3x3.addChild(&min4x5);
+
+            Node min4x6;
+            min4x6.setIsMax(false);
+            min4x6.setCost(-2);
+            max3x3.addChild(&min4x6);
+        
+        Node max3x4;
+        max3x4.setIsMax(true);
+        max3x4.setCost(std::numeric_limits<float>::min());
+        min2x2.addChild(&max3x4);
+
+            Node min4x7;
+            min4x7.setIsMax(false);
+            min4x7.setCost(-1);
+            max3x4.addChild(&min4x7);
+
+            Node min4x8;
+            min4x8.setIsMax(false);
+            min4x8.setCost(9);
+            max3x3.addChild(&min4x8);
+
+
+    //printNodeScore(&(testTree.root), 2);
+
+
+	Node * bestNode;
+	if(alphaBeta){
+		Node empty;
+		empty.setIsMax(true);
+		empty.setCost(2);
+		bestNode = compareChildrenAlphaBeta(&(testTree.root), &empty); //evaluate tree and find best option
+	} else {
+		bestNode = compareChildren(&(testTree.root)); //evaluate tree and find best option
+	}
+
+	cout << bestNode->getCost() << endl;
+	cout << bestNode->getAlpha() << endl;
+	cout << bestNode->getBeta() << endl;
+
+
 	bool anotherGame = false;
 	// clear screen
 	//this->clearScreen();
@@ -1549,21 +1642,29 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-	nextNode(&(decisionTree.root), 2); //create Tree 
-	
 
-	Node* bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
+	nextNode(&(decisionTree.root), 5); //create Tree 
+
+	Node * bestNode;
+	if(alphaBeta){
+		Node empty;
+		empty.setIsMax(true);
+		empty.setCost(2);
+		bestNode = compareChildrenAlphaBeta(&(decisionTree.root), &empty); //evaluate tree and find best option
+	} else {
+		bestNode = compareChildren(&(decisionTree.root)); //evaluate tree and find best option
+	}
 
 	//printNodeScore(&(decisionTree.root), 2);
 	Useraction bestAction = bestNode->getUseraction();
 
-	/*cout << "Dir: " << bestAction.dir << endl;
+	cout << "Dir: " << bestAction.dir << endl;
 	cout << "Cmd: " << bestAction.command << endl;
 	cout << "CaptureOption: " << bestAction.captureOption << endl;
 	cout << "End Row: " << bestAction.end.row << endl;
 	cout << "End Column: " << bestAction.end.column << endl;
 	cout << "Start Row: " << bestAction.start.row << endl;
-	cout << "Start Column: " << bestAction.start.column << endl;*/
+	cout << "Start Column: " << bestAction.start.column << endl;
 
 	//reset game to status before testing possible moves
 	meinSpielbrett = savedBoard;
@@ -1637,14 +1738,24 @@ Node* Game::compareChildren(Node * root)
 			//get winningChild
 			if(root->getIsMax()) //max
 			{
-				if(winningChild->getCost() < children.at(i)->getCost()){
+				/*if(winningChild->getCost() < children.at(i)->getCost()){
+					winningChild = children.at(i);
+				}*/
+
+				if(root->getCost() < children.at(i)->getCost()){
+					root->setCost(children.at(i)->getCost());
 					winningChild = children.at(i);
 				}
 			} else //min
 			{
-				if(winningChild->getCost() > children.at(i)->getCost()){
+
+				if(root->getCost() > children.at(i)->getCost()){
+					root->setCost(children.at(i)->getCost());
 					winningChild = children.at(i);
 				}
+				/*if(winningChild->getCost() > children.at(i)->getCost()){
+					winningChild = children.at(i);
+				}*/
 			}
 		}
 	} 
@@ -1653,12 +1764,128 @@ Node* Game::compareChildren(Node * root)
 		return root;
 	}
 	
-	root->setCost(winningChild->getCost());
+	//root->setCost(winningChild->getCost());
+	return winningChild;
+}
+
+	bool betaIsSet= false;
+	bool alphaIsSet = false;
+
+Node* Game::compareChildrenAlphaBeta(Node * root, Node * parent){
+	vector<Node *> children =  root->getChildren();
+	Node* winningChild;
+
+	//cout << "Children size: " << children.size() << endl;
+	if(children.size() > 0){
+		winningChild = children.at(0);
+		/*winningChild->setAlpha(alpha);
+		winningChild->setBeta(beta);*/
+
+
+		for (int i=0; i < children.size() ; ++i)
+		{	
+
+			children.at(i)->setAlpha(root->getAlpha());
+			children.at(i)->setBeta(root->getBeta());
+			Node* child = compareChildrenAlphaBeta(children.at(i), root);
+	
+
+			//get winningChild
+			if(root->getIsMax()) //max
+			{
+				/*cout << "isMax" << endl;
+				cout << "Root Cost:" << root->getCost() << endl;
+				cout << "Root Alpha:" << root->getAlpha() << endl;
+				cout << "Root Beta:" << root->getBeta() << endl;
+
+				cout << "Child Cost:" << children.at(i)->getCost() << endl;
+				cout << "Child Alpha:" << children.at(i)->getAlpha() << endl;
+				cout << "Child Beta:" << children.at(i)->getBeta() << endl;*/
+
+				
+				if(root->getCost() < children.at(i)->getCost()){
+					root->setCost(children.at(i)->getCost());
+					winningChild = children.at(i);
+				}
+
+				if(root->getBeta() <= children.at(i)->getCost()){
+					//root->setBeta(children.at(i)->getCost());
+					/*cout << "beta prun" << endl;
+					cout << "Root Cost PRUN:" << root->getCost() << endl;
+					cout << "Root Alpha PRUN:" << root->getAlpha() << endl;
+					cout << "Root Beta PRUN:" << root->getBeta() << endl;*/
+					//winningChild = children.at(i);
+					return winningChild;
+				}
+
+				if(root->getAlpha() < children.at(i)->getCost()){
+					root->setAlpha(children.at(i)->getCost());
+				}
+
+				/*cout << "Root Cost AFTER:" << root->getCost() << endl;
+				cout << "Root Alpha AFTER:" << root->getAlpha() << endl;
+				cout << "Root Beta AFTER:" << root->getBeta() << endl;*/
+
+
+			} else //min
+			{
+				if(root->getCost() > children.at(i)->getCost()){
+					root->setCost(children.at(i)->getCost());
+					winningChild = children.at(i);
+				}
+				if(root->getAlpha() >= children.at(i)->getCost()){
+					//root->setAlpha(children.at(i)->getCost());
+					//winningChild = children.at(i);
+					return winningChild;
+				}
+				if(root->getBeta() > children.at(i)->getCost()){
+					root->setBeta(children.at(i)->getCost());
+					betaIsSet = true;
+				}
+			}
+				if(parent->getIsMax()){
+				/*	cout << "hier wirds ernst MAX" << endl;
+					cout << "Root Cost VORHER:" << root->getCost() << endl;
+					cout << "Parent Cost VORHER:" << parent->getCost() << endl;*/
+					if((root->getCost() < parent->getCost())){
+						return winningChild;
+					}
+				} else {
+					/*cout << "hier wirds ernst MIN" << endl;
+					cout << "Root Cost VORHER:" << root->getCost() << endl;
+					cout << "Parent Cost VORHER:" << parent->getCost() << endl;*/
+					if((root->getCost() > parent->getCost())){
+						return winningChild;
+					}
+				}
+
+		/*	cout << "Cost: " << root->getCost() << endl;
+			cout << "Alpha: " << root->getAlpha() << endl;
+			cout << "Beta: " << root->getBeta() << endl;*/
+		}
+	} 
+	else
+	{
+		return root;
+	}
+	
+	//root->setCost(winningChild->getCost());
+	//root->setAlpha(winningChild->getAlpha());
+	//root->setBeta(winningChild->getBeta());
+
+
+
+	/*root->setCost(winningChild->getCost());
+	root->setAlpha(winningChild->getAlpha());
+	root->setBeta(winningChild->getBeta());*/
+
+
 	return winningChild;
 }
 
 
-float Game::nextNode(Node *root, int depth){
+
+void Game::nextNode(Node *root, int depth){
 	std::vector<Useraction> possibleMoves = getPossibleMoves();
 
 	//cout << "possibleMoves length: " << possibleMoves.size() << endl;
@@ -1754,10 +1981,19 @@ float Game::nextNode(Node *root, int depth){
 
 			capturingYes = capturingPossible(); 
 			n->setIsMax(!(n->getIsMax()));
+
+			if(n->getIsMax()){
+				n->setCost(std::numeric_limits<float>::min());
+			} else {
+				n->setCost(std::numeric_limits<float>::max());
+			}
+
+
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if(anotherMove && depth != 0) //another move for same player
 		{
+
 			nextNode(n, depth-1); // maybe causes segmentation fault
 		} 
 		else if (depth == 0) //Abbrechen wenn depth 0 ist
