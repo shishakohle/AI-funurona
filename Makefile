@@ -32,8 +32,10 @@ profile: clean $(SOURCES)
 	@ gprof $(RUNPREFIX)$(OUT) gmon.out > profile.txt
 	@ $(RM) gmon.out
 	@ echo
-	@ echo " +++ [MAKE PROFILE] Execution profiling completed. Here's a small sample for you: +++"
-	@ grep -A 5 'Each sample counts as 0.01 seconds.' profile.txt
+	@ echo " +++ [MAKE PROFILE] Execution profiling completed. +++"
+	@ echo " +++ [MAKE PROFILE] Here's the log for the AI calculating their moves: +++"
+	@ grep -A 2 'Each sample counts as 0.01 seconds.' profile.txt
+	@ grep -m 1 'getAIUseraction' profile.txt
 	@ echo " +++ [MAKE PROFILE] Checkout the profile.txt file for more... +++"
 
 memcheck: clean $(SOURCES)
