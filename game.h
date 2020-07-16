@@ -18,6 +18,7 @@
 
 #include <map>
 #include <vector>	
+#include <limits>
 #include "board.h"
 #include "player.h"
 #include "tree.h"
@@ -60,6 +61,7 @@ class Game
 		bool isMoveLengthOK;
 		bool isDirectionOK;
 		bool capturingYes;
+		bool alphaBeta = true;
 		int counterMoves;
 		int counterPossibleMoves;
 		int counterCapture;
@@ -104,9 +106,10 @@ class Game
 		std::vector<Useraction> getPossibleMoves();
 		enum Direction getDirectionFromInteger (int);
 		int minMaxAlgorithm(Board, int, bool);
-		float nextNode(Node *, int);
+		void nextNode(Node *, int);
 		void printNodeScore(Node *, int);
 		Node* compareChildren(Node *);
+		Node* compareChildrenAlphaBeta(Node *, Node *);
 		void turnTest(Node, struct Useraction);
 		void moveNew(Useraction);
 		int heuristik3(Team, Board);

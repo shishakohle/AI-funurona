@@ -1,4 +1,6 @@
 #include <vector>
+#include <limits>
+
 
 #ifndef NODE_H
 #define NODE_H
@@ -73,10 +75,11 @@ class Node
 		Useraction userAction;
 		vector<Node *> children;
 		float cost;
-		float alpha;
-		float beta;
+		float alpha = std::numeric_limits<float>::min();
+		float beta = std::numeric_limits<float>::max();
 		bool isMax = true;
 	public:
+		
 		void setBoard(Board value){
 			this->currentBoard = value;
 		}
@@ -104,8 +107,17 @@ class Node
 		float getCost(){
 			return this->cost;
 		}
+		float getAlpha(){
+			return this->alpha;
+		}
+		float getBeta(){
+			return this->beta;
+		}
 		bool getIsMax(){
 			return this->isMax;
+		}
+		void addChild(Node* n){
+			children.push_back(n);
 		}
 		Node* createNode(Useraction action)
 		{
