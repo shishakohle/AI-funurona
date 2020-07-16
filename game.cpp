@@ -1642,11 +1642,6 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
-<<<<<<< HEAD
-=======
-	nextNode(&(decisionTree.root), 3); //create Tree 
-	
->>>>>>> 7c8a5bc1d2eb4b03d3ec30fc6394df98c1f078d4
 
 	nextNode(&(decisionTree.root), 5); //create Tree 
 
