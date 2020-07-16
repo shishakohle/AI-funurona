@@ -61,7 +61,7 @@ class Game
 		bool isMoveLengthOK;
 		bool isDirectionOK;
 		bool capturingYes;
-		bool alphaBeta = false;
+		bool alphaBeta = true;
 		int counterMoves;
 		int counterPossibleMoves;
 		int counterCapture;

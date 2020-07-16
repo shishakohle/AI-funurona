@@ -40,7 +40,7 @@ Game::Game(void)
 
 bool Game::start() // TODO: private??
 {
-Tree testTree;
+/*Tree testTree;
     testTree.root.setIsMax(true);
     testTree.root.setCost(std::numeric_limits<float>::min());
 
@@ -130,7 +130,7 @@ Tree testTree;
 
 	cout << bestNode->getCost() << endl;
 	cout << bestNode->getAlpha() << endl;
-	cout << bestNode->getBeta() << endl;
+	cout << bestNode->getBeta() << endl;*/
 
 
 	bool anotherGame = false;
@@ -1643,7 +1643,7 @@ struct Useraction Game::getAIUseraction(void){
 
 	Tree decisionTree;
 
-	nextNode(&(decisionTree.root), 5); //create Tree 
+	nextNode(&(decisionTree.root), 4); //create Tree 
 
 	Node * bestNode;
 	if(alphaBeta){
@@ -1658,13 +1658,13 @@ struct Useraction Game::getAIUseraction(void){
 	//printNodeScore(&(decisionTree.root), 2);
 	Useraction bestAction = bestNode->getUseraction();
 
-	cout << "Dir: " << bestAction.dir << endl;
+	/*cout << "Dir: " << bestAction.dir << endl;
 	cout << "Cmd: " << bestAction.command << endl;
 	cout << "CaptureOption: " << bestAction.captureOption << endl;
 	cout << "End Row: " << bestAction.end.row << endl;
 	cout << "End Column: " << bestAction.end.column << endl;
 	cout << "Start Row: " << bestAction.start.row << endl;
-	cout << "Start Column: " << bestAction.start.column << endl;
+	cout << "Start Column: " << bestAction.start.column << endl;*/
 
 	//reset game to status before testing possible moves
 	meinSpielbrett = savedBoard;
