@@ -21,7 +21,6 @@ all+run: all
 clean:
 	@ $(RM) $(OUT)
 	@ $(RM) gmon.out
-	@ $(RM) memcheck.txt
 
 test: $(OUT)
 	@ $(RUNPREFIX)$(OUT)
@@ -33,8 +32,10 @@ profile: clean $(SOURCES)
 	@ gprof $(RUNPREFIX)$(OUT) gmon.out > profile.txt
 	@ $(RM) gmon.out
 	@ echo
-	@ echo " +++ [MAKE PROFILE] Execution profiling completed. Here's a small sample for you: +++"
-	@ grep -A 5 'Each sample counts as 0.01 seconds.' profile.txt
+	@ echo " +++ [MAKE PROFILE] Execution profiling completed. +++"
+	@ echo " +++ [MAKE PROFILE] Here's the log for the AI calculating their moves: +++"
+	@ grep -A 2 'Each sample counts as 0.01 seconds.' profile.txt
+	@ grep -m 1 'getAIUseraction' profile.txt
 	@ echo " +++ [MAKE PROFILE] Checkout the profile.txt file for more... +++"
 
 memcheck: clean $(SOURCES)
@@ -44,7 +45,8 @@ memcheck: clean $(SOURCES)
 	@ echo
 	@ echo " +++ [MAKE MEMCHECK] Execution memory check completed. Here's a summary for you: +++"
 	@ grep -A 2 'HEAP SUMMARY' memcheck.txt
-	@ grep -A 5 'LEAK SUMMARY' memcheck.txt
+	@ grep -A 5 'LEAK SUMMARY' memcheck.txt || true
+	@ grep -A 0 'All heap blocks were freed' memcheck.txt || true
 	@ grep -A 0 'ERROR SUMMARY' memcheck.txt
 	@ echo " +++ [MAKE MEMCHECK] Checkout the memcheck.txt file for more... +++"
 

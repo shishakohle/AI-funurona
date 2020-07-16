@@ -198,7 +198,7 @@ Tree testTree;
 		turn();
 		gameOver();
 
-		if(this->counterCapture >= 5){
+		if(this->counterCapture >= 10){
 			gameDraw = true;
 		}
 
@@ -1642,6 +1642,11 @@ struct Useraction Game::getAIUseraction(void){
 	cout << endl;
 
 	Tree decisionTree;
+<<<<<<< HEAD
+=======
+	nextNode(&(decisionTree.root), 3); //create Tree 
+	
+>>>>>>> 7c8a5bc1d2eb4b03d3ec30fc6394df98c1f078d4
 
 	nextNode(&(decisionTree.root), 5); //create Tree 
 
@@ -2009,7 +2014,8 @@ void Game::nextNode(Node *root, int depth){
 			// cout << possibleMoves[i].start.column <<  "," << possibleMoves[i].start.row << ";" << possibleMoves[i].dir << ": cost" << cost << endl;
 
 			n->setCost(cost);
-		}
+		}	
+	//delete (n); // to keep the Heap empty on application terminating, so Valgrind Leak summary looks nicer :)
 	}
 	} else {
 			int heuristik1TokenDel = heuristik1(currentPlayer->getTeam(), meinSpielbrett);
@@ -2250,7 +2256,7 @@ int Game::heuristik3(Team currentPlayer, Board board){
 	}
 
 
-	float squarenumber=3;
+	float squarenumber=1.5;
 	int returnvaluepos=0;
 	int returnvalueneg=0;
 	for (int value : heuristik3vec){
@@ -2292,7 +2298,7 @@ int Game::heuristik1(Team currentPlayer,Board board){
 		}
 	}
 
-	int c1=8;
+	int c1=5;
 	int returnvalue;
 	if (currentPlayer==WHITE){
 		returnvalue=c1*(tokensLeftWhite-tokensLeftBlack);
@@ -2326,7 +2332,7 @@ float Game::heuristik2(Team currentPlayer,Board board){
 			
 		}
 	}
-	float c1=5;
+	float c1=2.0;
 	return c1*returnvalue;
 }
 
